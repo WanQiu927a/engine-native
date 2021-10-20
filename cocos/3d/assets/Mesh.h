@@ -201,9 +201,9 @@ public:
      * @en The actual data of the mesh
      * @zh 此网格的数据。
      */
-    inline const Uint8Array &getData() const {
-        return _data;
-    }
+    //    inline const Uint8Array &getData() const {
+    //        return _data;
+    //    }
 
     inline Uint8Array &getData() {
         return _data;
@@ -215,12 +215,11 @@ public:
      */
     uint64_t getHash();
 
-    
     /**
      * @en Set the hash of the mesh
      * @zh 设置此网格的哈希值。
      */
-    void setHash(uint64_t hash) { _hash = hash;}
+    void setHash(uint64_t hash) { _hash = hash; }
 
     using JointBufferIndicesType = std::vector<index_t>;
     /**

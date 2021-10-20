@@ -32,15 +32,15 @@
 #if SCRIPT_ENGINE_TYPE == SCRIPT_ENGINE_V8
 
     #include "Object.h"
-    #include "Utils.h"
     #include "ScriptEngine.h"
+    #include "Utils.h"
 
 namespace se {
 // ------------------------------------------------------- Object
 
 namespace {
 //        std::unordered_map<std::string, Class *> __clsMap;
-v8::Isolate *__isolate = nullptr;
+v8::Isolate *        __isolate = nullptr;
 std::vector<Class *> __allClasses;
 } // namespace
 
@@ -69,9 +69,9 @@ Class *Class::create(const std::string &clsName, se::Object *parent, Object *par
 
 Class *Class::create(const std::initializer_list<const char *> &classPath, se::Object *parent, Object *parentProto, v8::FunctionCallback ctor) {
     se::AutoHandleScope scope;
-    se::Object *currentParent = parent;
-    for(auto i = 0;i < classPath.size() - 1; i++) {
-        se::Value tmp;
+    se::Object *        currentParent = parent;
+    se::Value           tmp;
+    for (auto i = 0; i < classPath.size() - 1; i++) {
         bool ok = currentParent->getProperty(*(classPath.begin() + i), &tmp);
         CCASSERT(ok, "class or namespace in path is not defined");
         currentParent = tmp.toObject();
@@ -136,13 +136,13 @@ bool Class::install() {
         _ctorTemplate.Get(__isolate)->Inherit(_parentProto->_getClass()->_ctorTemplate.Get(__isolate));
     }
 
-    v8::Local<v8::Context> context = __isolate->GetCurrentContext();
-    v8::MaybeLocal<v8::Function> ctor = _ctorTemplate.Get(__isolate)->GetFunction(context);
+    v8::Local<v8::Context>       context = __isolate->GetCurrentContext();
+    v8::MaybeLocal<v8::Function> ctor    = _ctorTemplate.Get(__isolate)->GetFunction(context);
     if (ctor.IsEmpty())
         return false;
 
-    v8::Local<v8::Function> ctorChecked = ctor.ToLocalChecked();
-    v8::MaybeLocal<v8::String> name = v8::String::NewFromUtf8(__isolate, _name.c_str(), v8::NewStringType::kNormal);
+    v8::Local<v8::Function>    ctorChecked = ctor.ToLocalChecked();
+    v8::MaybeLocal<v8::String> name        = v8::String::NewFromUtf8(__isolate, _name.c_str(), v8::NewStringType::kNormal);
     if (name.IsEmpty())
         return false;
 

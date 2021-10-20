@@ -38,6 +38,7 @@ if [ ${machine} = "Mac" ]; then
           -DCMAKE_OSX_ARCHITECTURES=x86_64 \
           -DRES_DIR=$RES_DIR \
           -DCOCOS_X_PATH=$COCOS_ROOT \
+          -DENABLE_JSB_FILES=ON \
           -T buildsystem=12
 
 else

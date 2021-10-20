@@ -377,6 +377,8 @@ public:
          */
     std::string toString() const;
 
+    std::string toStringExt() const;
+
     // Private API used in wrapper
     static Object *       _createJSObject(Class *cls, v8::Local<v8::Object> obj);
     v8::Local<v8::Object> _getJSObject() const;

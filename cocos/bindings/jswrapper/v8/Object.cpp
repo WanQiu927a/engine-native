@@ -33,6 +33,7 @@
     #include "Utils.h"
 
     #include <memory>
+    #include <sstream>
     #include <unordered_map>
 
 namespace se {
@@ -731,6 +732,23 @@ std::string Object::toString() const {
         ret = "[object Object]";
     }
     return ret;
+}
+
+std::string Object::toStringExt() const {
+    if (isFunction()) return "[function]";
+    if (isArray()) return "[array]";
+    if (isArrayBuffer()) return "[arraybuffer]";
+    if (isTypedArray()) return "[typedarray]";
+
+    std::vector<std::string> keys;
+    getAllKeys(&keys);
+    std::stringstream ss;
+    ss << "{ ";
+    for (auto &k : keys) {
+        ss << k << ", ";
+    }
+    ss << "}";
+    return ss.str();
 }
 
 } // namespace se

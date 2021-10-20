@@ -27,6 +27,9 @@
 
 #include <regex>
 #include <sstream>
+#include <type_traits>
+#include <utility>
+#include <variant>
 
 #include "base/TypeDef.h"
 #include "gfx-base/GFXDef.h"
@@ -618,6 +621,74 @@ bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unuse
 }
 
 template <>
+bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
+    std::shared_ptr<cc::ArrayBuffer> buffer;
+    se::Object *                     ret;
+
+    se_for_each(std::make_index_sequence<std::variant_size<cc::TypedArray>::value>{}, [&](auto vidx) {
+        if (vidx != typedArray.index()) {
+            return;
+        }
+        using AT = std::remove_reference_t<decltype(std::get<vidx>(typedArray))>;
+        using VT = typename AT::value_type;
+
+        auto &                                               arr = std::get<vidx>(typedArray);
+        se::Object::TypedArrayType                           arrayType;
+        constexpr std::array<se::Object::TypedArrayType, 12> typeIndex = {
+            se::Object::TypedArrayType::NONE,
+            se::Object::TypedArrayType::NONE,
+            se::Object::TypedArrayType::INT8,
+            se::Object::TypedArrayType::UINT8,
+            se::Object::TypedArrayType::INT16,
+            se::Object::TypedArrayType::UINT16,
+            se::Object::TypedArrayType::NONE,
+            se::Object::TypedArrayType::NONE,
+            se::Object::TypedArrayType::INT32,
+            se::Object::TypedArrayType::UINT32,
+            se::Object::TypedArrayType::FLOAT32,
+            se::Object::TypedArrayType::FLOAT64,
+        };
+        if (std::is_integral_v<VT>) {
+            arrayType = typeIndex[sizeof(VT) * 2 + (std::is_signed_v<VT> ? 0 : 1)];
+        } else {
+            arrayType = typeIndex[8 + (sizeof(VT) == 4 ? 0 : 1)];
+        }
+        auto buffer = arr.buffer();
+        ret         = se::Object::createTypedArray(arrayType, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    });
+
+    // if (std::holds_alternative<cc::Int8Array>(typedArray)) {
+    //     buffer = std::get<cc::Int8Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT8, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
+    //     buffer = std::get<cc::Uint8Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Int16Array>(typedArray)) {
+    //     buffer = std::get<cc::Int16Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT16, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
+    //     buffer = std::get<cc::Uint16Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT16, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Int32Array>(typedArray)) {
+    //     buffer = std::get<cc::Int32Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
+    //     buffer = std::get<cc::Uint32Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Float32Array>(typedArray)) {
+    //     buffer = std::get<cc::Float32Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else if (std::holds_alternative<cc::Float64Array>(typedArray)) {
+    //     buffer = std::get<cc::Float64Array>(typedArray).buffer();
+    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT64, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+    // } else {
+    //     assert(false);
+    // }
+    to.setObject(ret);
+    return true;
+}
+
+template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec4 *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec4 failed!");
     se::Object *obj = from.toObject();
@@ -762,7 +833,7 @@ bool sevalue_to_native(const se::Value &from, cc::Size *to, se::Object * /*unuse
     SE_PRECONDITION3(ok && w.isNumber(), false, *to = cc::Size::ZERO);
     ok = obj->getProperty("height", &h);
     SE_PRECONDITION3(ok && h.isNumber(), false, *to = cc::Size::ZERO);
-    to->width = w.toFloat();
+    to->width  = w.toFloat();
     to->height = h.toFloat();
     return true;
 }
@@ -831,6 +902,51 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Frustum *to, se::Obj
         se::Value ele;
         vertices->getArrayElement(i, &ele);
         sevalue_to_native(ele, &to->vertices[i], nullptr);
+    }
+
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
+    uint8_t *data    = nullptr;
+    size_t   byteLen = 0;
+    from.toObject()->getTypedArrayData(&data, &byteLen);
+    to->reset(data, byteLen);
+    return true;
+}
+template <>
+bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *out, se::Object *ctx) {
+    *out = std::make_shared<cc::ArrayBuffer>();
+    sevalue_to_native<cc::ArrayBuffer>(from, out->get(), ctx);
+    //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
+    return true;
+}
+template <>
+bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
+    auto &   typedArray = *to;
+    uint8_t *data       = nullptr;
+    size_t   byteLen    = 0;
+    from.toObject()->getTypedArrayData(&data, &byteLen);
+    auto arrayBuffer = std::make_shared<cc::ArrayBuffer>(byteLen);
+    if (std::holds_alternative<cc::Int8Array>(typedArray)) {
+        *to = cc::Int8Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
+        *to = cc::Uint8Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Int16Array>(typedArray)) {
+        *to = cc::Int16Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
+        *to = cc::Uint16Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Int32Array>(typedArray)) {
+        *to = cc::Int32Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
+        *to = cc::Uint32Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Float32Array>(typedArray)) {
+        *to = cc::Float32Array{arrayBuffer};
+    } else if (std::holds_alternative<cc::Float64Array>(typedArray)) {
+        *to = cc::Float64Array{arrayBuffer};
+    } else {
+        assert(false);
     }
 
     return true;

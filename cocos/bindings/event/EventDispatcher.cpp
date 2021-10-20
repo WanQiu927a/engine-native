@@ -247,7 +247,9 @@ void EventDispatcher::dispatchTickEvent(float /*dt*/) {
     int64_t        milliSeconds = std::chrono::duration_cast<std::chrono::milliseconds>(prevTime - se::ScriptEngine::getInstance()->getStartTime()).count();
     args.push_back(se::Value(static_cast<double>(milliSeconds)));
 
-    tickVal.toObject()->call(args, nullptr);
+    if (!tickVal.isUndefined()) {
+        tickVal.toObject()->call(args, nullptr);
+    }
 }
 
 void EventDispatcher::dispatchResizeEvent(int width, int height) {

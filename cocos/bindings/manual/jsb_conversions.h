@@ -764,6 +764,15 @@ HOLD_UNBOUND_TYPE(const cc::Mat4 *, false);
 HOLD_UNBOUND_TYPE(cc::Color *, false);
 HOLD_UNBOUND_TYPE(cc::geometry::Frustum *, false);
 
+template <>
+struct HolderType<cc::ArrayBuffer, true> {
+    using type       = cc::ArrayBuffer;
+    using local_type = cc::ArrayBuffer;
+    local_type                 data;
+    std::remove_const_t<type> *ptr = nullptr;
+    inline type &              value() { return data; /* TODO(PatriceJiang): use std::move() */ }
+};
+
 template <typename R, typename... ARGS>
 struct HolderType<std::function<R(ARGS...)>, true> {
     using type       = std::function<R(ARGS...)>;
@@ -831,6 +840,12 @@ bool sevalue_to_native(const se::Value &from, std::array<T, N> *to, se::Object *
 // std::any
 template <>
 bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *ctx); //NOLINT(readability-identifier-naming)
+////////////////// ArrayBuffer
+template <>
+bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/);
+///////////////// std::shared_ptr<cc::ArrayBuffer>
+template <>
+bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *out, se::Object *ctx);
 
 //////////////////// std::array
 
@@ -1025,26 +1040,16 @@ inline bool sevalue_to_native(const se::Value &from, std::vector<se::Value> *to,
 
 //////////////////  std::any
 template <>
-bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *ctx) {
+inline bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *ctx) {
     assert(false);
     //TODO(PatriceJiang): convert any to specific types
     return false;
-}
-////////////////// ArrayBuffer
-template <>
-bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
-    uint8_t *data    = nullptr;
-    size_t   byteLen = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
-    to->reset(data, byteLen);
-    return true;
 }
 
 ////////////////// TypedArray
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, bool>::type
-sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
+typename std::enable_if<std::is_arithmetic<T>::value, bool>::type inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
     uint8_t *data    = nullptr;
     size_t   byteLen = 0;
     from.toObject()->getTypedArrayData(&data, &byteLen);
@@ -1054,54 +1059,10 @@ sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object *
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
-    auto &   typedArray = *to;
-    uint8_t *data       = nullptr;
-    size_t   byteLen    = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
-    auto arrayBuffer = std::make_shared<cc::ArrayBuffer>(byteLen);
-    if (std::holds_alternative<cc::Int8Array>(typedArray)) {
-        *to = cc::Int8Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
-        *to = cc::Uint8Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Int16Array>(typedArray)) {
-        *to = cc::Int16Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
-        *to = cc::Uint16Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Int32Array>(typedArray)) {
-        *to = cc::Int32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
-        *to = cc::Uint32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Float32Array>(typedArray)) {
-        *to = cc::Float32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Float64Array>(typedArray)) {
-        *to = cc::Float64Array{arrayBuffer};
-    } else {
-        assert(false);
-    }
-
-    return true;
-}
+bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/);
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::IBArray *to, se::Object * /*ctx*/) {
-    auto &   typedArray = *to;
-    uint8_t *data       = nullptr;
-    size_t   byteLen    = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
-    auto arrayBuffer = std::make_shared<cc::ArrayBuffer>(byteLen);
-    if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
-        *to = cc::Uint8Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
-        *to = cc::Uint16Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
-        *to = cc::Uint32Array{arrayBuffer};
-    } else {
-        assert(false);
-    }
-
-    return true;
-}
+bool sevalue_to_native(const se::Value &from, cc::IBArray *to, se::Object * /*ctx*/);
 
 ////////////////// pointer types
 
@@ -1425,26 +1386,19 @@ sevalue_to_native(const se::Value &from, HolderType<std::vector<T, allocator>, t
 
 template <typename T>
 bool sevalue_to_native(const se::Value &from, std::shared_ptr<T> *out, se::Object *ctx) {
-    T *tmp = nullptr;
-    sevalue_to_native<T>(from, &tmp, ctx);
+    T *  tmp = new T;
+    bool ok  = sevalue_to_native<T>(from, tmp, ctx);
     out->reset(tmp);
     //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
-    return true;
+    return ok;
 }
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, bool>::type
-sevalue_to_native(const se::Value &from, std::shared_ptr<cc::TypedArrayTemp<T>> *out, se::Object *ctx) {
+inline
+    typename std::enable_if<std::is_arithmetic<T>::value, bool>::type
+    sevalue_to_native(const se::Value &from, std::shared_ptr<cc::TypedArrayTemp<T>> *out, se::Object *ctx) {
     *out = std::make_shared<cc::TypedArrayTemp<T>>();
     sevalue_to_native<T>(from, out->get(), ctx);
-    //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
-    return true;
-}
-
-template <>
-bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *out, se::Object *ctx) {
-    *out = std::make_shared<cc::ArrayBuffer>();
-    sevalue_to_native<cc::ArrayBuffer>(from, out->get(), ctx);
     //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
     return true;
 }
@@ -1510,6 +1464,7 @@ inline bool sevalue_to_native(const se::Value &from, T to) { // NOLINT(readabili
 ///////////////////////////////////////////////////////////////////
 //////////////////  nativevalue_to_se   ///////////////////////////
 ///////////////////////////////////////////////////////////////////
+// declaration
 
 template <typename T>
 inline bool nativevalue_to_se(T &&from, se::Value &to); // NOLINT(readability-identifier-naming)
@@ -1564,6 +1519,25 @@ nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) {
 }
 
 #endif // HAS_CONSTEXPR
+
+template <>
+bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/); // NOLINT
+
+/// nativevalue_to_se std::optional
+template <typename T>
+bool nativevalue_to_se(const std::optional<T> &from, se::Value &to, se::Object *ctx) { // NOLINT
+    if (!from.has_value()) {
+        to.setUndefined();
+        return true;
+    }
+    return nativevalue_to_se(from.value(), to, ctx);
+}
+
+template <typename T>
+inline bool nativevalue_to_se(const cc::TypedArrayTemp<T> &typedArray, se::Value &to, se::Object *ctx) {
+    cc::TypedArray ta{typedArray};
+    return nativevalue_to_se(ta, to, ctx);
+}
 
 template <typename T, typename allocator>
 inline bool nativevalue_to_se(const std::vector<T, allocator> &from, se::Value &to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
