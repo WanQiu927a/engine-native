@@ -620,6 +620,32 @@ bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unuse
     return Rect_to_seval(from, &to);
 }
 
+template <typename T>
+constexpr std::enable_if_t<std::is_arithmetic_v<T>, se::Object::TypedArrayType>
+get_typed_array_type() { // NOLINT(readability-identifier-naming)
+    se::Object::TypedArrayType                           arrayType;
+    constexpr std::array<se::Object::TypedArrayType, 12> typeIndex = {
+        se::Object::TypedArrayType::NONE,
+        se::Object::TypedArrayType::NONE,
+        se::Object::TypedArrayType::INT8,
+        se::Object::TypedArrayType::UINT8,
+        se::Object::TypedArrayType::INT16,
+        se::Object::TypedArrayType::UINT16,
+        se::Object::TypedArrayType::NONE,
+        se::Object::TypedArrayType::NONE,
+        se::Object::TypedArrayType::INT32,
+        se::Object::TypedArrayType::UINT32,
+        se::Object::TypedArrayType::FLOAT32,
+        se::Object::TypedArrayType::FLOAT64,
+    };
+    if (std::is_integral_v<T>) {
+        arrayType = typeIndex[sizeof(T) * 2 + (std::is_signed_v<T> ? 0 : 1)];
+    } else {
+        arrayType = typeIndex[10 + (sizeof(T) == 4 ? 0 : 1)];
+    }
+    return arrayType;
+}
+
 template <>
 bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
     std::shared_ptr<cc::ArrayBuffer> buffer;
@@ -629,32 +655,12 @@ bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Obje
         if (vidx != typedArray.index()) {
             return;
         }
-        using AT = std::remove_reference_t<decltype(std::get<vidx>(typedArray))>;
-        using VT = typename AT::value_type;
-
-        auto &                                               arr = std::get<vidx>(typedArray);
-        se::Object::TypedArrayType                           arrayType;
-        constexpr std::array<se::Object::TypedArrayType, 12> typeIndex = {
-            se::Object::TypedArrayType::NONE,
-            se::Object::TypedArrayType::NONE,
-            se::Object::TypedArrayType::INT8,
-            se::Object::TypedArrayType::UINT8,
-            se::Object::TypedArrayType::INT16,
-            se::Object::TypedArrayType::UINT16,
-            se::Object::TypedArrayType::NONE,
-            se::Object::TypedArrayType::NONE,
-            se::Object::TypedArrayType::INT32,
-            se::Object::TypedArrayType::UINT32,
-            se::Object::TypedArrayType::FLOAT32,
-            se::Object::TypedArrayType::FLOAT64,
-        };
-        if (std::is_integral_v<VT>) {
-            arrayType = typeIndex[sizeof(VT) * 2 + (std::is_signed_v<VT> ? 0 : 1)];
-        } else {
-            arrayType = typeIndex[8 + (sizeof(VT) == 4 ? 0 : 1)];
-        }
-        auto buffer = arr.buffer();
-        ret         = se::Object::createTypedArray(arrayType, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
+        using AT                             = std::remove_reference_t<decltype(std::get<vidx>(typedArray))>;
+        using VT                             = typename AT::value_type;
+        auto &                     arr       = std::get<vidx>(typedArray);
+        se::Object::TypedArrayType arrayType = get_typed_array_type<VT>();
+        auto                       buffer    = arr.buffer();
+        ret                                  = se::Object::createTypedArray(arrayType, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
     });
 
     to.setObject(ret);
@@ -834,8 +840,7 @@ bool sevalue_to_native(const se::Value &from, cc::Quaternion *to, se::Object * /
     return true;
 }
 
-
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to AABB failed!");
     se::Object *obj = from.toObject();
@@ -851,7 +856,7 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *to, se::Object
     return true;
 }
 
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Capsule failed!");
     se::Object *obj = from.toObject();
@@ -870,8 +875,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *to, se::Obj
     return true;
 }
 
-template<>
-bool sevalue_to_native(const se::Value &from, cc::geometry::Line *to, se::Object * /*ctx*/){
+template <>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Line *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Line failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
@@ -886,8 +891,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Line *to, se::Object
     return true;
 }
 
-template<>
-bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *to, se::Object * /*ctx*/){
+template <>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Sphere failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
@@ -902,14 +907,14 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *to, se::Object 
     return true;
 }
 
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Sphere failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
     bool        ok;
-    float radius;
-    cc::Vec3 center;
+    float       radius;
+    cc::Vec3    center;
     ok = obj->getProperty("radius", &tmp);
     SE_PRECONDITION2(ok, false, "property radius not found!");
     ok = sevalue_to_native(tmp, &radius, obj);
@@ -922,8 +927,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *to, se::Obje
     return true;
 }
 
-template<>
-bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *to, se::Object * /*ctx*/){
+template <>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Plane failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
