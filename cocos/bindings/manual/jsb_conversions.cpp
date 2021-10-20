@@ -657,33 +657,6 @@ bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Obje
         ret         = se::Object::createTypedArray(arrayType, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
     });
 
-    // if (std::holds_alternative<cc::Int8Array>(typedArray)) {
-    //     buffer = std::get<cc::Int8Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT8, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
-    //     buffer = std::get<cc::Uint8Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Int16Array>(typedArray)) {
-    //     buffer = std::get<cc::Int16Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT16, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
-    //     buffer = std::get<cc::Uint16Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT16, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Int32Array>(typedArray)) {
-    //     buffer = std::get<cc::Int32Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::INT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
-    //     buffer = std::get<cc::Uint32Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::UINT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Float32Array>(typedArray)) {
-    //     buffer = std::get<cc::Float32Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else if (std::holds_alternative<cc::Float64Array>(typedArray)) {
-    //     buffer = std::get<cc::Float64Array>(typedArray).buffer();
-    //     ret    = se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT64, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    // } else {
-    //     assert(false);
-    // }
     to.setObject(ret);
     return true;
 }
