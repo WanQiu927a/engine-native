@@ -1284,7 +1284,7 @@ constexpr bool sevalue_to_native(const se::Value &from, std::vector<std::variant
 template <typename T, bool is_reference>
 inline bool sevalue_to_native(const se::Value &from, HolderType<T, is_reference> *holder, se::Object *ctx) { // NOLINT(readability-identifier-naming)
     if CC_CONSTEXPR (is_reference && is_jsb_object_v<T>) {
-    #if 0 // TODO(PatriceJiang): allow pure js value to struct
+    #if 1 // TODO(PatriceJiang): allow pure js value to struct
         void *ptr = from.toObject()->getPrivateData();
         if (ptr) {
             holder->data = static_cast<T *>(ptr);
