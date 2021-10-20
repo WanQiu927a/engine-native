@@ -41,15 +41,16 @@
 #include "cocos/base/Vector.h"
 #include "cocos/core/TypedArray.h"
 #include "cocos/core/assets/AssetsModuleHeader.h"
-#include "cocos/core/geometry/Frustum.h"
-#include "cocos/core/geometry/Plane.h"
 #include "cocos/math/Geometry.h"
 #include "cocos/math/Quaternion.h"
 #include "cocos/math/Vec2.h"
 #include "cocos/math/Vec3.h"
 #include "core/ArrayBuffer.h"
+#include "core/geometry/AABB.h"
 #include "extensions/cocos-ext.h"
 #include "network/Downloader.h"
+
+#include "cocos/core/geometry/Geometry.h"
 
 #if USE_SPINE
     #include "cocos/editor-support/spine-creator-support/spine-cocos2dx.h"
@@ -1016,11 +1017,6 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::Quaternion *to, se::Object * /*unused*/);
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::geometry::Plane *to, se::Object * /*unused*/);
-template <>
-bool sevalue_to_native(const se::Value &from, cc::geometry::Frustum *to, se::Object * /*unused*/);
-
-template <>
 bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unused*/);
 
 template <>
@@ -1461,6 +1457,26 @@ inline bool sevalue_to_native(const se::Value &from, T to) { // NOLINT(readabili
     return sevalue_to_native(from, to, static_cast<se::Object *>(nullptr));
 }
 
+
+/////////////////////// geometry
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Line *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *, se::Object * /*ctx*/);
+template <>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Plane *to, se::Object * /*unused*/);
+template <>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Frustum *to, se::Object * /*unused*/);
+
 ///////////////////////////////////////////////////////////////////
 //////////////////  nativevalue_to_se   ///////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -1744,6 +1760,7 @@ template <>
 inline bool nativevalue_to_se(const cc::network::DownloadTask &from, se::Value &to, se::Object * /*ctx*/) {
     return DownloadTask_to_seval(from, &to);
 }
+
 
 #if __clang__
     #pragma clang diagnostic pop

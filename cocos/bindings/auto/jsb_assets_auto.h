@@ -379,7 +379,7 @@ bool js_register_cc_Prefab(se::Object *obj); // NOLINT
 bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Prefab);
-SE_DECLARE_FUNC(js_assets_Prefab__instantiate);
+SE_DECLARE_FUNC(js_assets_Prefab_instantiate);
 SE_DECLARE_FUNC(js_assets_Prefab_Prefab);
 
 extern se::Object *__jsb_cc_IRenderTextureCreateInfo_proto; // NOLINT

@@ -861,6 +861,113 @@ bool sevalue_to_native(const se::Value &from, cc::Quaternion *to, se::Object * /
     return true;
 }
 
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to AABB failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    ok = obj->getProperty("center", &tmp);
+    SE_PRECONDITION2(ok, false, "property center not found!");
+    ok = sevalue_to_native(tmp, &to->center, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("halfExtents", &tmp);
+    SE_PRECONDITION2(ok, false, "property halfExtents not found!");
+    sevalue_to_native(tmp, &to->halfExtents, obj);
+    return true;
+}
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Capsule failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    ok = obj->getProperty("radius", &tmp);
+    SE_PRECONDITION2(ok, false, "property radius not found!");
+    ok = sevalue_to_native(tmp, &to->radius, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("halfHeight", &tmp);
+    SE_PRECONDITION2(ok, false, "property halfHeight not found!");
+    sevalue_to_native(tmp, &to->halfHeight, obj);
+    ok = obj->getProperty("axis", &tmp);
+    SE_PRECONDITION2(ok, false, "property axis not found!");
+    sevalue_to_native(tmp, &to->axis, obj);
+    return true;
+}
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Line *to, se::Object * /*ctx*/){
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Line failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    ok = obj->getProperty("s", &tmp);
+    SE_PRECONDITION2(ok, false, "property o not found!");
+    ok = sevalue_to_native(tmp, &to->s, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("e", &tmp);
+    SE_PRECONDITION2(ok, false, "property d not found!");
+    sevalue_to_native(tmp, &to->e, obj);
+    return true;
+}
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *to, se::Object * /*ctx*/){
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Sphere failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    ok = obj->getProperty("o", &tmp);
+    SE_PRECONDITION2(ok, false, "property o not found!");
+    ok = sevalue_to_native(tmp, &to->o, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("d", &tmp);
+    SE_PRECONDITION2(ok, false, "property d not found!");
+    sevalue_to_native(tmp, &to->d, obj);
+    return true;
+}
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Sphere failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    float radius;
+    cc::Vec3 center;
+    ok = obj->getProperty("radius", &tmp);
+    SE_PRECONDITION2(ok, false, "property radius not found!");
+    ok = sevalue_to_native(tmp, &radius, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("center", &tmp);
+    SE_PRECONDITION2(ok, false, "property center not found!");
+    sevalue_to_native(tmp, &center, obj);
+    to->setCenter(center);
+    to->setRadius(radius);
+    return true;
+}
+
+template<>
+bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *to, se::Object * /*ctx*/){
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Plane failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    bool        ok;
+    ok = obj->getProperty("a", &tmp);
+    SE_PRECONDITION2(ok, false, "property a not found!");
+    ok = sevalue_to_native(tmp, &to->a, obj);
+    SE_PRECONDITION2(ok, false, "convert to vec3");
+    ok = obj->getProperty("b", &tmp);
+    SE_PRECONDITION2(ok, false, "property b not found!");
+    sevalue_to_native(tmp, &to->b, obj);
+    ok = obj->getProperty("c", &tmp);
+    SE_PRECONDITION2(ok, false, "property c not found!");
+    sevalue_to_native(tmp, &to->c, obj);
+    return true;
+}
+
 template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Plane *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Plane failed!");
