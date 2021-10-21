@@ -38,9 +38,8 @@ if [ ${machine} = "Mac" ]; then
           -DCMAKE_OSX_ARCHITECTURES=x86_64 \
           -DRES_DIR=$RES_DIR \
           -DCOCOS_X_PATH=$COCOS_ROOT \
-          -T buildsystem=12
-
-#          -DENABLE_JSB_FILES=ON \
+          -T buildsystem=12 \
+          -DENABLE_JSB_FILES=ON
 else
      cd $COCOS_ROOT/templates/windows
      mkdir -p build-win32/proj

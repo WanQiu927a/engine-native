@@ -80,6 +80,18 @@ public:
     static Node *getDirtyNode(const index_t idx);
 
     /**
+     * @en Finds a node by hierarchy path, the path is case-sensitive.
+     * It will traverse the hierarchy by splitting the path using '/' character.
+     * This function will still returns the node even if it is inactive.
+     * It is recommended to not use this function every frame instead cache the result at startup.
+     * @zh 通过路径从节点树中查找节点的方法，路径是大小写敏感的，并且通过 `/` 来分隔节点层级。
+     * 即使节点的状态是未启用的也可以找到，建议将结果缓存，而不是每次需要都去查找。
+     * @param path The path of the target node
+     * @param referenceNode If given, the search will be limited in the sub node tree of the reference node
+     */
+    static Node *find(const std::string &path, Node *referenceNode = nullptr);
+
+    /**
      * @en Determine whether the given object is a normal Node. Will return false if [[Scene]] given.
      * @zh 指定对象是否是普通的节点？如果传入 [[Scene]] 会返回 false。
      */
