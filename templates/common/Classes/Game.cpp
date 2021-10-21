@@ -48,6 +48,8 @@ Game::Game(int width, int height, uintptr_t windowHandle) : cc::Application(widt
 bool Game::init() {
     cc::Application::init();
 
+#if 0
+    
     se::ScriptEngine *se = se::ScriptEngine::getInstance();
 
     jsb_set_xxtea_key("");
@@ -75,7 +77,7 @@ bool Game::init() {
     jsb_run_script("jsb-adapter/jsb-builtin.js");
     jsb_run_script("main.js");
 
-//    jsb_run_script("hello.js");
+#endif
 
 #if (CC_PLATFORM == CC_PLATFORM_MAC_IOS)
     cc::Vec2 logicSize  = getViewLogicalSize();
