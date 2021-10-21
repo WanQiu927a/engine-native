@@ -1489,6 +1489,8 @@ cocos_source_files(
 
     cocos/core/event/CallbacksInvoker.cpp
     cocos/core/event/CallbacksInvoker.h
+    cocos/core/event/EventTypesToJS.h
+    cocos/core/event/EventTypesToJS.cpp
     cocos/core/event/Event.cpp
     cocos/core/event/Event.h
     cocos/core/event/EventModuleHeader.h
