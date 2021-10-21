@@ -211,6 +211,7 @@ public:
      * @zh 此网格的数据。
      */
     // TODO(PatriceJiang); binding generator does not support override function
+    // TODO(PatriceJiang); binding generator does not support override function
     //    inline const Uint8Array &getData() const {
     //        return _data;
     //    }
