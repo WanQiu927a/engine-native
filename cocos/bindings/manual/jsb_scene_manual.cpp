@@ -86,8 +86,7 @@ static bool js_root_registerListeners(se::State &s) // NOLINT(readability-identi
 SE_BIND_FUNC(js_root_registerListeners) // NOLINT(readability-identifier-naming)
 
 static void registerOnTransformChanged(cc::Node *node, se::Object *jsObject) {
-    cc::CallbackInfoBase::ID skip;
-    node->getEventProcessor()->on(
+    node->on(
         cc::NodeEventType::TRANSFORM_CHANGED,
         [jsObject](cc::TransformBit transformBit) {
             se::AutoHandleScope hs;
@@ -100,12 +99,10 @@ static void registerOnTransformChanged(cc::Node *node, se::Object *jsObject) {
             nativevalue_to_se(transformBit, arg0);
             args.push_back(arg0);
             funcVal.toObject()->call(args, jsObject);
-        },
-        skip);
+        });
 }
 
 static void registerOnParentChanged(cc::Node *node, se::Object *jsObject) {
-    cc::CallbackInfoBase::ID skip;
     node->on(
         cc::NodeEventType::PARENT_CHANGED,
         [jsObject](cc::Node *oldParent) {
@@ -119,12 +116,10 @@ static void registerOnParentChanged(cc::Node *node, se::Object *jsObject) {
             nativevalue_to_se(oldParent, arg0);
             args.push_back(arg0);
             funcVal.toObject()->call(args, jsObject);
-        },
-        skip);
+        });
 }
 
 static void registerOnLayerChanged(cc::Node *node, se::Object *jsObject) {
-    cc::CallbackInfoBase::ID skip;
     node->on(
         cc::NodeEventType::PARENT_CHANGED,
         [jsObject](uint32_t layer) {
@@ -138,12 +133,10 @@ static void registerOnLayerChanged(cc::Node *node, se::Object *jsObject) {
             nativevalue_to_se(layer, arg0);
             args.push_back(arg0);
             funcVal.toObject()->call(args, jsObject);
-        },
-        skip);
+        });
 }
 
 static void registerOnChildRemoved(cc::Node *node, se::Object *jsObject) {
-    cc::CallbackInfoBase::ID skip;
     node->on(
         cc::NodeEventType::PARENT_CHANGED,
         [jsObject](cc::Node *child) {
@@ -157,8 +150,7 @@ static void registerOnChildRemoved(cc::Node *node, se::Object *jsObject) {
             nativevalue_to_se(child, arg0);
             args.push_back(arg0);
             funcVal.toObject()->call(args, jsObject);
-        },
-        skip);
+        });
 }
 
 static void registerOnChildAdded(cc::Node *node, se::Object *jsObject) {
@@ -204,19 +196,17 @@ static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-
     auto *cobj = SE_THIS_OBJECT<cc::Node>(s);
     SE_PRECONDITION2(cobj, false, "js_scene_Node_registerListeners : Invalid Native Object");
 
-    auto *                   jsObject = s.thisObject();
-    cc::CallbackInfoBase::ID skip;
+    auto *jsObject = s.thisObject();
 
 #define NODE_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                                 \
-    cobj->getEventProcessor()->on(                                                                       \
+    cobj->on(                                                                                            \
         eventType, [jsObject]() {                                                                        \
             se::AutoHandleScope hs;                                                                      \
             se::Value           funcVal;                                                                 \
             bool                ok = jsObject->getProperty(#jsFuncName, &funcVal) && funcVal.isObject(); \
             SE_PRECONDITION2_VOID(ok, "js_scene_Node_registerListeners : Error processing arguments");   \
             funcVal.toObject()->call(se::EmptyValueArray, jsObject);                                     \
-        },                                                                                               \
-        skip);
+        });
 
     registerOnTransformChanged(cobj, jsObject);
     registerOnParentChanged(cobj, jsObject);
