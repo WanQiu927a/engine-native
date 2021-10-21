@@ -27,6 +27,7 @@
 #include "core/Director.h"
 #include "core/Game.h"
 #include "core/data/Object.h"
+#include "core/scene-graph/Find.h"
 #include "core/scene-graph/NodeActivator.h"
 #include "core/scene-graph/NodeEnum.h"
 #include "core/scene-graph/Scene.h"
@@ -921,6 +922,11 @@ bool Node::onPreDestroy() {
 void Node::onHierarchyChanged(Node *oldParent) {
     _eventProcessor->reattach();
     onHierarchyChangedBase(oldParent);
+}
+
+/* static */
+Node *Node::find(const std::string &path, Node *referenceNode /* = nullptr*/) {
+    return cc::find(path, referenceNode);
 }
 
 } // namespace cc
