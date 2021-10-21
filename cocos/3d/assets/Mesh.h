@@ -212,7 +212,7 @@ public:
 
     //    }
 
-    inline void &setData(const Uint8Array &data) {
+    inline void setData(const Uint8Array &data) {
         _data = data;
     }
     
