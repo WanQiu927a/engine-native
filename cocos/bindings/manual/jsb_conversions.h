@@ -1051,8 +1051,15 @@ template <typename T>
 typename std::enable_if<std::is_arithmetic<T>::value, bool>::type inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
     uint8_t *data    = nullptr;
     size_t   byteLen = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
+    se::Object *obj = from.toObject();
+    if(obj->isTypedArray()) {
+        obj->getTypedArrayData(&data, &byteLen);
+    }else {
+        obj->getArrayBufferData(&data, &byteLen);
+    }
+    
     auto buffer = std::make_shared<cc::ArrayBuffer>(byteLen);
+    buffer->reset(data, byteLen);
     to->reset(buffer);
     return true;
 }
