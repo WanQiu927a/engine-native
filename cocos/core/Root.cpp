@@ -24,6 +24,9 @@
  ****************************************************************************/
 
 #include "core/Root.h"
+#include "core/Director.h"
+#include "core/event/CallbacksInvoker.h"
+#include "core/event/EventTypesToJS.h"
 #include "renderer/gfx-base/GFXDef.h"
 #include "renderer/pipeline/deferred/DeferredPipeline.h"
 #include "renderer/pipeline/forward/ForwardPipeline.h"
@@ -40,7 +43,8 @@ Root *Root::getInstance() {
 
 Root::Root(gfx::Device *device)
 : _device(device) {
-    instance = this;
+    instance        = this;
+    _eventProcessor = new CallbacksInvoker();
     //TODO: minggo
     //    this._dataPoolMgr = legacyCC.internal.DataPoolManager && new legacyCC.internal.DataPoolManager(device) as DataPoolManager;
     _cameraPool = new memop::Pool<scene::Camera>([this]() { return new scene::Camera(_device); },
@@ -50,6 +54,7 @@ Root::Root(gfx::Device *device)
 Root::~Root() {
     instance = nullptr;
     delete _cameraPool;
+    CC_SAFE_DELETE(_eventProcessor);
 }
 
 void Root::initialize() {
@@ -125,13 +130,14 @@ bool Root::setRenderPipeline(pipeline::RenderPipeline *rppl /* = nullptr*/) {
     }
 
     // TODO: minggo
-    //    const scene = legacyCC.director.getScene();
-    //    if (scene) {
-    //        scene.globals.activate();
-    //    }
+    auto *scene = Director::getInstance()->getScene();
+    if (scene) {
+        scene->getSceneGlobal()->activate();
+    }
 
     onGlobalPipelineStateChanged();
 
+    _eventProcessor->emit(ROOT_BATCH2D_INIT);
     //TODO: minggo
     //    if (!_batcher) {
     //        _batcher = new Batcher2D(this);
@@ -160,7 +166,7 @@ void Root::resetCumulativeTime() {
     _cumulativeTime = 0;
 }
 
-void Root::frameMove(float deltaTime) {
+void Root::frameMove(float deltaTime, int32_t totalFrames) {
     _frameTime = deltaTime;
 
     ++_frameCount;
@@ -172,6 +178,8 @@ void Root::frameMove(float deltaTime) {
         _fpsTime    = 0.0;
     }
 
+    _eventProcessor->emit(ROOT_BATCH2D_UPDATE); //cjh added for sync logic in ts.
+
     for (auto *scene : _scenes) {
         scene->removeBatches();
     }
@@ -181,6 +189,7 @@ void Root::frameMove(float deltaTime) {
     //        _batcher.update();
     //    }
 
+    //
     std::vector<scene::Camera *> cameraList;
     for (auto *window : _windows) {
         window->extractRenderCameras(cameraList);
@@ -189,7 +198,9 @@ void Root::frameMove(float deltaTime) {
     if (_pipeline != nullptr && !cameraList.empty()) {
         _device->acquire();
         //cjh TODO:        const stamp = legacyCC.director.getTotalFrames();
-        uint32_t stamp = 60;
+        uint32_t stamp = totalFrames;
+
+        _eventProcessor->emit(ROOT_BATCH2D_UPLOAD_BUFFERS);
         //        if (_batcher != nullptr) {
         //            _batcher->uploadBuffers();
         //        }
@@ -204,6 +215,7 @@ void Root::frameMove(float deltaTime) {
         _device->present();
     }
 
+    _eventProcessor->emit(ROOT_BATCH2D_RESET);
     //cjh TODO:    if (this._batcher) this._batcher.reset();
 }
 

@@ -42,6 +42,8 @@
 
 namespace cc {
 
+class CallbacksInvoker;
+
 class Root final {
 public:
     static Root *getInstance(); //cjh todo: put Root Managerment to Director class.
@@ -81,7 +83,7 @@ public:
      * 每帧执行函数
      * @param deltaTime 间隔时间
      */
-    void frameMove(float deltaTime);
+    void frameMove(float deltaTime, int32_t totalFrames); // TODO: c++ doesn't have a Director, so totalFrames need to be set from JS
 
     /**
      * @zh
@@ -265,6 +267,8 @@ public:
 
     inline bool isUsingDeferredPipeline() const { return _useDeferredPipeline; }
 
+    inline CallbacksInvoker *getEventProcessor() const { return _eventProcessor; }
+
 private:
     gfx::Device *                      _device{nullptr};
     scene::RenderWindow *              _mainWindow{nullptr};
@@ -283,6 +287,7 @@ private:
     uint32_t                           _fps{0};
     uint32_t                           _fixedFPS{0};
     bool                               _useDeferredPipeline{false};
+    CallbacksInvoker *                 _eventProcessor{nullptr};
 };
 
 } // namespace cc

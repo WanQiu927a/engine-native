@@ -201,7 +201,7 @@ void Director::tick(float dt) {
         emit(Director::EVENT_BEFORE_DRAW);
         // The test environment does not currently support the renderer
         if (true) { //cjh }!TEST) {
-            _root->frameMove(dt);
+            _root->frameMove(dt, _totalFrames);
         }
 
         emit(Director::EVENT_AFTER_DRAW);
