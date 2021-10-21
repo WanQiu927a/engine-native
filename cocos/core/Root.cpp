@@ -137,7 +137,7 @@ bool Root::setRenderPipeline(pipeline::RenderPipeline *rppl /* = nullptr*/) {
 
     onGlobalPipelineStateChanged();
 
-    _eventProcessor->emit(ROOT_BATCH2D_INIT);
+    _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_INIT);
     //TODO: minggo
     //    if (!_batcher) {
     //        _batcher = new Batcher2D(this);
@@ -178,7 +178,7 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
         _fpsTime    = 0.0;
     }
 
-    _eventProcessor->emit(ROOT_BATCH2D_UPDATE); //cjh added for sync logic in ts.
+    _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_UPDATE); //cjh added for sync logic in ts.
 
     for (auto *scene : _scenes) {
         scene->removeBatches();
@@ -200,7 +200,7 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
         //cjh TODO:        const stamp = legacyCC.director.getTotalFrames();
         uint32_t stamp = totalFrames;
 
-        _eventProcessor->emit(ROOT_BATCH2D_UPLOAD_BUFFERS);
+        _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_UPLOAD_BUFFERS);
         //        if (_batcher != nullptr) {
         //            _batcher->uploadBuffers();
         //        }
@@ -215,7 +215,7 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
         _device->present();
     }
 
-    _eventProcessor->emit(ROOT_BATCH2D_RESET);
+    _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_RESET);
     //cjh TODO:    if (this._batcher) this._batcher.reset();
 }
 

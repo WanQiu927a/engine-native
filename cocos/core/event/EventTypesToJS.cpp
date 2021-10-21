@@ -23,18 +23,13 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#pragma once
-
-#include <string>
+#include "core/event/EventTypesToJS.h"
 
 namespace cc {
 
-class EventTypesToJS final {
-public:
-    static const std::string ROOT_BATCH2D_INIT;
-    static const std::string ROOT_BATCH2D_UPDATE;
-    static const std::string ROOT_BATCH2D_UPLOAD_BUFFERS;
-    static const std::string ROOT_BATCH2D_RESET;
-};
+const std::string EventTypesToJS::ROOT_BATCH2D_INIT{"ROOT_BATCH2D_INIT"};
+const std::string EventTypesToJS::ROOT_BATCH2D_UPDATE{"ROOT_BATCH2D_UPDATE"};
+const std::string EventTypesToJS::ROOT_BATCH2D_UPLOAD_BUFFERS{"ROOT_BATCH2D_UPLOAD_BUFFERS"};
+const std::string EventTypesToJS::ROOT_BATCH2D_RESET{"ROOT_BATCH2D_RESET"};
 
 } // namespace cc
