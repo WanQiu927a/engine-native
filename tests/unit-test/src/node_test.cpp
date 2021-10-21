@@ -35,6 +35,12 @@ using namespace cc;
 using namespace cc::event;
 using namespace cc::gfx;
 
+namespace {
+
+class MyCallbackTarget {
+public:
+};
+
 TEST(NodeTest, inverseTransformPoint) {
     initCocos(100, 100);
 
@@ -56,68 +62,38 @@ TEST(NodeTest, inverseTransformPoint) {
     destroyCocos();
 }
 
-// TODO(xwx): wait for NodeEventProcessor implementation
-// TEST(NodeTest, activeInHierarchyChanged) {}
-// test('active-in-hierarchy-changed', () => {
-//     const scene = new Scene('');
-//     director.runSceneImmediate(scene);
-//     const node = new Node();
-//     const cb = jest.fn((node: Node) => {
-//         expect(node.activeInHierarchy).toBeTruthy();
-//     });
-//     node.once(NodeEventType.ACTIVE_IN_HIERARCHY_CHANGED, cb);
-//     scene.addChild(node);
-
-//     const cb1 = jest.fn((node: Node) => {
-//         expect(node.activeInHierarchy).toBeFalsy();
-//     });
-//     node.once(NodeEventType.ACTIVE_IN_HIERARCHY_CHANGED, cb1);
-//     node.active = false;
-//     node.once(NodeEventType.ACTIVE_IN_HIERARCHY_CHANGED, cb);
-//     node.active = true;
-
-//     const node2 = new Node();
-//     scene.addChild(node2);
-//     node2.active = false;
-//     node.once(NodeEventType.ACTIVE_IN_HIERARCHY_CHANGED, cb1);
-//     node2.addChild(node);
-
-//     node.once(NodeEventType.ACTIVE_IN_HIERARCHY_CHANGED, cb);
-//     node.setParent(scene);
-//     expect(cb).toBeCalledTimes(3);
-//     expect(cb1).toBeCalledTimes(2);
-// });
-
-TEST(NodeTest, remove_and_add_again_during_invoking) {
-    CallbacksInvoker ci;
-
+TEST(NodeTest, activeInHierarchyChanged) {
+    // TODO(xwx): need fix Director usage in setActive() 
     initCocos(100, 100);
-    auto *      node            = new Node();
-    static bool callbackInvoked = false;
-    callbackInvoked             = false;
-    class MyTarget : public CCObject {
-    public:
-        MyTarget(Node *node) : _node{node} {}
-        void onEvent(cc::event::Event *event) {
-            _node->off("eve", &MyTarget::onEvent, this);
-            EXPECT_FALSE(_node->hasEventListener("eve", &MyTarget::onEvent, this));
-            _node->on("eve", &MyTarget::onEvent, this);
-            callbackInvoked = true;
-        }
-
-    private:
-        Node *_node;
+    static CallbackInfoBase::ID id{0};
+    static CallbackInfoBase::ID id1{0};
+    static CallbackInfoBase::ID id2{0};
+    auto *                      director = Director::getInstance();
+    auto *                      scene    = director->getScene();
+    auto *                      node     = new Node();
+    auto                        cb       = [](Node *node) {
+        EXPECT_TRUE(node->isActiveInHierarchy());
     };
 
-    MyTarget target{node};
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    scene->addChild(node);
+    auto cb1 = [](Node *node) {
+        EXPECT_FALSE(node->isActiveInHierarchy());
+    };
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb1, id1);
+    node->setActive(false);
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    node->setActive(true);
 
-    node->on("eve", &MyTarget::onEvent, &target);
-    EXPECT_TRUE(node->hasEventListener("eve", &MyTarget::onEvent, &target));
+    auto *node2 = new Node();
+    scene->addChild(node2);
+    node2->setActive(false);
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb1, id1);
+    node2->addChild(node);
 
-    EventCustom event{"eve"};
-    node->dispatchEvent(&event);
-
-    EXPECT_TRUE(callbackInvoked);
-    EXPECT_TRUE(node->hasEventListener("eve", &MyTarget::onEvent, &target));
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    node->setParent(scene);
+    // xwx FIXME: gfx-validator Assert
     destroyCocos();
 }
+} // namespace

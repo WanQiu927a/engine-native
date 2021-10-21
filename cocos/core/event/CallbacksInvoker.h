@@ -226,12 +226,12 @@ public:
      * @param key - Event type
      * @param cbID - Callback ID
      */
-    bool hasEventListener(const std::string &key);
-    bool hasEventListener(const std::string &key, CallbackInfoBase::ID cbID);
+    bool hasEventListener(const std::string &key) const;
+    bool hasEventListener(const std::string &key, CallbackInfoBase::ID cbID) const;
     bool hasEventListener(const std::string &key, void *target);
-    bool hasEventListener(const std::string &key, void *target, CallbackInfoBase::ID cbID);
+    bool hasEventListener(const std::string &key, void *target, CallbackInfoBase::ID cbID) const;
     template <typename Target, typename... Args>
-    bool hasEventListener(const std::string &key, void (Target::*memberFn)(Args...), Target *target);
+    bool hasEventListener(const std::string &key, void (Target::*memberFn)(Args...), Target *target) const;
     /**
      * @zh 移除在特定事件类型中注册的所有回调或在某个目标中注册的所有回调。
      * @en Removes all callbacks registered in a certain event type or all callbacks registered with a certain target
@@ -449,7 +449,7 @@ void CallbacksInvoker::emit(const std::string &key, Args &&...args) {
 }
 
 template <typename Target, typename... Args>
-bool CallbacksInvoker::hasEventListener(const std::string &key, void (Target::*memberFn)(Args...), Target *target) {
+bool CallbacksInvoker::hasEventListener(const std::string &key, void (Target::*memberFn)(Args...), Target *target) const {
     using CallbackFn = void (CCObject::*)(Args...);
     auto iter        = _callbackTable.find(key);
     if (iter == _callbackTable.end()) {
