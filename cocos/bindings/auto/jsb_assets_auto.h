@@ -379,7 +379,7 @@ bool js_register_cc_Prefab(se::Object *obj); // NOLINT
 bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Prefab);
-SE_DECLARE_FUNC(js_assets_Prefab__instantiate);
+SE_DECLARE_FUNC(js_assets_Prefab_instantiate);
 SE_DECLARE_FUNC(js_assets_Prefab_Prefab);
 
 extern se::Object *__jsb_cc_IRenderTextureCreateInfo_proto; // NOLINT
@@ -566,11 +566,13 @@ SE_DECLARE_FUNC(js_assets_Mesh_assign);
 SE_DECLARE_FUNC(js_assets_Mesh_copyAttribute);
 SE_DECLARE_FUNC(js_assets_Mesh_copyIndices);
 SE_DECLARE_FUNC(js_assets_Mesh_destroyRenderingMesh);
+SE_DECLARE_FUNC(js_assets_Mesh_getAssetData);
 SE_DECLARE_FUNC(js_assets_Mesh_initialize);
 SE_DECLARE_FUNC(js_assets_Mesh_merge);
 SE_DECLARE_FUNC(js_assets_Mesh_readAttribute);
 SE_DECLARE_FUNC(js_assets_Mesh_readIndices);
 SE_DECLARE_FUNC(js_assets_Mesh_reset);
+SE_DECLARE_FUNC(js_assets_Mesh_setAssetData);
 SE_DECLARE_FUNC(js_assets_Mesh_validateMergingMesh);
 SE_DECLARE_FUNC(js_assets_Mesh_Mesh);
 

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 #include <variant>
 #include "base/TypeDef.h"
 #include "core/ArrayBuffer.h"
@@ -36,6 +37,7 @@ template <typename T>
 class TypedArrayTemp {
 public:
     static constexpr uint32_t BYTES_PER_ELEMENT{sizeof(T)};
+    using value_type = T;
 
     TypedArrayTemp() {
     }

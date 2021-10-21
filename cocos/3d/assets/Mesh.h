@@ -26,6 +26,7 @@
 #pragma once
 
 #include "3d/assets/Types.h"
+#include "core/ArrayBuffer.h"
 #include "core/TypedArray.h"
 #include "core/assets/Asset.h"
 #include "core/geometry/AABB.h"
@@ -54,6 +55,7 @@ public:
      * 交错排列是指在实际数据的缓冲区中，每个顶点的所有属性总是依次排列，并总是出现在下一个顶点的所有属性之前。
      */
     struct IVertexBundle {
+        int _what; // TODO(PatriceJiang): avoid jsb cache map
         /**
          * @en The actual value for all vertex attributes.
          * You must use DataView to access the data.
@@ -164,6 +166,13 @@ public:
     std::any getNativeAsset() const override;
     void     setNativeAsset(const std::any &obj) override;
 
+    void setAssetData(const cc::ArrayBuffer::Ptr data) {
+        _data = Uint8Array(data);
+    }
+    const Uint8Array & getAssetData() {
+        return _data;
+    }
+
     /**
      * @en The sub meshes count of the mesh.
      * @zh 此网格的子网格数量。
@@ -201,26 +210,33 @@ public:
      * @en The actual data of the mesh
      * @zh 此网格的数据。
      */
-    inline const Uint8Array &getData() const {
-        return _data;
-    }
+    // TODO(PatriceJiang); binding generator does not support override function
+    // TODO(PatriceJiang); binding generator does not support override function
+    //    inline const Uint8Array &getData() const {
+    //        return _data;
+    //    }
 
     inline Uint8Array &getData() {
         return _data;
     }
 
+    //    }
+
+    inline void setData(const Uint8Array &data) {
+        _data = data;
+    }
+    
     /**
      * @en The hash of the mesh
      * @zh 此网格的哈希值。
      */
     uint64_t getHash();
 
-    
     /**
      * @en Set the hash of the mesh
      * @zh 设置此网格的哈希值。
      */
-    void setHash(uint64_t hash) { _hash = hash;}
+    void setHash(uint64_t hash) { _hash = hash; }
 
     using JointBufferIndicesType = std::vector<index_t>;
     /**

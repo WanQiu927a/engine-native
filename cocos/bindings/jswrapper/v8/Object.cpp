@@ -33,6 +33,7 @@
     #include "Utils.h"
 
     #include <memory>
+    #include <sstream>
     #include <unordered_map>
 
 namespace se {
@@ -281,8 +282,8 @@ bool Object::init(Class *cls, v8::Local<v8::Object> obj) {
 
     #if CC_DEBUG
     this->_objectId = ++nativeObjectId;
-    this->setProperty("__object_id__", se::Value(this->_objectId));
-    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
+//    this->setProperty("__object_id__", se::Value(this->_objectId));
+//    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
     #endif
 
     return true;
@@ -731,6 +732,23 @@ std::string Object::toString() const {
         ret = "[object Object]";
     }
     return ret;
+}
+
+std::string Object::toStringExt() const {
+    if (isFunction()) return "[function]";
+    if (isArray()) return "[array]";
+    if (isArrayBuffer()) return "[arraybuffer]";
+    if (isTypedArray()) return "[typedarray]";
+
+    std::vector<std::string> keys;
+    getAllKeys(&keys);
+    std::stringstream ss;
+    ss << "{ ";
+    for (auto &k : keys) {
+        ss << k << ", ";
+    }
+    ss << "}";
+    return ss.str();
 }
 
 } // namespace se

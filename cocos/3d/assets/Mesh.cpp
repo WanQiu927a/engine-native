@@ -216,6 +216,9 @@ void Mesh::initialize() {
     if (_initialized) {
         return;
     }
+    if(!_data.buffer()) {
+        return;
+    }
 
     _initialized                                  = true;
     auto &                          buffer        = _data;
