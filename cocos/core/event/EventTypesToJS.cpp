@@ -32,4 +32,10 @@ const std::string EventTypesToJS::ROOT_BATCH2D_UPDATE{"ROOT_BATCH2D_UPDATE"};
 const std::string EventTypesToJS::ROOT_BATCH2D_UPLOAD_BUFFERS{"ROOT_BATCH2D_UPLOAD_BUFFERS"};
 const std::string EventTypesToJS::ROOT_BATCH2D_RESET{"ROOT_BATCH2D_RESET"};
 
+const std::string EventTypesToJS::NODE_REATTACH{"NODE_REATTACH"};
+const std::string EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE{"NODE_REMOVE_PERSIST_ROOT_NODE"};
+const std::string EventTypesToJS::NODE_DESTROY_COMPONENTS{"NODE_DESTROY_COMPONENTS"};
+const std::string EventTypesToJS::NODE_UI_TRANSFORM_DIRTY{"NODE_UI_TRANSFORM_DIRTY"};
+const std::string EventTypesToJS::NODE_ACTIVE_NODE{"NODE_ACTIVE_NODE"};
+
 } // namespace cc

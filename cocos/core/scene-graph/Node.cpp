@@ -31,18 +31,19 @@
 #include "core/scene-graph/NodeActivator.h"
 #include "core/scene-graph/NodeEnum.h"
 #include "core/scene-graph/Scene.h"
+#include "core/event/EventTypesToJS.h"
 
 namespace cc {
 
 // static variables
 std::vector<Node *>              Node::dirtyNodes;
-uint                             Node::clearFrame{0};
-uint                             Node::clearRound{1000};
+uint32_t                         Node::clearFrame{0};
+uint32_t                         Node::clearRound{1000};
 bool                             Node::isStatic{false};
-const uint                       Node::TRANSFORM_ON{1 << 0};
-const uint                       Node::DESTROYING{static_cast<uint>(CCObject::Flags::DESTROYING)};
-const uint                       Node::DEACTIVATING{static_cast<uint>(CCObject::Flags::DEACTIVATING)};
-const uint                       Node::DONT_DESTROY{static_cast<uint>(CCObject::Flags::DONT_DESTROY)};
+const uint32_t                   Node::TRANSFORM_ON{1 << 0};
+const uint32_t                   Node::DESTROYING{static_cast<uint>(CCObject::Flags::DESTROYING)};
+const uint32_t                   Node::DEACTIVATING{static_cast<uint>(CCObject::Flags::DEACTIVATING)};
+const uint32_t                   Node::DONT_DESTROY{static_cast<uint>(CCObject::Flags::DONT_DESTROY)};
 index_t                          Node::stackId{0};
 std::vector<std::vector<Node *>> Node::stacks;
 //
@@ -113,11 +114,11 @@ void Node::onHierarchyChangedBase(Node *oldParent) {
     Node * newParent = _parent;
     Scene *scene     = dynamic_cast<Scene *>(newParent);
     if (_persistNode && scene) {
-        // TODO
-        /*legacyCC.game.removePersistRootNode(this);
-        if (EDITOR) {
-            warnID(1623);
-        }*/
+        emit(EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE);
+         
+//        if (EDITOR) {
+//            warnID(1623);
+//        }
     }
     // TODO
     //if (EDITOR) {
@@ -138,6 +139,7 @@ void Node::onHierarchyChangedBase(Node *oldParent) {
     bool shouldActiveNow = _active && !!(newParent && newParent->_activeInHierarchy);
     if (_activeInHierarchy != shouldActiveNow) {
         Director::getInstance()->getNodeActivator()->activateNode(this, shouldActiveNow);
+        emit(EventTypesToJS::NODE_ACTIVE_NODE, shouldActiveNow);
     }
 }
 
@@ -203,8 +205,7 @@ void Node::setActive(bool isActive) {
         if (parent) {
             bool couldActiveInScene = parent->_activeInHierarchy;
             if (couldActiveInScene) {
-                // TODO: Director not implemented
-                // Director::getInstance()->getNodeActivator()->activateNode(this, isActive);
+                emit(EventTypesToJS::NODE_ACTIVE_NODE, isActive);
             }
         }
     }
@@ -264,11 +265,11 @@ void Node::walk(const std::function<void(Node *)> &preFunc) {
 }
 
 void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<void(Node *)> &postFunc) {
-    uint                index{1};
+    index_t             index{1};
     index_t             i{0};
     std::vector<Node *> children;
     Node *              curr{nullptr};
-    auto                stacksCount = static_cast<uint>(Node::stacks.size());
+    auto                stacksCount = static_cast<index_t>(Node::stacks.size());
     if (stackId >= stacksCount) {
         stacks.resize(stackId + 1);
     }
@@ -282,7 +283,7 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
     bool  afterChildren{false};
     while (index) {
         index--;
-        auto stackCount = static_cast<uint>(stack.size());
+        auto stackCount = static_cast<index_t>(stack.size());
         if (index >= stackCount) {
             continue;
         }
@@ -304,7 +305,7 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
             }
             afterChildren = false;
         } else {
-            if (static_cast<int>(curr->_children.size()) > 0) {
+            if (static_cast<index_t>(curr->_children.size()) > 0) {
                 parent       = curr;
                 children     = curr->_children;
                 i            = 0;
@@ -317,7 +318,7 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
             }
             continue;
         }
-        auto childCount = static_cast<uint>(children.size());
+        auto childCount = static_cast<index_t>(children.size());
         if (childCount > 0) {
             i++;
             if (i < childCount && children[i] != nullptr) {
@@ -376,8 +377,7 @@ bool Node::onPreDestroyBase() {
         this._registerIfAttached !(false);
     }*/
     if (_persistNode) {
-        // TODO
-        // legacyCC.game.removePersistRootNode(this);
+        emit(EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE);
     }
     if (!destroyByParent) {
         if (_parent) {
@@ -396,10 +396,8 @@ bool Node::onPreDestroyBase() {
     for (auto *child : _children) {
         child->destroyImmediate();
     }
-    for (auto *comp : _components) {
-        // TODO(Lenovo): _destroyImmediate
-        // comps[i]._destroyImmediate();
-    }
+
+    emit(EventTypesToJS::NODE_DESTROY_COMPONENTS);
     return destroyByParent;
 }
 
@@ -563,8 +561,8 @@ void Node::updateWorldTransform() {
         setDirtyNode(i++, curr);
         curr = curr->getParent();
     }
-    Node *child{nullptr};
-    uint  dirtyBits = 0;
+    Node *   child{nullptr};
+    uint32_t dirtyBits = 0;
     while (i) {
         child = getDirtyNode(--i);
         if (!child) {
@@ -573,16 +571,16 @@ void Node::updateWorldTransform() {
         dirtyBits |= child->getDirtyFlag();
         auto *currChild = child;
         if (curr) {
-            if (dirtyBits & static_cast<uint>(TransformBit::POSITION)) {
+            if (dirtyBits & static_cast<uint32_t>(TransformBit::POSITION)) {
                 currChild->_worldPosition.transformMat4(currChild->_localPosition, curr->getWorldMatrix());
                 currChild->_worldMatrix.m[12] = currChild->_worldPosition.x;
                 currChild->_worldMatrix.m[13] = currChild->_worldPosition.y;
                 currChild->_worldMatrix.m[14] = currChild->_worldPosition.z;
             }
-            if (dirtyBits & static_cast<uint>(TransformBit::RS)) {
+            if (dirtyBits & static_cast<uint32_t>(TransformBit::RS)) {
                 Mat4::fromRTS(currChild->_localRotation, currChild->_localPosition, currChild->_localScale, &currChild->_worldMatrix);
                 Mat4::multiply(curr->getWorldMatrix(), currChild->_worldMatrix, &currChild->_worldMatrix);
-                if (dirtyBits & static_cast<uint>(TransformBit::ROTATION)) {
+                if (dirtyBits & static_cast<uint32_t>(TransformBit::ROTATION)) {
                     Quaternion::multiply(curr->getWorldRotation(), currChild->_localRotation, &currChild->_worldRotation);
                 }
                 quat = currChild->_worldRotation;
@@ -593,23 +591,23 @@ void Node::updateWorldTransform() {
                 currChild->_worldScale.set(mat3.m[0], mat3.m[4], mat3.m[8]);
             }
         } else if (child) {
-            if (dirtyBits & static_cast<uint>(TransformBit::POSITION)) {
+            if (dirtyBits & static_cast<uint32_t>(TransformBit::POSITION)) {
                 currChild->_worldPosition.set(currChild->_localPosition);
                 currChild->_worldMatrix.m[12] = currChild->_worldPosition.x;
                 currChild->_worldMatrix.m[13] = currChild->_worldPosition.y;
                 currChild->_worldMatrix.m[14] = currChild->_worldPosition.z;
             }
-            if (dirtyBits & static_cast<uint>(TransformBit::RS)) {
-                if (dirtyBits & static_cast<uint>(TransformBit::ROTATION)) {
+            if (dirtyBits & static_cast<uint32_t>(TransformBit::RS)) {
+                if (dirtyBits & static_cast<uint32_t>(TransformBit::ROTATION)) {
                     currChild->_worldRotation.set(currChild->_localRotation);
                 }
-                if (dirtyBits & static_cast<uint>(TransformBit::SCALE)) {
+                if (dirtyBits & static_cast<uint32_t>(TransformBit::SCALE)) {
                     currChild->_worldScale.set(currChild->_localScale);
                     Mat4::fromRTS(currChild->_worldRotation, currChild->_worldPosition, currChild->_worldScale, &currChild->_worldMatrix);
                 }
             }
         }
-        child->setDirtyFlag(static_cast<uint>(TransformBit::NONE));
+        child->setDirtyFlag(static_cast<uint32_t>(TransformBit::NONE));
         curr = child;
     }
 }
@@ -634,8 +632,8 @@ Mat4 Node::getWorldRT() {
 }
 
 void Node::invalidateChildren(TransformBit dirtyBit) {
-    uint       curDirtyBit{static_cast<uint>(dirtyBit)};
-    const uint childDirtyBit{curDirtyBit | static_cast<uint>(TransformBit::POSITION)};
+    auto           curDirtyBit{static_cast<uint32_t>(dirtyBit)};
+    const uint32_t childDirtyBit{curDirtyBit | static_cast<uint32_t>(TransformBit::POSITION)};
     setDirtyNode(0, this);
     int i{0};
     while (i >= 0) {
@@ -644,10 +642,10 @@ void Node::invalidateChildren(TransformBit dirtyBit) {
             continue;
         }
 
-        const uint hasChangedFlags = cur->getChangedFlags();
+        const uint32_t hasChangedFlags = cur->getChangedFlags();
         if (cur->isValid() && (cur->getDirtyFlag() & hasChangedFlags & curDirtyBit) != curDirtyBit) {
             cur->setDirtyFlag(cur->getDirtyFlag() | curDirtyBit);
-            //cjh TODO:            cur._uiProps.uiTransformDirty = true; // UIOnly TRS dirty
+            emit(EventTypesToJS::NODE_UI_TRANSFORM_DIRTY);
             cur->setChangedFlags(hasChangedFlags | curDirtyBit);
 
             for (Node *curChild : cur->getChildren()) {
@@ -848,19 +846,19 @@ void Node::setWorldRotationFromEuler(float x, float y, float z) {
 }
 
 void Node::setRTS(Quaternion *rot, Vec3 *pos, Vec3 *scale) {
-    uint dirtyBit = 0;
+    uint32_t dirtyBit = 0;
     if (rot) {
-        dirtyBit |= static_cast<uint>(TransformBit::ROTATION);
+        dirtyBit |= static_cast<uint32_t>(TransformBit::ROTATION);
         _localRotation = _worldRotation;
         _eulerDirty    = true;
     }
     if (pos) {
         _localPosition = _worldPosition;
-        dirtyBit |= static_cast<uint>(TransformBit::POSITION);
+        dirtyBit |= static_cast<uint32_t>(TransformBit::POSITION);
     }
     if (scale) {
         _localScale = _worldScale;
-        dirtyBit |= static_cast<uint>(TransformBit::SCALE);
+        dirtyBit |= static_cast<uint32_t>(TransformBit::SCALE);
     }
     if (dirtyBit) {
         invalidateChildren(static_cast<TransformBit>(dirtyBit));

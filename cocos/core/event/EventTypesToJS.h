@@ -35,6 +35,12 @@ public:
     static const std::string ROOT_BATCH2D_UPDATE;
     static const std::string ROOT_BATCH2D_UPLOAD_BUFFERS;
     static const std::string ROOT_BATCH2D_RESET;
+    
+    static const std::string NODE_REATTACH;
+    static const std::string NODE_REMOVE_PERSIST_ROOT_NODE;
+    static const std::string NODE_DESTROY_COMPONENTS;
+    static const std::string NODE_UI_TRANSFORM_DIRTY;
+    static const std::string NODE_ACTIVE_NODE;
 };
 
 } // namespace cc
