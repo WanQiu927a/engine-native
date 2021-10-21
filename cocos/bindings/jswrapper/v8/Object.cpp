@@ -282,8 +282,8 @@ bool Object::init(Class *cls, v8::Local<v8::Object> obj) {
 
     #if CC_DEBUG
     this->_objectId = ++nativeObjectId;
-    this->setProperty("__object_id__", se::Value(this->_objectId));
-    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
+//    this->setProperty("__object_id__", se::Value(this->_objectId));
+//    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
     #endif
 
     return true;
