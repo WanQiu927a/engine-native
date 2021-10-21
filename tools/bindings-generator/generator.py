@@ -1156,13 +1156,13 @@ class NativeClass(object):
 
     @property
     def nested_class_name(self):
-        classes = self.nested_classes.copy()
+        classes = list(self.nested_classes)
         classes.append(self.class_name)
         return "_".join(classes)
     
     @property
     def nested_class_array(self):
-        classes = self.nested_classes.copy()
+        classes = list(self.nested_classes)
         classes.append(self.target_class_name)
         if len(classes) == 1:
             return "\"%s\""%(self.target_class_name)
@@ -1317,7 +1317,7 @@ class NativeClass(object):
         self.generator.impl_file.write(unicode(tpl))
 
     def _deep_iterate(self, cursor=None, depth=0, nested_classes = []):
-        # self.nested_classes = nested_classes.copy()
+        # self.nested_classes = list(nested_classes)
         for node in cursor.get_children():
             # logger.info("_deep_iterate %s%s - %s" % ("> " * depth, node.displayname, node.kind))
             if self._process_node(node, depth, nested_classes):
@@ -1487,7 +1487,7 @@ class NativeClass(object):
             return True
         elif cursor.kind == cindex.CursorKind.CLASS_DECL or cursor.kind == cindex.CursorKind.STRUCT_DECL:
             # logging.error("find class %s in %s , nested_classes %s" % (cursor.displayname, self.class_name, nested_classes))
-            nn = nested_classes.copy()
+            nn = list(nested_classes)
             nn.append(self.class_name)
             self.generator._deep_iterate(cursor, depth + 1, nn)
        # else:
@@ -1528,7 +1528,7 @@ class NativeEnum(object):
         for node in cursor.get_children():
             #logger.info("%s%s - %s" % ("> " * depth, node.displayname, node.kind))
             if self._process_node(node, nested_classes):
-                self._deep_iterate(node, depth + 1, nested_classes.copy())
+                self._deep_iterate(node, depth + 1, list(nested_classes))
 
     def _process_node(self, node, nested_classes = []):
         if node.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
@@ -2038,7 +2038,7 @@ class Generator(object):
                     if cursor.displayname not in self.generated_classes:
                         nclass = NativeClass(cursor, self, is_struct)
                         # logger.error(" - depth %s, nested_classes %s" %(depth, nested_classes))
-                        nclass.nested_classes = nested_classes.copy()
+                        nclass.nested_classes = list(nested_classes)
                         nclass.generate_code()
                         self.generated_classes[cursor.displayname] = nclass
                     return
@@ -2065,7 +2065,7 @@ class Generator(object):
 
         for node in cursor.get_children():
             # print("%s %s - %s" % (">" * depth, node.displayname, node.kind))
-            self._deep_iterate(node, depth + 1, nested_classes.copy() if nested_classes is not None else [])
+            self._deep_iterate(node, depth + 1, list(nested_classes) if nested_classes is not None else [])
 
     def scriptname_from_native(self, namespace_class_name, namespace_name):
         script_ns_dict = self.config['conversions']['ns_map']
