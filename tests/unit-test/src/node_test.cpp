@@ -37,59 +37,6 @@ using namespace cc::gfx;
 
 namespace {
 
-template <typename T>
-struct FunctionTraits
-: public FunctionTraits<decltype(&T::operator())> {};
-
-template <typename ClassType, typename ReturnType, typename... Args>
-struct FunctionTraits<ReturnType (ClassType::*)(Args...) const> {
-    typedef std::function<ReturnType(Args...)> type;
-};
-
-template <typename ClassType, typename ReturnType, typename... Args>
-struct FunctionTraits<ReturnType (ClassType::*)(Args...)> {
-    typedef std::function<ReturnType(Args...)> type;
-};
-
-template <typename T>
-typename FunctionTraits<T>::type toFunction(T l) {
-    return static_cast<typename FunctionTraits<T>::type>(l);
-}
-
-} // namespace
-
-template <typename... Args>
-class TestFunctor final {
-public:
-    using Fn = std::function<void(Args...)>;
-
-    TestFunctor(Fn &&cb)
-    : _cb(std::forward<Fn>(cb)) {
-    }
-
-    template <typename Lambda>
-    TestFunctor(const Lambda &cb) {
-        _cb = toFunction(cb);
-    }
-
-    void operator()(Args &&...args) {
-        _cb(std::forward<Args>(args)...);
-        *_calledCount = *_calledCount + 1;
-    }
-
-    uint32_t getCalledCount() const {
-        return *_calledCount;
-    }
-
-    void clear() {
-        *_calledCount = 0;
-    }
-
-private:
-    Fn                        _cb;
-    std::shared_ptr<uint32_t> _calledCount{std::make_shared<uint32_t>(0)};
-};
-
 class MyCallbackTarget {
 public:
 };
@@ -111,40 +58,42 @@ TEST(NodeTest, inverseTransformPoint) {
 
     EXPECT_EQ(p, Vec3(25.F, 195.F, -122.F));
 
-    // //xwx FIXME: gfx-validator Assert
+    //xwx FIXME: gfx-validator Assert
     destroyCocos();
 }
 
 TEST(NodeTest, activeInHierarchyChanged) {
-    // TODO(xwx): should fix once implementation first
-    // initCocos(100, 100);
-    // auto *        director = Director::getInstance();
-    // auto *        scene    = director->getScene();
-    // auto *        node     = new Node();
-    // TestFunctor<> cb{[](Node *node) {
-    //     EXPECT_TRUE(node->isActiveInHierarchy());
-    // }};
-    // node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb);
-    // scene->addChild(node);
-    // TestFunctor<> cb1{[](Node *node) {
-    //     EXPECT_FALSE(node->isActiveInHierarchy());
-    // }};
-    // node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb1);
-    // node->setActive(false);
-    // node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb);
-    // node->setActive(true);
+    // TODO(xwx): need fix Director usage in setActive() 
+    initCocos(100, 100);
+    static CallbackInfoBase::ID id{0};
+    static CallbackInfoBase::ID id1{0};
+    static CallbackInfoBase::ID id2{0};
+    auto *                      director = Director::getInstance();
+    auto *                      scene    = director->getScene();
+    auto *                      node     = new Node();
+    auto                        cb       = [](Node *node) {
+        EXPECT_TRUE(node->isActiveInHierarchy());
+    };
 
-    // auto* node2 = new Node();
-    // scene->addChild(node2);
-    // node2->setActive(false);
-    // node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED,cb1);
-    // node2->addChild(node);
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    scene->addChild(node);
+    auto cb1 = [](Node *node) {
+        EXPECT_FALSE(node->isActiveInHierarchy());
+    };
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb1, id1);
+    node->setActive(false);
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    node->setActive(true);
 
-    // node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb);
-    // node->setParent(scene);
-    // EXPECT_EQ(cb.getCalledCount(), 3);
-    // EXPECT_EQ(cb1.getCalledCount(), 2);
+    auto *node2 = new Node();
+    scene->addChild(node2);
+    node2->setActive(false);
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb1, id1);
+    node2->addChild(node);
 
-    // // xwx FIXME: gfx-validator Assert
-    // destroyCocos();
+    node->once(NodeEventType::ACTIVE_IN_HIERARCHY_CHANGED, cb, id);
+    node->setParent(scene);
+    // xwx FIXME: gfx-validator Assert
+    destroyCocos();
 }
+} // namespace
