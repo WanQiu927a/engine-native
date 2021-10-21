@@ -56,16 +56,16 @@ static bool js_scene_RenderScene_updateBatches(se::State &s) // NOLINT(readabili
 }
 SE_BIND_FUNC(js_scene_RenderScene_updateBatches) // NOLINT(readability-identifier-naming)
 
-static bool js_root_registerNativeEvent(se::State &s) // NOLINT(readability-identifier-naming)
+static bool js_root_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
 {
     auto *cobj = SE_THIS_OBJECT<cc::Root>(s);
     SE_PRECONDITION2(cobj, false, "js_root_registerNativeEvent : Invalid Native Object");
 
 #define ROOT_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                           \
-    cobj->getEventProcessor()->on(eventType, [](cc::Root *thiz) {                                  \
+    cobj->getEventProcessor()->on(eventType, [](cc::Root *rootObj) {                               \
         se::AutoHandleScope hs;                                                                    \
         se::Value           rootVal;                                                               \
-        bool                ok = nativevalue_to_se(thiz, rootVal);                                 \
+        bool                ok = nativevalue_to_se(rootObj, rootVal);                              \
         SE_PRECONDITION2_VOID(ok, "js_root_registerNativeEvent : Error processing arguments");     \
         if (rootVal.isObject()) {                                                                  \
             se::Value funcVal;                                                                     \
@@ -82,7 +82,7 @@ static bool js_root_registerNativeEvent(se::State &s) // NOLINT(readability-iden
 
     return true;
 }
-SE_BIND_FUNC(js_root_registerNativeEvent) // NOLINT(readability-identifier-naming)
+SE_BIND_FUNC(js_root_registerListeners) // NOLINT(readability-identifier-naming)
 
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
@@ -96,7 +96,7 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
 
     __jsb_cc_scene_RenderScene_proto->defineFunction("updateBatches", _SE(js_scene_RenderScene_updateBatches));
 
-    __jsb_cc_Root_proto->defineFunction("_registerNativeEvent", _SE(js_root_registerNativeEvent));
+    __jsb_cc_Root_proto->defineFunction("_registerListeners", _SE(js_root_registerListeners));
 
     return true;
 }
