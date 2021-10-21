@@ -1132,8 +1132,9 @@ class NativeClass(object):
         if self.class_name in generator.getter_setter:
             for field_name in iter(generator.getter_setter[self.class_name].keys()):
                 field = generator.getter_setter[self.class_name][field_name]
+                name_array ='{' +", ".join(list(map(lambda x: "\"%s\"" % x, field["names"]))) +'}'
                 item = {
-                    "name": field_name,
+                    "name": '"'+field_name+'"' if len(field["names"]) == 1 else name_array,
                     "getter": self.find_method(field["getter"]),
                     "setter": self.find_method(field["setter"]),
                 }
@@ -1704,35 +1705,44 @@ class Generator(object):
                 match = re.match("\[([^]]+)\]", gs_fields_txt)
                 if match:
                     list_of_fields = match.group(1).split(" ")
-                    for field in list_of_fields:
-                        field_component = field.split("/")
-                        cap = capitalize(field_component[0])
+                    for segment in list_of_fields:
+                        field_components = segment.split("/")
+                        name_variants = field_components[0].split(":")
+                        field_name = name_variants[0]
+                        cap = capitalize(field_name)
                         default_getter = "get" + cap
                         default_setter = "set" + cap
-                        if len(field_component) == 1:
-                            #getter = field
-                            gs_obj[field] = {
-                                "getter": default_getter, "setter": default_setter}
+                        if len(field_components) == 1:
+                            #getter = field_name
+                            gs_obj[field_name] = {
+                                "getter": default_getter,
+                                "setter": default_setter,
+                                "names": name_variants,
+                                }
                             gs_sd.extend(
-                                [field, default_getter, default_setter])
-                        elif len(field_component) == 2:
-                            field = field_component[0]
-                            gs_obj[field] = {
-                                "getter": field_component[1], "setter": default_setter}
+                                [field_name, default_getter, default_setter, name_variants])
+                        elif len(field_components) == 2:
+                            gs_obj[field_name] = {
+                                "getter": field_components[1],
+                                "setter": default_setter,
+                                "names": name_variants,
+                                 }
                             gs_sd.extend(
-                                [field, field_component[1], default_setter])
-                        elif len(field_component) == 3:
-                            field = field_component[0]
-                            getter = field_component[1] if len(
-                                field_component[1]) > 0 else default_getter
-                            setter = field_component[2] if len(
-                                field_component[2]) > 0 else default_setter
-                            gs_obj[field] = {
-                                "getter": getter, "setter": setter}
-                            gs_sd.extend([field, getter, setter])
+                                [field_name, field_components[1], default_setter, name_variants])
+                        elif len(field_components) == 3:
+                            getter = field_components[1] if len(
+                                field_components[1]) > 0 else default_getter
+                            setter = field_components[2] if len(
+                                field_components[2]) > 0 else default_setter
+                            gs_obj[field_name] = {
+                                "getter": getter,
+                                "setter": setter,
+                                "names": name_variants,
+                                }
+                            gs_sd.extend([field_name, getter, setter, name_variants])
                         else:
                             raise Exception(
-                                "getter_setter parse %s:%s failed" % (gs_kls, field))
+                                "getter_setter parse %s:%s failed" % (gs_kls, field_name))
 
     def is_reserved_function(self, class_name, method_name):
         if class_name in self.rename_functions:

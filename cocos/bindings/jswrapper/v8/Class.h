@@ -73,6 +73,9 @@ public:
          */
     bool defineProperty(const char *name, v8::AccessorNameGetterCallback getter, v8::AccessorNameSetterCallback setter);
 
+    bool defineProperty(const std::initializer_list<const char *> &names, v8::AccessorNameGetterCallback getter, v8::AccessorNameSetterCallback setter);
+
+
     /**
          *  @brief Defines a static function with a callback. Only JavaScript constructor object will have this function.
          *  @param[in] name A null-terminated UTF8 string containing the function name.

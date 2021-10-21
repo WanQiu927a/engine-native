@@ -10484,9 +10484,9 @@ bool js_register_assets_Mesh(se::Object* obj) // NOLINT(readability-identifier-n
 {
     auto* cls = se::Class::create("Mesh", obj, __jsb_cc_Asset_proto, _SE(js_assets_Mesh_constructor));
 
-    cls->defineProperty("_struct", _SE(js_assets_Mesh_getStruct), _SE(js_assets_Mesh_setStruct));
-    cls->defineProperty("_hash", _SE(js_assets_Mesh_getHash), _SE(js_assets_Mesh_setHash));
-    cls->defineProperty("data", _SE(js_assets_Mesh_getData), _SE(js_assets_Mesh_setData));
+    cls->defineProperty({"_struct", "struct"}, _SE(js_assets_Mesh_getStruct), _SE(js_assets_Mesh_setStruct));
+    cls->defineProperty({"_hash", "hash"}, _SE(js_assets_Mesh_getHash), _SE(js_assets_Mesh_setHash));
+    cls->defineProperty({"data", "_data"}, _SE(js_assets_Mesh_getData), _SE(js_assets_Mesh_setData));
     cls->defineProperty("boneSpaceBounds", _SE(js_assets_Mesh_getBoneSpaceBounds), nullptr);
     cls->defineProperty("jointBufferIndices", _SE(js_assets_Mesh_getJointBufferIndices), nullptr);
     cls->defineProperty("maxPosition", _SE(js_assets_Mesh_getMaxPosition), nullptr);
