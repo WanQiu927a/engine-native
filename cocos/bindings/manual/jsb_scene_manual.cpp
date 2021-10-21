@@ -25,6 +25,7 @@
 
 #include "jsb_scene_manual.h"
 #include "bindings/auto/jsb_scene_auto.h"
+#include "core/event/EventTypesToJS.h"
 #include "core/scene-graph/Node.h"
 #include "scene/Model.h"
 
@@ -55,6 +56,34 @@ static bool js_scene_RenderScene_updateBatches(se::State &s) // NOLINT(readabili
 }
 SE_BIND_FUNC(js_scene_RenderScene_updateBatches) // NOLINT(readability-identifier-naming)
 
+static bool js_root_registerNativeEvent(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::Root>(s);
+    SE_PRECONDITION2(cobj, false, "js_root_registerNativeEvent : Invalid Native Object");
+
+#define ROOT_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                           \
+    cobj->getEventProcessor()->on(eventType, [](cc::Root *thiz) {                                  \
+        se::AutoHandleScope hs;                                                                    \
+        se::Value           rootVal;                                                               \
+        bool                ok = nativevalue_to_se(thiz, rootVal);                                 \
+        SE_PRECONDITION2_VOID(ok, "js_root_registerNativeEvent : Error processing arguments");     \
+        if (rootVal.isObject()) {                                                                  \
+            se::Value funcVal;                                                                     \
+            ok = rootVal.toObject()->getProperty(#jsFuncName, &funcVal) && funcVal.isObject();     \
+            SE_PRECONDITION2_VOID(ok, "js_root_registerNativeEvent : Error processing arguments"); \
+            funcVal.toObject()->call(se::EmptyValueArray, rootVal.toObject());                     \
+        }                                                                                          \
+    })
+
+    ROOT_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::ROOT_BATCH2D_INIT, _onBatch2DInit);
+    ROOT_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::ROOT_BATCH2D_UPDATE, _onBatch2DUpdate);
+    ROOT_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::ROOT_BATCH2D_UPLOAD_BUFFERS, _onBatch2DUploadBuffers);
+    ROOT_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::ROOT_BATCH2D_RESET, _onBatch2DReset);
+
+    return true;
+}
+SE_BIND_FUNC(js_root_registerNativeEvent) // NOLINT(readability-identifier-naming)
+
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
     // Get the ns
@@ -66,6 +95,8 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     }
 
     __jsb_cc_scene_RenderScene_proto->defineFunction("updateBatches", _SE(js_scene_RenderScene_updateBatches));
+
+    __jsb_cc_Root_proto->defineFunction("_registerNativeEvent", _SE(js_root_registerNativeEvent));
 
     return true;
 }
