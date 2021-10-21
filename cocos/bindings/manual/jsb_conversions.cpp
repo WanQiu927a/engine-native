@@ -978,7 +978,9 @@ bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * 
 }
 template <>
 bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *out, se::Object *ctx) {
-    *out = std::make_shared<cc::ArrayBuffer>();
+    if(!out->get()){
+        *out = std::make_shared<cc::ArrayBuffer>();
+    }
     sevalue_to_native<cc::ArrayBuffer>(from, out->get(), ctx);
     //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
     return true;

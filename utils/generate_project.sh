@@ -29,7 +29,7 @@ if [ ${machine} = "Mac" ]; then
      echo "set(MACOSX_BUNDLE_GUI_IDENTIFIER com.cocos.test)" >> build-mac/proj/cfg.cmake
      rm -rf build-mac/assets
      mkdir build-mac/assets
-     cp -f ../assets/* build-mac/assets/
+     cp -rf ../assets/* build-mac/assets/
 
      RES_DIR=$COCOS_ROOT/templates/mac/build-mac
      cd build-mac

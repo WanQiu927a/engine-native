@@ -29,6 +29,7 @@
 #include "cocos/bindings/manual/jsb_classtype.h"
 #include "cocos/bindings/manual/jsb_global.h"
 #include "cocos/bindings/manual/jsb_module_register.h"
+#include "cocos/platform/FileUtils.h"
 
 #if (CC_PLATFORM == CC_PLATFORM_MAC_IOS)
     #include "platform/Device.h"
@@ -66,11 +67,15 @@ bool Game::init() {
 
     se->start();
 
+    auto fu = cc::FileUtils::getInstance();;
+    
+    fu->addSearchPath("gen-res");
+    
     se::AutoHandleScope hs;
-    //        jsb_run_script("jsb-adapter/jsb-builtin.js");
-    //        jsb_run_script("main.js");
+    jsb_run_script("jsb-adapter/jsb-builtin.js");
+    jsb_run_script("main.js");
 
-    jsb_run_script("hello.js");
+//    jsb_run_script("hello.js");
 
 #if (CC_PLATFORM == CC_PLATFORM_MAC_IOS)
     cc::Vec2 logicSize  = getViewLogicalSize();
