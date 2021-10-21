@@ -967,7 +967,12 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
     uint8_t *data    = nullptr;
     size_t   byteLen = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
+    se::Object *obj = from.toObject();
+    if(obj->isTypedArray()) {
+        obj->getTypedArrayData(&data, &byteLen);
+    }else {
+        obj->getArrayBufferData(&data, &byteLen);
+    }
     to->reset(data, byteLen);
     return true;
 }
