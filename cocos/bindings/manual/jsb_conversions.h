@@ -51,6 +51,9 @@
 #include "network/Downloader.h"
 
 #include "cocos/core/geometry/Geometry.h"
+#include "scene/Fog.h"
+#include "scene/Shadow.h"
+#include "scene/Skybox.h"
 
 #if USE_SPINE
     #include "cocos/editor-support/spine-creator-support/spine-cocos2dx.h"
@@ -1456,6 +1459,16 @@ template <typename T>
 inline bool sevalue_to_native(const se::Value &from, T to) { // NOLINT(readability-identifier-naming)
     return sevalue_to_native(from, to, static_cast<se::Object *>(nullptr));
 }
+
+//////////////////////// scene info
+template<>
+bool sevalue_to_native(const se::Value &from, cc::scene::FogInfo *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::scene::ShadowInfo *, se::Object * /*ctx*/);
+template<>
+bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *, se::Object * /*ctx*/);
+
+
 
 
 /////////////////////// geometry

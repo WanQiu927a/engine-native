@@ -27,16 +27,49 @@
 
 #include <regex>
 #include <sstream>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <variant>
 
+#include "Value.h"
 #include "base/TypeDef.h"
+#include "core/geometry/AABB.h"
+#include "core/geometry/Capsule.h"
+#include "core/geometry/Plane.h"
+#include "core/geometry/Sphere.h"
 #include "gfx-base/GFXDef.h"
 #include "math/Geometry.h"
 #include "math/Math.h"
+#include "math/Vec3.h"
+#include "scene/Fog.h"
+#include "scene/Shadow.h"
+#include "scene/Skybox.h"
+#include "v8/Object.h"
 
 // seval to native
+
+template <typename A, typename T, typename F>
+bool set_member_field(se::Object *obj, T *to, const std::string_view &property, F f, se::Value &tmp) {
+    bool ok = obj->getProperty(property.data(), &tmp);
+    SE_PRECONDITION2(ok, false, "Property '%s' is not set", property.data());
+    if constexpr (std::is_member_function_pointer_v<F>) {
+        A m;
+        ok = sevalue_to_native(tmp, &m, obj);
+        SE_PRECONDITION2(ok, false, "Convert property '%s' failed", property.data());
+        ((*to).*f)(m);
+        return true;
+    } else if constexpr (std::is_member_object_pointer_v<F>) {
+        A m;
+        ok       = sevalue_to_native(tmp, &m, obj);
+        (*to).*f = m;
+        SE_PRECONDITION2(ok, false, "Convert property '%s' failed", property.data());
+        return true;
+    } else {
+        static_assert(std::is_member_pointer_v<F>, "only member pointer allowed!");
+    }
+    return false;
+}
 
 bool seval_to_ccvalue(const se::Value &v, cc::Value *ret) {
     assert(ret != nullptr);
@@ -623,7 +656,7 @@ bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unuse
 template <typename T>
 constexpr std::enable_if_t<std::is_arithmetic_v<T>, se::Object::TypedArrayType>
 get_typed_array_type() { // NOLINT(readability-identifier-naming)
-    se::Object::TypedArrayType                           arrayType;
+    se::Object::TypedArrayType                           arrayType{};
     constexpr std::array<se::Object::TypedArrayType, 12> typeIndex = {
         se::Object::TypedArrayType::NONE,
         se::Object::TypedArrayType::NONE,
@@ -671,22 +704,11 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec4 *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec4 failed!");
     se::Object *obj = from.toObject();
-    se::Value   x;
-    se::Value   y;
-    se::Value   z;
-    se::Value   w;
-    bool        ok = obj->getProperty("x", &x);
-    SE_PRECONDITION3(ok && x.isNumber(), false, *to = cc::Vec4::ZERO);
-    ok = obj->getProperty("y", &y);
-    SE_PRECONDITION3(ok && y.isNumber(), false, *to = cc::Vec4::ZERO);
-    ok = obj->getProperty("z", &z);
-    SE_PRECONDITION3(ok && z.isNumber(), false, *to = cc::Vec4::ZERO);
-    ok = obj->getProperty("w", &w);
-    SE_PRECONDITION3(ok && w.isNumber(), false, *to = cc::Vec4::ZERO);
-    to->x = x.toFloat();
-    to->y = y.toFloat();
-    to->z = z.toFloat();
-    to->w = w.toFloat();
+    se::Value   tmp;
+    set_member_field<float>(obj, to, "x", &cc::Vec4::x, tmp);
+    set_member_field<float>(obj, to, "y", &cc::Vec4::y, tmp);
+    set_member_field<float>(obj, to, "z", &cc::Vec4::z, tmp);
+    set_member_field<float>(obj, to, "w", &cc::Vec4::w, tmp);
     return true;
 }
 
@@ -739,18 +761,10 @@ bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unuse
     if (!from.isObject()) {
     }
     se::Object *obj = from.toObject();
-    se::Value   x;
-    se::Value   y;
-    se::Value   z;
-    bool        ok = obj->getProperty("x", &x);
-    SE_PRECONDITION3(ok && x.isNumber(), false, *to = cc::Vec3::ZERO);
-    ok = obj->getProperty("y", &y);
-    SE_PRECONDITION3(ok && y.isNumber(), false, *to = cc::Vec3::ZERO);
-    ok = obj->getProperty("z", &z);
-    SE_PRECONDITION3(ok && z.isNumber(), false, *to = cc::Vec3::ZERO);
-    to->x = x.toFloat();
-    to->y = y.toFloat();
-    to->z = z.toFloat();
+    se::Value   tmp;
+    set_member_field<float>(obj, to, "x", &cc::Vec3::x, tmp);
+    set_member_field<float>(obj, to, "y", &cc::Vec3::y, tmp);
+    set_member_field<float>(obj, to, "z", &cc::Vec3::z, tmp);
     return true;
 }
 
@@ -760,26 +774,11 @@ bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unus
     if (!from.isObject()) {
     }
     se::Object *obj = from.toObject();
-    bool        ok;
     se::Value   t;
-    uint8_t     r;
-    uint8_t     g;
-    uint8_t     b;
-    uint8_t     a;
-
-    ok = obj->getProperty("r", &t);
-    SE_PRECONDITION3(ok && t.isNumber(), false, *to = {});
-    r  = t.toUint8();
-    ok = obj->getProperty("g", &t);
-    SE_PRECONDITION3(ok && t.isNumber(), false, *to = {});
-    g  = t.toUint8();
-    ok = obj->getProperty("b", &t);
-    SE_PRECONDITION3(ok && t.isNumber(), false, *to = {});
-    g  = t.toUint8();
-    ok = obj->getProperty("a", &t);
-    SE_PRECONDITION3(ok && t.isNumber(), false, *to = {});
-    a = t.toUint8();
-    to->set(r, g, b, a);
+    set_member_field<uint8_t>(obj, to, "r", &cc::Color::r, t);
+    set_member_field<uint8_t>(obj, to, "g", &cc::Color::g, t);
+    set_member_field<uint8_t>(obj, to, "b", &cc::Color::b, t);
+    set_member_field<uint8_t>(obj, to, "a", &cc::Color::a, t);
     return true;
 }
 
@@ -789,14 +788,9 @@ bool sevalue_to_native(const se::Value &from, cc::Vec2 *to, se::Object * /*unuse
     if (!from.isObject()) {
     }
     se::Object *obj = from.toObject();
-    se::Value   x;
-    se::Value   y;
-    bool        ok = obj->getProperty("x", &x);
-    SE_PRECONDITION3(ok && x.isNumber(), false, *to = cc::Vec2::ZERO);
-    ok = obj->getProperty("y", &y);
-    SE_PRECONDITION3(ok && y.isNumber(), false, *to = cc::Vec2::ZERO);
-    to->x = x.toFloat();
-    to->y = y.toFloat();
+    se::Value   tmp;
+    set_member_field<float>(obj, to, "x", &cc::Vec2::x, tmp);
+    set_member_field<float>(obj, to, "y", &cc::Vec2::y, tmp);
     return true;
 }
 
@@ -806,14 +800,9 @@ bool sevalue_to_native(const se::Value &from, cc::Size *to, se::Object * /*unuse
     if (!from.isObject()) {
     }
     se::Object *obj = from.toObject();
-    se::Value   w;
-    se::Value   h;
-    bool        ok = obj->getProperty("width", &w);
-    SE_PRECONDITION3(ok && w.isNumber(), false, *to = cc::Size::ZERO);
-    ok = obj->getProperty("height", &h);
-    SE_PRECONDITION3(ok && h.isNumber(), false, *to = cc::Size::ZERO);
-    to->width  = w.toFloat();
-    to->height = h.toFloat();
+    se::Value   tmp;
+    set_member_field<float>(obj, to, "width", &cc::Size::width, tmp);
+    set_member_field<float>(obj, to, "height", &cc::Size::height, tmp);
     return true;
 }
 
@@ -821,38 +810,23 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::Quaternion *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Quaternion failed!");
     se::Object *obj = from.toObject();
-    se::Value   x;
-    se::Value   y;
-    se::Value   z;
-    se::Value   w;
-    bool        ok = obj->getProperty("x", &x);
-    SE_PRECONDITION3(ok && x.isNumber(), false, *to = cc::Quaternion::ZERO);
-    ok = obj->getProperty("y", &y);
-    SE_PRECONDITION3(ok && y.isNumber(), false, *to = cc::Quaternion::ZERO);
-    ok = obj->getProperty("z", &z);
-    SE_PRECONDITION3(ok && z.isNumber(), false, *to = cc::Quaternion::ZERO);
-    ok = obj->getProperty("w", &w);
-    SE_PRECONDITION3(ok && w.isNumber(), false, *to = cc::Quaternion::ZERO);
-    to->x = x.toFloat();
-    to->y = y.toFloat();
-    to->z = z.toFloat();
-    to->w = w.toFloat();
+    se::Value   tmp;
+    set_member_field<float>(obj, to, "x", &cc::Quaternion::x, tmp);
+    set_member_field<float>(obj, to, "y", &cc::Quaternion::y, tmp);
+    set_member_field<float>(obj, to, "z", &cc::Quaternion::z, tmp);
+    set_member_field<float>(obj, to, "w", &cc::Quaternion::w, tmp);
     return true;
 }
+
+//////////////////// geometry
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to AABB failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("center", &tmp);
-    SE_PRECONDITION2(ok, false, "property center not found!");
-    ok = sevalue_to_native(tmp, &to->center, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("halfExtents", &tmp);
-    SE_PRECONDITION2(ok, false, "property halfExtents not found!");
-    sevalue_to_native(tmp, &to->halfExtents, obj);
+    set_member_field<cc::Vec3>(obj, to, "halfExtents", &cc::geometry::AABB::halfExtents, tmp);
+    set_member_field<cc::Vec3>(obj, to, "center", &cc::geometry::AABB::center, tmp);
     return true;
 }
 
@@ -861,17 +835,9 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *to, se::Obj
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Capsule failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("radius", &tmp);
-    SE_PRECONDITION2(ok, false, "property radius not found!");
-    ok = sevalue_to_native(tmp, &to->radius, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("halfHeight", &tmp);
-    SE_PRECONDITION2(ok, false, "property halfHeight not found!");
-    sevalue_to_native(tmp, &to->halfHeight, obj);
-    ok = obj->getProperty("axis", &tmp);
-    SE_PRECONDITION2(ok, false, "property axis not found!");
-    sevalue_to_native(tmp, &to->axis, obj);
+    set_member_field<float>(obj, to, "radius", &cc::geometry::Capsule::radius, tmp);
+    set_member_field<float>(obj, to, "halfHeight", &cc::geometry::Capsule::halfHeight, tmp);
+    set_member_field<cc::geometry::Capsule::CenterEnum>(obj, to, "axis", &cc::geometry::Capsule::axis, tmp);
     return true;
 }
 
@@ -880,14 +846,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Line *to, se::Object
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Line failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("s", &tmp);
-    SE_PRECONDITION2(ok, false, "property o not found!");
-    ok = sevalue_to_native(tmp, &to->s, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("e", &tmp);
-    SE_PRECONDITION2(ok, false, "property d not found!");
-    sevalue_to_native(tmp, &to->e, obj);
+    set_member_field<cc::Vec3>(obj, to, "s", &cc::geometry::Line::s, tmp);
+    set_member_field<cc::Vec3>(obj, to, "e", &cc::geometry::Line::e, tmp);
     return true;
 }
 
@@ -896,14 +856,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *to, se::Object 
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Sphere failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("o", &tmp);
-    SE_PRECONDITION2(ok, false, "property o not found!");
-    ok = sevalue_to_native(tmp, &to->o, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("d", &tmp);
-    SE_PRECONDITION2(ok, false, "property d not found!");
-    sevalue_to_native(tmp, &to->d, obj);
+    set_member_field<cc::Vec3>(obj, to, "o", &cc::geometry::Ray::o, tmp);
+    set_member_field<cc::Vec3>(obj, to, "d", &cc::geometry::Ray::d, tmp);
     return true;
 }
 
@@ -913,17 +867,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *to, se::Obje
     se::Object *obj = from.toObject();
     se::Value   tmp;
     bool        ok;
-    float       radius;
-    cc::Vec3    center;
-    ok = obj->getProperty("radius", &tmp);
-    SE_PRECONDITION2(ok, false, "property radius not found!");
-    ok = sevalue_to_native(tmp, &radius, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("center", &tmp);
-    SE_PRECONDITION2(ok, false, "property center not found!");
-    sevalue_to_native(tmp, &center, obj);
-    to->setCenter(center);
-    to->setRadius(radius);
+    set_member_field<float>(obj, to, "radius", &cc::geometry::Sphere::setRadius, tmp);
+    set_member_field<cc::Vec3>(obj, to, "center", &cc::geometry::Sphere::setCenter, tmp);
     return true;
 }
 
@@ -932,17 +877,9 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *to, se::Ob
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Plane failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("a", &tmp);
-    SE_PRECONDITION2(ok, false, "property a not found!");
-    ok = sevalue_to_native(tmp, &to->a, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("b", &tmp);
-    SE_PRECONDITION2(ok, false, "property b not found!");
-    sevalue_to_native(tmp, &to->b, obj);
-    ok = obj->getProperty("c", &tmp);
-    SE_PRECONDITION2(ok, false, "property c not found!");
-    sevalue_to_native(tmp, &to->c, obj);
+    set_member_field<cc::Vec3>(obj, to, "a", &cc::geometry::Triangle::a, tmp);
+    set_member_field<cc::Vec3>(obj, to, "b", &cc::geometry::Triangle::b, tmp);
+    set_member_field<cc::Vec3>(obj, to, "c", &cc::geometry::Triangle::c, tmp);
     return true;
 }
 
@@ -951,14 +888,8 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Plane *to, se::Objec
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Plane failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    ok = obj->getProperty("n", &tmp);
-    SE_PRECONDITION2(ok, false, "property n not found!");
-    ok = sevalue_to_native(tmp, &to->n, obj);
-    SE_PRECONDITION2(ok, false, "convert to vec3");
-    ok = obj->getProperty("d", &tmp);
-    SE_PRECONDITION2(ok, false, "property d not found!");
-    sevalue_to_native(tmp, &to->d, obj);
+    set_member_field<cc::Vec3>(obj, to, "n", &cc::geometry::Plane::n, tmp);
+    set_member_field<float>(obj, to, "d", &cc::geometry::Plane::d, tmp);
     return true;
 }
 
@@ -967,28 +898,67 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Frustum *to, se::Obj
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Frustum failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    bool        ok;
-    uint32_t    arraySize;
-    ok = obj->getProperty("planes", &tmp);
-    SE_PRECONDITION2(ok, false, "property planes not found!");
-    se::Object *planes = tmp.toObject();
-    planes->getArrayLength(&arraySize);
-    for (auto i = 0; i < arraySize; i++) {
-        se::Value ele;
-        planes->getArrayElement(i, &ele);
-        sevalue_to_native(ele, &to->planes[i], nullptr);
-    }
+    set_member_field<std::array<cc::geometry::Plane, 6>>(obj, to, "planes", &cc::geometry::Frustum::planes, tmp);
+    set_member_field<std::array<cc::Vec3, 8>>(obj, to, "vertices", &cc::geometry::Frustum::vertices, tmp);
+    return true;
+}
 
-    ok = obj->getProperty("vertices", &tmp);
-    SE_PRECONDITION2(ok, false, "property vertices not found!");
-    se::Object *vertices = tmp.toObject();
-    vertices->getArrayLength(&arraySize);
-    for (auto i = 0; i < arraySize; i++) {
-        se::Value ele;
-        vertices->getArrayElement(i, &ele);
-        sevalue_to_native(ele, &to->vertices[i], nullptr);
-    }
+////////////////////////// scene info
 
+template <>
+bool sevalue_to_native(const se::Value &from, cc::scene::FogInfo *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to FogInfo failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    set_member_field<cc::scene::FogType>(obj, to, "type", &cc::scene::FogInfo::setType, tmp);
+    set_member_field<cc::Color>(obj, to, "fogColor", &cc::scene::FogInfo::setFogColor, tmp);
+    set_member_field<bool>(obj, to, "enabled", &cc::scene::FogInfo::setEnabled, tmp);
+    set_member_field<float>(obj, to, "fogDensity", &cc::scene::FogInfo::setFogDensity, tmp);
+    set_member_field<float>(obj, to, "fogStart", &cc::scene::FogInfo::setFogStart, tmp);
+    set_member_field<float>(obj, to, "fogEnd", &cc::scene::FogInfo::setFogEnd, tmp);
+    set_member_field<float>(obj, to, "fogAtten", &cc::scene::FogInfo::setFogAtten, tmp);
+    set_member_field<float>(obj, to, "fogTop", &cc::scene::FogInfo::setFogTop, tmp);
+    set_member_field<float>(obj, to, "fogRange", &cc::scene::FogInfo::setFogRange, tmp);
+    //TODO(PatriceJiang): covnert resource ??
+    // set_member_field<cc::scene::Fog>(obj, to, "resource", &cc::scene::FogInfo::setResource, tmp);
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::scene::ShadowInfo *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to ShadowInfo failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;
+    set_member_field<cc::scene::ShadowType>(obj, to, "type", &cc::scene::ShadowInfo::setType, tmp);
+    set_member_field<bool>(obj, to, "enabled", &cc::scene::ShadowInfo::setEnabled, tmp);
+    set_member_field<cc::Vec3>(obj, to, "normal", &cc::scene::ShadowInfo::setNormal, tmp);
+    set_member_field<float>(obj, to, "distance", &cc::scene::ShadowInfo::setDistance, tmp);
+    set_member_field<cc::Color>(obj, to, "shadowColor", &cc::scene::ShadowInfo::setshadowColor, tmp);
+    set_member_field<bool>(obj, to, "autoAdapt", &cc::scene::ShadowInfo::setAutoAdapt, tmp);
+    set_member_field<cc::scene::PCFType>(obj, to, "pcf", &cc::scene::ShadowInfo::setPcf, tmp);
+    set_member_field<float>(obj, to, "bias", &cc::scene::ShadowInfo::setBias, tmp);
+    set_member_field<float>(obj, to, "normalBias", &cc::scene::ShadowInfo::setNormalBias, tmp);
+    set_member_field<float>(obj, to, "near", &cc::scene::ShadowInfo::setNear, tmp);
+    set_member_field<float>(obj, to, "far", &cc::scene::ShadowInfo::setFar, tmp);
+    set_member_field<float>(obj, to, "orthoSize", &cc::scene::ShadowInfo::setOrthoSize, tmp);
+    set_member_field<float>(obj, to, "maxReceived", &cc::scene::ShadowInfo::setMaxReceived, tmp);
+    set_member_field<float>(obj, to, "size", &cc::scene::ShadowInfo::setShadowMapSize, tmp);
+    set_member_field<float>(obj, to, "saturation", &cc::scene::ShadowInfo::setSaturation, tmp);
+    //TODO(PatriceJiang): covnert resource ??
+    // set_member_field<cc::scene::Shadow>(obj, to, "resource", &cc::scene::ShadowInfo::setResource, tmp);
+
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to ShadowInfo failed!");
+    se::Object *obj = from.toObject();
+    se::Value   tmp;    
+    set_member_field<cc::TextureCube*>(obj, to, "envmap", &cc::scene::SkyboxInfo::setEnvmap, tmp);
+    set_member_field<bool>(obj, to, "isRGBE", &cc::scene::SkyboxInfo::setRGBE, tmp);
+    set_member_field<bool>(obj, to, "enabled", &cc::scene::SkyboxInfo::setEnabled, tmp);
+    set_member_field<bool>(obj, to, "useIBL", &cc::scene::SkyboxInfo::setUseIBL, tmp);
     return true;
 }
 
