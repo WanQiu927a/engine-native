@@ -10190,6 +10190,25 @@ static bool js_assets_Mesh_getMinPosition(se::State& s) // NOLINT(readability-id
 }
 SE_BIND_PROP_GET(js_assets_Mesh_getMinPosition)
 
+static bool js_assets_Mesh_getAssetData(se::State& s) // NOLINT(readability-identifier-naming)
+{
+    auto* cobj = SE_THIS_OBJECT<cc::Mesh>(s);
+    SE_PRECONDITION2(cobj, false, "js_assets_Mesh_getAssetData : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 0) {
+        const cc::TypedArrayTemp<unsigned char>& result = cobj->getAssetData();
+        ok &= nativevalue_to_se(result, s.rval(), nullptr /*ctx*/);
+        SE_PRECONDITION2(ok, false, "js_assets_Mesh_getAssetData : Error processing arguments");
+        SE_HOLD_RETURN_VALUE(result, s.thisObject(), s.rval());
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_assets_Mesh_getAssetData)
+
 static bool js_assets_Mesh_getRenderingSubMeshes(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto* cobj = SE_THIS_OBJECT<cc::Mesh>(s);
@@ -10413,6 +10432,25 @@ static bool js_assets_Mesh_setHash(se::State& s) // NOLINT(readability-identifie
 }
 SE_BIND_PROP_SET(js_assets_Mesh_setHash)
 
+static bool js_assets_Mesh_setAssetData(se::State& s) // NOLINT(readability-identifier-naming)
+{
+    auto* cobj = SE_THIS_OBJECT<cc::Mesh>(s);
+    SE_PRECONDITION2(cobj, false, "js_assets_Mesh_setAssetData : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    CC_UNUSED bool ok = true;
+    if (argc == 1) {
+        HolderType<std::shared_ptr<cc::ArrayBuffer>, false> arg0 = {};
+        ok &= sevalue_to_native(args[0], &arg0, s.thisObject());
+        SE_PRECONDITION2(ok, false, "js_assets_Mesh_setAssetData : Error processing arguments");
+        cobj->setAssetData(arg0.value());
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
+    return false;
+}
+SE_BIND_FUNC(js_assets_Mesh_setAssetData)
+
 static bool js_assets_Mesh_setStruct(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto* cobj = SE_THIS_OBJECT<cc::Mesh>(s);
@@ -10497,11 +10535,13 @@ bool js_register_assets_Mesh(se::Object* obj) // NOLINT(readability-identifier-n
     cls->defineFunction("copyAttribute", _SE(js_assets_Mesh_copyAttribute));
     cls->defineFunction("copyIndices", _SE(js_assets_Mesh_copyIndices));
     cls->defineFunction("destroyRenderingMesh", _SE(js_assets_Mesh_destroyRenderingMesh));
+    cls->defineFunction("getNativeAsset", _SE(js_assets_Mesh_getAssetData));
     cls->defineFunction("initialize", _SE(js_assets_Mesh_initialize));
     cls->defineFunction("merge", _SE(js_assets_Mesh_merge));
     cls->defineFunction("readAttribute", _SE(js_assets_Mesh_readAttribute));
     cls->defineFunction("readIndices", _SE(js_assets_Mesh_readIndices));
     cls->defineFunction("reset", _SE(js_assets_Mesh_reset));
+    cls->defineFunction("setNativeAsset", _SE(js_assets_Mesh_setAssetData));
     cls->defineFunction("validateMergingMesh", _SE(js_assets_Mesh_validateMergingMesh));
     cls->defineFinalizeFunction(_SE(js_cc_Mesh_finalize));
     cls->install();

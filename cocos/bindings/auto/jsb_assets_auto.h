@@ -566,11 +566,13 @@ SE_DECLARE_FUNC(js_assets_Mesh_assign);
 SE_DECLARE_FUNC(js_assets_Mesh_copyAttribute);
 SE_DECLARE_FUNC(js_assets_Mesh_copyIndices);
 SE_DECLARE_FUNC(js_assets_Mesh_destroyRenderingMesh);
+SE_DECLARE_FUNC(js_assets_Mesh_getAssetData);
 SE_DECLARE_FUNC(js_assets_Mesh_initialize);
 SE_DECLARE_FUNC(js_assets_Mesh_merge);
 SE_DECLARE_FUNC(js_assets_Mesh_readAttribute);
 SE_DECLARE_FUNC(js_assets_Mesh_readIndices);
 SE_DECLARE_FUNC(js_assets_Mesh_reset);
+SE_DECLARE_FUNC(js_assets_Mesh_setAssetData);
 SE_DECLARE_FUNC(js_assets_Mesh_validateMergingMesh);
 SE_DECLARE_FUNC(js_assets_Mesh_Mesh);
 

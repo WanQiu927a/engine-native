@@ -26,6 +26,7 @@
 #pragma once
 
 #include "3d/assets/Types.h"
+#include "core/ArrayBuffer.h"
 #include "core/TypedArray.h"
 #include "core/assets/Asset.h"
 #include "core/geometry/AABB.h"
@@ -164,6 +165,13 @@ public:
 
     std::any getNativeAsset() const override;
     void     setNativeAsset(const std::any &obj) override;
+
+    void setAssetData(const cc::ArrayBuffer::Ptr data) {
+        _data = Uint8Array(data);
+    }
+    const Uint8Array & getAssetData() {
+        return _data;
+    }
 
     /**
      * @en The sub meshes count of the mesh.
