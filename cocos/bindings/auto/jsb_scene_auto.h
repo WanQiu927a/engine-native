@@ -1,37 +1,36 @@
 #pragma once
-#include "base/Config.h"
 #include <type_traits>
+#include "base/Config.h"
+#include "cocos/2d/framework/UITransform.h"
+#include "cocos/bindings/auto/jsb_assets_auto.h"
+#include "cocos/bindings/auto/jsb_geometry_auto.h"
+#include "cocos/bindings/auto/jsb_gfx_auto.h"
 #include "cocos/bindings/jswrapper/SeApi.h"
 #include "cocos/bindings/manual/jsb_conversions.h"
-#include "cocos/bindings/auto/jsb_gfx_auto.h"
-#include "cocos/bindings/auto/jsb_geometry_auto.h"
-#include "cocos/bindings/auto/jsb_assets_auto.h"
 #include "cocos/core/scene-graph/Node.h"
 #include "cocos/core/scene-graph/NodeUIProperties.h"
-#include "cocos/scene/Light.h"
-#include "cocos/scene/Fog.h"
-#include "cocos/scene/Shadow.h"
-#include "cocos/scene/Skybox.h"
-#include "cocos/scene/DirectionalLight.h"
-#include "cocos/scene/SpotLight.h"
-#include "cocos/scene/SphereLight.h"
-#include "cocos/scene/Model.h"
-#include "cocos/scene/SubModel.h"
-#include "cocos/scene/Pass.h"
-#include "cocos/scene/RenderScene.h"
-#include "cocos/scene/DrawBatch2D.h"
-#include "cocos/scene/Camera.h"
-#include "cocos/scene/RenderWindow.h"
+#include "cocos/scene/Ambient.h"
 #include "cocos/scene/Camera.h"
 #include "cocos/scene/Define.h"
-#include "cocos/scene/Ambient.h"
-#include "cocos/2d/framework/UITransform.h"
+#include "cocos/scene/DirectionalLight.h"
+#include "cocos/scene/DrawBatch2D.h"
+#include "cocos/scene/Fog.h"
+#include "cocos/scene/Light.h"
+#include "cocos/scene/Model.h"
+#include "cocos/scene/Pass.h"
+#include "cocos/scene/RenderScene.h"
+#include "cocos/scene/RenderWindow.h"
+#include "cocos/scene/Shadow.h"
+#include "cocos/scene/Skybox.h"
+#include "cocos/scene/SphereLight.h"
+#include "cocos/scene/SpotLight.h"
+#include "cocos/scene/SubModel.h"
 
 extern se::Object *__jsb_cc_CCObject_proto; // NOLINT
 extern se::Class * __jsb_cc_CCObject_class; // NOLINT
 
 bool js_register_cc_CCObject(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);      // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::CCObject);
 SE_DECLARE_FUNC(js_scene_CCObject_destroy);
@@ -51,7 +50,7 @@ extern se::Object *__jsb_cc_Node_proto; // NOLINT
 extern se::Class * __jsb_cc_Node_class; // NOLINT
 
 bool js_register_cc_Node(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);  // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Node);
 SE_DECLARE_FUNC(js_scene_Node_addChild);
@@ -124,21 +123,21 @@ SE_DECLARE_FUNC(js_scene_Node_translate);
 SE_DECLARE_FUNC(js_scene_Node_updateSiblingIndex);
 SE_DECLARE_FUNC(js_scene_Node_updateWorldTransform);
 SE_DECLARE_FUNC(js_scene_Node_walk);
-SE_DECLARE_FUNC(js_scene_Node_instantiate);
 SE_DECLARE_FUNC(js_scene_Node_setScene);
-SE_DECLARE_FUNC(js_scene_Node_getIdxOfChild);
+SE_DECLARE_FUNC(js_scene_Node_instantiate);
+SE_DECLARE_FUNC(js_scene_Node_clearNodeArray);
+SE_DECLARE_FUNC(js_scene_Node_resetChangedFlags);
 SE_DECLARE_FUNC(js_scene_Node_setDirtyNode);
+SE_DECLARE_FUNC(js_scene_Node_getIdxOfChild);
 SE_DECLARE_FUNC(js_scene_Node_getDirtyNode);
 SE_DECLARE_FUNC(js_scene_Node_find);
-SE_DECLARE_FUNC(js_scene_Node_resetChangedFlags);
-SE_DECLARE_FUNC(js_scene_Node_clearNodeArray);
 SE_DECLARE_FUNC(js_scene_Node_Node);
 
 extern se::Object *__jsb_cc_scene_Light_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Light_class; // NOLINT
 
 bool js_register_cc_scene_Light(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);         // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Light);
 SE_DECLARE_FUNC(js_scene_Light_attachToScene);
@@ -163,7 +162,7 @@ extern se::Object *__jsb_cc_scene_FogInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_FogInfo_class; // NOLINT
 
 bool js_register_cc_scene_FogInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);           // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::FogInfo);
 SE_DECLARE_FUNC(js_scene_FogInfo_activate);
@@ -190,7 +189,7 @@ extern se::Object *__jsb_cc_scene_Fog_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Fog_class; // NOLINT
 
 bool js_register_cc_scene_Fog(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);       // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Fog);
 SE_DECLARE_FUNC(js_scene_Fog_activate);
@@ -220,7 +219,7 @@ extern se::Object *__jsb_cc_scene_Model_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Model_class; // NOLINT
 
 bool js_register_cc_scene_Model(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);         // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Model);
 SE_DECLARE_FUNC(js_scene_Model_attachToScene);
@@ -274,7 +273,7 @@ extern se::Object *__jsb_cc_IPassStates_proto; // NOLINT
 extern se::Class * __jsb_cc_IPassStates_class; // NOLINT
 
 bool js_register_cc_IPassStates(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);         // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IPassStates *, se::Object *ctx);
@@ -284,7 +283,7 @@ extern se::Object *__jsb_cc_IPassInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IPassInfo_class; // NOLINT
 
 bool js_register_cc_IPassInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);       // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IPassInfo *, se::Object *ctx);
@@ -294,7 +293,7 @@ extern se::Object *__jsb_cc_IPassInfoFull_proto; // NOLINT
 extern se::Class * __jsb_cc_IPassInfoFull_class; // NOLINT
 
 bool js_register_cc_IPassInfoFull(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);           // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IPassInfoFull *, se::Object *ctx);
@@ -304,7 +303,7 @@ extern se::Object *__jsb_cc_scene_IMacroPatch_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_IMacroPatch_class; // NOLINT
 
 bool js_register_cc_scene_IMacroPatch(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::scene::IMacroPatch *, se::Object *ctx);
@@ -314,7 +313,7 @@ extern se::Object *__jsb_cc_scene_ShadowInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_ShadowInfo_class; // NOLINT
 
 bool js_register_cc_scene_ShadowInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);              // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::ShadowInfo);
 SE_DECLARE_FUNC(js_scene_ShadowInfo_activate);
@@ -355,7 +354,7 @@ extern se::Object *__jsb_cc_scene_Shadow_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Shadow_class; // NOLINT
 
 bool js_register_cc_scene_Shadow(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);          // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Shadow);
 SE_DECLARE_FUNC(js_scene_Shadow_activate);
@@ -407,7 +406,7 @@ extern se::Object *__jsb_cc_scene_SkyboxInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_SkyboxInfo_class; // NOLINT
 
 bool js_register_cc_scene_SkyboxInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);              // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::SkyboxInfo);
 SE_DECLARE_FUNC(js_scene_SkyboxInfo_activate);
@@ -425,7 +424,7 @@ extern se::Object *__jsb_cc_scene_Skybox_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Skybox_class; // NOLINT
 
 bool js_register_cc_scene_Skybox(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);          // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Skybox);
 SE_DECLARE_FUNC(js_scene_Skybox_activate);
@@ -445,7 +444,7 @@ extern se::Object *__jsb_cc_scene_DirectionalLight_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_DirectionalLight_class; // NOLINT
 
 bool js_register_cc_scene_DirectionalLight(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);                    // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::DirectionalLight);
 SE_DECLARE_FUNC(js_scene_DirectionalLight_setDirection);
@@ -456,7 +455,7 @@ extern se::Object *__jsb_cc_scene_SpotLight_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_SpotLight_class; // NOLINT
 
 bool js_register_cc_scene_SpotLight(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);             // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::SpotLight);
 SE_DECLARE_FUNC(js_scene_SpotLight_getLuminance);
@@ -472,7 +471,7 @@ extern se::Object *__jsb_cc_scene_SphereLight_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_SphereLight_class; // NOLINT
 
 bool js_register_cc_scene_SphereLight(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::SphereLight);
 SE_DECLARE_FUNC(js_scene_SphereLight_getLuminance);
@@ -486,7 +485,7 @@ extern se::Object *__jsb_cc_scene_AmbientInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_AmbientInfo_class; // NOLINT
 
 bool js_register_cc_scene_AmbientInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::AmbientInfo);
 SE_DECLARE_FUNC(js_scene_AmbientInfo_getGroundAlbedo);
@@ -501,7 +500,7 @@ extern se::Object *__jsb_cc_scene_Ambient_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Ambient_class; // NOLINT
 
 bool js_register_cc_scene_Ambient(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);           // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Ambient);
 SE_DECLARE_FUNC(js_scene_Ambient_getAlbedoArray);
@@ -521,7 +520,7 @@ extern se::Object *__jsb_cc_scene_IRenderWindowInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_IRenderWindowInfo_class; // NOLINT
 
 bool js_register_cc_scene_IRenderWindowInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);                     // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::scene::IRenderWindowInfo *, se::Object *ctx);
@@ -531,7 +530,7 @@ extern se::Object *__jsb_cc_scene_RenderWindow_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_RenderWindow_class; // NOLINT
 
 bool js_register_cc_scene_RenderWindow(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);                // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::RenderWindow);
 SE_DECLARE_FUNC(js_scene_RenderWindow_attachCamera);
@@ -555,7 +554,7 @@ extern se::Object *__jsb_cc_scene_ICameraInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_ICameraInfo_class; // NOLINT
 
 bool js_register_cc_scene_ICameraInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::scene::ICameraInfo *, se::Object *ctx);
@@ -565,7 +564,7 @@ extern se::Object *__jsb_cc_scene_Camera_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Camera_class; // NOLINT
 
 bool js_register_cc_scene_Camera(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);          // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Camera);
 SE_DECLARE_FUNC(js_scene_Camera_attachToScene);
@@ -650,7 +649,7 @@ extern se::Object *__jsb_cc_scene_DrawBatch2D_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_DrawBatch2D_class; // NOLINT
 
 bool js_register_cc_scene_DrawBatch2D(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::scene::DrawBatch2D *, se::Object *ctx);
@@ -660,7 +659,7 @@ extern se::Object *__jsb_cc_scene_IRenderSceneInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_IRenderSceneInfo_class; // NOLINT
 
 bool js_register_cc_scene_IRenderSceneInfo(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);                    // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::scene::IRenderSceneInfo *, se::Object *ctx);
@@ -670,7 +669,7 @@ extern se::Object *__jsb_cc_scene_RenderScene_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_RenderScene_class; // NOLINT
 
 bool js_register_cc_scene_RenderScene(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);               // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::RenderScene);
 SE_DECLARE_FUNC(js_scene_RenderScene_addBatch);
@@ -711,7 +710,7 @@ extern se::Object *__jsb_cc_Root_proto; // NOLINT
 extern se::Class * __jsb_cc_Root_class; // NOLINT
 
 bool js_register_cc_Root(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);  // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Root);
 SE_DECLARE_FUNC(js_scene_Root_activeWindow);
@@ -757,7 +756,7 @@ extern se::Object *__jsb_cc_scene_Pass_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_Pass_class; // NOLINT
 
 bool js_register_cc_scene_Pass(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);        // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::Pass);
 SE_DECLARE_FUNC(js_scene_Pass_beginChangeStatesSilently);
@@ -805,19 +804,19 @@ SE_DECLARE_FUNC(js_scene_Pass_setUniform);
 SE_DECLARE_FUNC(js_scene_Pass_setUniformArray);
 SE_DECLARE_FUNC(js_scene_Pass_tryCompile);
 SE_DECLARE_FUNC(js_scene_Pass_update);
-SE_DECLARE_FUNC(js_scene_Pass_getPropertyTypeFromHandle);
-SE_DECLARE_FUNC(js_scene_Pass_getTypeFromHandle);
-SE_DECLARE_FUNC(js_scene_Pass_getBindingFromHandle);
-SE_DECLARE_FUNC(js_scene_Pass_getOffsetFromHandle);
-SE_DECLARE_FUNC(js_scene_Pass_fillPipelineInfo);
 SE_DECLARE_FUNC(js_scene_Pass_getPassHash);
+SE_DECLARE_FUNC(js_scene_Pass_getPropertyTypeFromHandle);
+SE_DECLARE_FUNC(js_scene_Pass_getOffsetFromHandle);
+SE_DECLARE_FUNC(js_scene_Pass_getBindingFromHandle);
+SE_DECLARE_FUNC(js_scene_Pass_getTypeFromHandle);
+SE_DECLARE_FUNC(js_scene_Pass_fillPipelineInfo);
 SE_DECLARE_FUNC(js_scene_Pass_Pass);
 
 extern se::Object *__jsb_cc_scene_SubModel_proto; // NOLINT
 extern se::Class * __jsb_cc_scene_SubModel_class; // NOLINT
 
 bool js_register_cc_scene_SubModel(se::Object *obj); // NOLINT
-bool register_all_scene(se::Object *obj);                   // NOLINT
+bool register_all_scene(se::Object *obj);            // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::scene::SubModel);
 SE_DECLARE_FUNC(js_scene_SubModel_destroy);
@@ -844,4 +843,3 @@ SE_DECLARE_FUNC(js_scene_SubModel_setShaders);
 SE_DECLARE_FUNC(js_scene_SubModel_setSubMesh);
 SE_DECLARE_FUNC(js_scene_SubModel_update);
 SE_DECLARE_FUNC(js_scene_SubModel_SubModel);
-
