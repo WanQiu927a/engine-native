@@ -1183,8 +1183,9 @@ class NativeClass(object):
         if self.generator.is_reserved_function(self.class_name, method_name["name"]):
             return False
         if self.class_name in self.generator.shadowed_methods_by_getter_setter:
-            #logger.info("??? skip %s contains %s" %(self.generator.shadowed_methods_by_getter_setter[self.class_name], method_name))
-            return method_name["name"] in self.generator.shadowed_methods_by_getter_setter[self.class_name]
+            ret = method_name["name"] in self.generator.shadowed_methods_by_getter_setter[self.class_name]
+            # logger.info("??? skip %s contains %s , %s" %(self.generator.shadowed_methods_by_getter_setter[self.class_name], method_name, ret))
+            return ret
         return False
 
     def find_method(self, method_name):
@@ -1262,7 +1263,7 @@ class NativeClass(object):
             "is_persistent" : self.is_persistent,
             "is_class_owned_by_cpp": self.is_class_owned_by_cpp,
             "has_constructor": self.has_constructor,
-            "public_fields": list(map(lambda x: x.toJSON(), self.public_fields)),
+            "public_fields": list(map(lambda x: x.toJSON(), filter(lambda x: self.should_export_field(x.name), self.public_fields))),
             # "fields" : list(map(lambda x: x.toJSON(), self.fields)),
             "override_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), self.override_methods.items())),
             "getter_setter": list(map(lambda x: {
@@ -1270,8 +1271,8 @@ class NativeClass(object):
                         "names": x["names"],
                         "type": x["getter"].ret_type.toJSON() if x["getter"] is not None else (x["setter"].arguments[0].toJSON() if x["setter"] is not None else None)
                     }, self.getter_setter)),
-            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), self.methods.items())),
-            "static_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), self.static_methods.items())),
+            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.generator.should_skip(self.class_name,f[0]), self.methods.items()))),
+            "static_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda x: not self.generator.should_skip(self.class_name, x[0]), self.static_methods.items()))),
             "dict_of_override_method_should_be_bound": dict(map(lambda kv: (kv[0], list(map(lambda x: x.toJSON(), kv[1]))), self.dict_of_override_method_should_be_bound.items())),
         }
 
