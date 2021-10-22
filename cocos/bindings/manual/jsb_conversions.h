@@ -1559,6 +1559,12 @@ nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) {
 template <>
 bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/); // NOLINT
 
+template <typename ...ARGS>
+bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object * ctx); // NOLINT
+
+template <typename ...ARGS>
+bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object * ctx); // NOLINT
+
 /// nativevalue_to_se std::optional
 template <typename T>
 bool nativevalue_to_se(const std::optional<T> &from, se::Value &to, se::Object *ctx) { // NOLINT
@@ -1894,4 +1900,31 @@ inline bool nativevalue_to_se(const se_object_ptr &from, se::Value &to, se::Obje
 template <typename T>
 inline bool nativevalue_to_se(T &&from, se::Value &to) { // NOLINT(readability-identifier-naming)
     return nativevalue_to_se(std::forward<typename std::add_const<T>::type>(from), to, nullptr);
+}
+
+
+
+template <typename ...ARGS>
+bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object * ctx) {
+    bool ok = false;
+    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i){
+        if(i != from.index()) {
+            return;
+        }
+        ok = nativevalue_to_se(std::get<i>(from), to, ctx); 
+    });
+    return ok;
+}
+
+template <typename ...ARGS>
+bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object * ctx) {
+    bool ok = true;
+    se::Value tmp;
+    se::Object * array = se::Object::createArrayObject(sizeof...(ARGS));
+    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i){
+        ok &= nativevalue_to_se(std::get<i>(from), tmp, ctx);
+        array->setArrayElement(i, tmp);
+    });
+    to.setObject(array);
+    return ok;
 }
