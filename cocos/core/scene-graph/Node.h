@@ -477,7 +477,7 @@ public:
     inline uint32_t getDirtyFlag() const { return _dirtyFlag; }
     inline void     setLayer(uint32_t layer) {
         _layer = layer;
-        _eventProcessor->emit(NodeEventType::LAYER_CHANGED, _layer);
+        emit(NodeEventType::LAYER_CHANGED, _layer);
     }
     inline uint32_t getLayer() const { return _layer; }
 
