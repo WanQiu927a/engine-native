@@ -381,7 +381,7 @@ function processClass(klass: NativeClass): string {
 
 
     const extends_field = klass.parents.length == 0 ? '' :
-        `extends ${klass.parents.map(x => UFC({ script_ns: utils.cpptype_to_script_ns(x)!, is_enum: false, namespace_name:"???" }))} `;
+        `extends ${klass.parents.map(x => UFC({ script_ns: utils.cpptype_to_script_ns(x) || x, is_enum: false, namespace_name:"???" }))} `;
 
     buffer.push('\n');
 

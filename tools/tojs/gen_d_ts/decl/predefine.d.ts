@@ -2,7 +2,6 @@
 /* eslint-disable no-trailing-spaces */
 declare namespace jsb {
     // type Node = any;
-    type Scene               = any;
     type Event               = any;
     type NodeEventProcessor  = any;
     type Mat4                = any;
