@@ -61,10 +61,10 @@ class Node : public CCObject {
 public:
     using Super = CCObject;
 
-    static const uint TRANSFORM_ON;
-    static const uint DESTROYING;
-    static const uint DEACTIVATING;
-    static const uint DONT_DESTROY;
+    static const uint32_t TRANSFORM_ON;
+    static const uint32_t DESTROYING;
+    static const uint32_t DEACTIVATING;
+    static const uint32_t DONT_DESTROY;
 
     static Node *instantiate(Node *cloned, bool isSyncedNode);
     // for walk
@@ -184,7 +184,7 @@ public:
     void off(const std::string &type, void (Target::*memberFn)(Args...), Target *target, bool useCapture = false);
 
     template <typename... Args>
-    void emit(const std::string &type, Args &&...args);
+    void emit(const std::string &type, Args &&... args);
 
     void dispatchEvent(event::Event *event);
     bool hasEventListener(const std::string &type) const;
@@ -210,7 +210,7 @@ public:
         }
     }
     inline void updateSiblingIndex() {
-        uint i = 0;
+        uint32_t i = 0;
         for (auto *child : _children) {
             child->_siblingIndex = i++;
         }
@@ -258,11 +258,11 @@ public:
     inline Node *                     getParent() const { return _parent; }
     inline NodeEventProcessor *       getEventProcessor() const { return _eventProcessor; }
 
-    Node *      getChildByUuid(const std::string &) const;
-    Node *      getChildByName(const std::string &) const;
-    Node *      getChildByPath(const std::string &) const;
-    inline uint getSiblingIndex() const { return _siblingIndex; }
-    inline void insertChild(Node *child, uint32_t siblingIndex) {
+    Node *          getChildByUuid(const std::string &) const;
+    Node *          getChildByName(const std::string &) const;
+    Node *          getChildByPath(const std::string &) const;
+    inline uint32_t getSiblingIndex() const { return _siblingIndex; }
+    inline void     insertChild(Node *child, uint32_t siblingIndex) {
         child->_parent = this;
         child->setSiblingIndex(siblingIndex);
     }
@@ -428,7 +428,7 @@ public:
     void setRTS(Quaternion *rot, Vec3 *pos, Vec3 *scale);
 
     inline void setForward(const Vec3 &dir) {
-        uint       len    = dir.length();
+        auto       len    = static_cast<uint32_t>(dir.length());
         Vec3       v3Temp = dir * -1 / len;
         Quaternion qTemp{Quaternion::identity()};
         Quaternion::fromViewUp(qTemp, v3Temp);
@@ -470,15 +470,18 @@ public:
      * @en Whether the node's transformation have changed during the current frame.
      * @zh 这个节点的空间变换信息在当前帧内是否有变过？
      */
-    uint getChangedFlags() const { return _flagChange; }
-    void setChangedFlags(uint value) { _flagChange = value; }
+    inline uint32_t getChangedFlags() const { return _flagChange; }
+    inline void     setChangedFlags(uint32_t value) { _flagChange = value; }
 
-    void setDirtyFlag(uint value) { _dirtyFlag = value; }
-    uint getDirtyFlag() const { return _dirtyFlag; }
-    void setLayer(uint layer) { _layer = layer; }
-    uint getLayer() const { return _layer; }
+    inline void     setDirtyFlag(uint32_t value) { _dirtyFlag = value; }
+    inline uint32_t getDirtyFlag() const { return _dirtyFlag; }
+    inline void     setLayer(uint32_t layer) {
+        _layer = layer;
+        _eventProcessor->emit(NodeEventType::LAYER_CHANGED, _layer);
+    }
+    inline uint32_t getLayer() const { return _layer; }
 
-    NodeUiProperties *getUIProps() const { return _uiProps; }
+    inline NodeUiProperties *getUIProps() const { return _uiProps; }
 
     // ------------------  Component code start -----------------------------
     // TODO(Lenovo):
@@ -586,7 +589,7 @@ protected:
     virtual void onBatchCreated(bool dontChildPrefab);
 
     bool onPreDestroyBase();
-    void onSiblingIndexChanged(uint siblingIndex) {}
+    void onSiblingIndexChanged(uint32_t siblingIndex) {}
 
     std::vector<Node *> _children;
     Node *              _parent{nullptr};
@@ -599,7 +602,7 @@ protected:
     Scene *             _scene{nullptr};
     NodeEventProcessor *_eventProcessor{nullptr};
     index_t             _siblingIndex{0};
-    uint                _eventMask{0};
+    uint32_t            _eventMask{0};
 
     cc::Vec3       _worldPosition{Vec3::ZERO};
     cc::Quaternion _worldRotation{Quaternion::identity()};
@@ -615,14 +618,14 @@ protected:
     //
 
     static std::vector<Node *> dirtyNodes;
-    static uint                clearFrame;
-    static uint                clearRound;
+    static uint32_t            clearFrame;
+    static uint32_t            clearRound;
 
     Vec3 _euler{0, 0, 0};
 
-    uint _flagChange{0};
-    uint _dirtyFlag{0};
-    uint _layer{0};
+    uint32_t _flagChange{0};
+    uint32_t _dirtyFlag{0};
+    uint32_t _layer{0};
 
     bool              _eulerDirty{false};
     NodeUiProperties *_uiProps{nullptr};
@@ -639,7 +642,7 @@ bool Node::isNode(T *obj) {
 }
 
 template <typename... Args>
-void Node::emit(const std::string &type, Args &&...args) {
+void Node::emit(const std::string &type, Args &&... args) {
     _eventProcessor->emit(type, std::forward<Args>(args)...);
 }
 

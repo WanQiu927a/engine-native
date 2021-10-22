@@ -25,9 +25,10 @@
 
 #include "jsb_scene_manual.h"
 #include "bindings/auto/jsb_scene_auto.h"
-#include "core/event/EventTypesToJS.h"
-#include "core/scene-graph/Node.h"
 #include "scene/Model.h"
+#include "core/event/EventTypesToJS.h"
+#include "core/scene-graph/NodeEvent.h"
+#include "core/scene-graph/Node.h"
 
 #ifndef JSB_ALLOC
     #define JSB_ALLOC(kls, ...) new (std::nothrow) kls(__VA_ARGS__)
@@ -59,20 +60,20 @@ SE_BIND_FUNC(js_scene_RenderScene_updateBatches) // NOLINT(readability-identifie
 static bool js_root_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
 {
     auto *cobj = SE_THIS_OBJECT<cc::Root>(s);
-    SE_PRECONDITION2(cobj, false, "js_root_registerNativeEvent : Invalid Native Object");
+    SE_PRECONDITION2(cobj, false, "js_root_registerListeners : Invalid Native Object");
 
-#define ROOT_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                           \
-    cobj->getEventProcessor()->on(eventType, [](cc::Root *rootObj) {                               \
-        se::AutoHandleScope hs;                                                                    \
-        se::Value           rootVal;                                                               \
-        bool                ok = nativevalue_to_se(rootObj, rootVal);                              \
-        SE_PRECONDITION2_VOID(ok, "js_root_registerNativeEvent : Error processing arguments");     \
-        if (rootVal.isObject()) {                                                                  \
-            se::Value funcVal;                                                                     \
-            ok = rootVal.toObject()->getProperty(#jsFuncName, &funcVal) && funcVal.isObject();     \
-            SE_PRECONDITION2_VOID(ok, "js_root_registerNativeEvent : Error processing arguments"); \
-            funcVal.toObject()->call(se::EmptyValueArray, rootVal.toObject());                     \
-        }                                                                                          \
+#define ROOT_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                         \
+    cobj->getEventProcessor()->on(eventType, [](cc::Root *rootObj) {                             \
+        se::AutoHandleScope hs;                                                                  \
+        se::Value           rootVal;                                                             \
+        bool                ok = nativevalue_to_se(rootObj, rootVal);                            \
+        SE_PRECONDITION2_VOID(ok, "js_root_registerListeners : Error processing arguments");     \
+        if (rootVal.isObject()) {                                                                \
+            se::Value funcVal;                                                                   \
+            ok = rootVal.toObject()->getProperty(#jsFuncName, &funcVal) && funcVal.isObject();   \
+            SE_PRECONDITION2_VOID(ok, "js_root_registerListeners : Error processing arguments"); \
+            funcVal.toObject()->call(se::EmptyValueArray, rootVal.toObject());                   \
+        }                                                                                        \
     })
 
     ROOT_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::ROOT_BATCH2D_INIT, _onBatch2DInit);
@@ -83,6 +84,147 @@ static bool js_root_registerListeners(se::State &s) // NOLINT(readability-identi
     return true;
 }
 SE_BIND_FUNC(js_root_registerListeners) // NOLINT(readability-identifier-naming)
+
+static void registerOnTransformChanged(cc::Node *node, se::Object *jsObject) {
+    node->on(
+        cc::NodeEventType::TRANSFORM_CHANGED,
+        [jsObject](cc::TransformBit transformBit) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onTransformChanged", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onTransformChanged.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(transformBit, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        });
+}
+
+static void registerOnParentChanged(cc::Node *node, se::Object *jsObject) {
+    node->on(
+        cc::NodeEventType::PARENT_CHANGED,
+        [jsObject](cc::Node *oldParent) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onParentChanged", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onParentChanged.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(oldParent, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        });
+}
+
+static void registerOnLayerChanged(cc::Node *node, se::Object *jsObject) {
+    node->on(
+        cc::NodeEventType::PARENT_CHANGED,
+        [jsObject](uint32_t layer) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onLayerChanged", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onLayerChanged.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(layer, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        });
+}
+
+static void registerOnChildRemoved(cc::Node *node, se::Object *jsObject) {
+    node->on(
+        cc::NodeEventType::PARENT_CHANGED,
+        [jsObject](cc::Node *child) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onChildRemoved", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onChildRemoved.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(child, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        });
+}
+
+static void registerOnChildAdded(cc::Node *node, se::Object *jsObject) {
+    cc::CallbackInfoBase::ID skip;
+    node->on(
+        cc::NodeEventType::PARENT_CHANGED,
+        [jsObject](cc::Node *child) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onChildAdded", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onChildAdded.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(child, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        },
+        skip);
+}
+
+static void registerOnActiveNode(cc::Node *node, se::Object *jsObject) {
+    cc::CallbackInfoBase::ID skip;
+    node->on(
+        cc::NodeEventType::PARENT_CHANGED,
+        [jsObject](bool shouldActiveNow) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onActiveNode", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onActiveNode.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(shouldActiveNow, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        },
+        skip);
+}
+
+static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::Node>(s);
+    SE_PRECONDITION2(cobj, false, "js_scene_Node_registerListeners : Invalid Native Object");
+
+    auto *jsObject = s.thisObject();
+
+#define NODE_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                                 \
+    cobj->on(                                                                                            \
+        eventType, [jsObject]() {                                                                        \
+            se::AutoHandleScope hs;                                                                      \
+            se::Value           funcVal;                                                                 \
+            bool                ok = jsObject->getProperty(#jsFuncName, &funcVal) && funcVal.isObject(); \
+            SE_PRECONDITION2_VOID(ok, "js_scene_Node_registerListeners : Error processing arguments");   \
+            funcVal.toObject()->call(se::EmptyValueArray, jsObject);                                     \
+        });
+
+    registerOnTransformChanged(cobj, jsObject);
+    registerOnParentChanged(cobj, jsObject);
+    registerOnLayerChanged(cobj, jsObject);
+    registerOnChildRemoved(cobj, jsObject);
+    registerOnChildAdded(cobj, jsObject);
+    registerOnActiveNode(cobj, jsObject);
+
+    NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_REATTACH, _onReAttach);
+    NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE, _onRemovePersistRootNode);
+    NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_DESTROY_COMPONENTS, _onDestroyComponents);
+    NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_UI_TRANSFORM_DIRTY, _onUiTransformDirty);
+    NODE_DISPATCH_EVENT_TO_JS(cc::NodeEventType::NODE_DESTROYED, _onNodeDestroyed);
+    NODE_DISPATCH_EVENT_TO_JS(cc::NodeEventType::SIBLING_ORDER_CHANGED, _onSiblingOrderChanged);
+
+    return true;
+}
+SE_BIND_FUNC(js_scene_Node_registerListeners) // NOLINT(readability-identifier-naming)
 
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
@@ -95,8 +237,9 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     }
 
     __jsb_cc_scene_RenderScene_proto->defineFunction("updateBatches", _SE(js_scene_RenderScene_updateBatches));
-
     __jsb_cc_Root_proto->defineFunction("_registerListeners", _SE(js_root_registerListeners));
 
+    // Node TS wrapper will invoke this function to let native object listen some events.
+    __jsb_cc_Node_proto->defineFunction("_registerListners", _SE(js_scene_Node_registerListeners));
     return true;
 }
