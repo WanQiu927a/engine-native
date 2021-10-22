@@ -1135,6 +1135,8 @@ class NativeClass(object):
                 name_array ='{' +", ".join(list(map(lambda x: "\"%s\"" % x, field["names"]))) +'}'
                 item = {
                     "name": '"'+field_name+'"' if len(field["names"]) == 1 else name_array,
+                    "field_name": field_name,
+                    "names": field["names"],
                     "getter": self.find_method(field["getter"]),
                     "setter": self.find_method(field["setter"]),
                 }
@@ -1264,7 +1266,8 @@ class NativeClass(object):
             # "fields" : list(map(lambda x: x.toJSON(), self.fields)),
             "override_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), self.override_methods.items())),
             "getter_setter": list(map(lambda x: {
-                        "name": x["name"],
+                        "name": x["field_name"],
+                        "names": x["names"],
                         "type": x["getter"].ret_type.toJSON() if x["getter"] is not None else (x["setter"].arguments[0].toJSON() if x["setter"] is not None else None)
                     }, self.getter_setter)),
             "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), self.methods.items())),

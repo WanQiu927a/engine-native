@@ -58,6 +58,7 @@ declare interface NativeOverloadedFunction {
 declare interface NativeAttribute {
     name: string;
     type: NativeType;
+    names: string[];
 }
 
 type MethodMap = {
@@ -68,6 +69,7 @@ declare interface NativeClass {
     namespace_name: string;
     script_ns: string;
     parents: string[];
+    nested_classes: string[];
     class_name: string;
     is_ref_class: boolean;
     namespaced_class_name: string;
