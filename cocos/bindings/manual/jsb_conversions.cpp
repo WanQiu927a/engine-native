@@ -956,7 +956,7 @@ bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Obj
     se::Object *obj = from.toObject();
     se::Value   tmp;
     //TODO(PatriceJiang): export TextureCube
-   // set_member_field<cc::TextureCube*>(obj, to, "envmap", &cc::scene::SkyboxInfo::setEnvmap, tmp);
+    // set_member_field<cc::TextureCube*>(obj, to, "envmap", &cc::scene::SkyboxInfo::setEnvmap, tmp);
     set_member_field<bool>(obj, to, "isRGBE", &cc::scene::SkyboxInfo::setRGBE, tmp);
     set_member_field<bool>(obj, to, "enabled", &cc::scene::SkyboxInfo::setEnabled, tmp);
     set_member_field<bool>(obj, to, "useIBL", &cc::scene::SkyboxInfo::setUseIBL, tmp);
@@ -964,13 +964,22 @@ bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Obj
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
-    uint8_t *data    = nullptr;
-    size_t   byteLen = 0;
+bool sevalue_to_native(const se::Value &from, cc::IMaterialInstanceInfo *to, se::Object * /*ctx*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to ShadowInfo failed!");
     se::Object *obj = from.toObject();
-    if(obj->isTypedArray()) {
+    //cjh TODO:
+    CC_ASSERT(false);
+    return false;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
+    uint8_t *   data    = nullptr;
+    size_t      byteLen = 0;
+    se::Object *obj     = from.toObject();
+    if (obj->isTypedArray()) {
         obj->getTypedArrayData(&data, &byteLen);
-    }else {
+    } else {
         obj->getArrayBufferData(&data, &byteLen);
     }
     to->reset(data, byteLen);
@@ -978,7 +987,7 @@ bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * 
 }
 template <>
 bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *out, se::Object *ctx) {
-    if(!out->get()){
+    if (!out->get()) {
         *out = std::make_shared<cc::ArrayBuffer>();
     }
     sevalue_to_native<cc::ArrayBuffer>(from, out->get(), ctx);

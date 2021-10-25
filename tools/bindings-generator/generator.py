@@ -884,6 +884,7 @@ class NativeFunction(object):
             "arguments": list(map(lambda x : x.toJSON(), self.arguments)),
             "argumentTips": self.argumtntTips,
             "static": self.static,
+            "min_args": self.min_args,
             # "implementations": self.implementations,
             "is_overloaded": self.is_overloaded,
             "is_constructor": self.is_constructor,

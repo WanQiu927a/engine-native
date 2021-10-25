@@ -29,7 +29,7 @@
 #include "3d/misc/CreateMesh.h"
 #include "core/Director.h"
 #include "core/builtin/BuiltinResMgr.h"
-#include "core/scene-graph/SceneGlobal.h"
+#include "core/scene-graph/SceneGlobals.h"
 #include "primitive/Primitive.h"
 #include "renderer/core/MaterialInstance.h"
 #include "renderer/core/PassUtils.h"
