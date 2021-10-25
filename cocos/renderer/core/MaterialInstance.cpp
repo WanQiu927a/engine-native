@@ -30,7 +30,7 @@ void MaterialInstance::overridePipelineStates(const PassOverrides &overrides, in
         return;
     }
 
-    std::vector<IPassInfoFull> &passInfos = _effectAsset->_techniques[getTechniqueIndex()].passes;
+    std::vector<IPassInfoFull> &passInfos = _effectAsset->techniques[getTechniqueIndex()].passes;
     if (passIdx == CC_INVALID_INDEX) {
         for (size_t i = 0, len = _passInstances.size(); i < len; i++) {
             auto *pass = _passInstances[i];

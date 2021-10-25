@@ -201,7 +201,7 @@ public:
 
     @serializable
     @editable*/
-    std::vector<ITechniqueInfo> _techniques;
+    std::vector<ITechniqueInfo> techniques;
 
     /**
      * @en The shaders used by the current effect.
@@ -209,7 +209,7 @@ public:
 
     @serializable
     @editable*/
-    std::vector<IShaderInfo> _shaders;
+    std::vector<IShaderInfo> shaders;
 
     /**
      * @en The preprocess macro combinations for the shader
@@ -217,7 +217,7 @@ public:
 
     @serializable
     @editable*/
-    std::vector<IPreCompileInfo> _combinations;
+    std::vector<IPreCompileInfo> combinations;
 
     /*
     @serializable

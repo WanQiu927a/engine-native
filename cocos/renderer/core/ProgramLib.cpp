@@ -286,8 +286,8 @@ ProgramLib *ProgramLib::getInstance() {
 }
 
 void ProgramLib::registerEffect(EffectAsset *effect) {
-    for (auto i = 0; i < effect->_shaders.size(); i++) {
-        auto tmpl        = define(effect->_shaders[i]);
+    for (auto i = 0; i < effect->shaders.size(); i++) {
+        auto *tmpl        = define(effect->shaders[i]);
         tmpl->effectName = effect->getName();
     }
 }

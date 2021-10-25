@@ -205,7 +205,7 @@ void Material::update(bool keepProps /* = true*/) {
     if (_effectAsset) {
         _passes = createPasses();
         // handle property values
-        size_t totalPasses = _effectAsset->_techniques[_techIdx].passes.size();
+        size_t totalPasses = _effectAsset->techniques[_techIdx].passes.size();
         _props.resize(totalPasses);
         if (keepProps) {
             auto cb = [this](auto *pass, size_t i) {
@@ -241,8 +241,8 @@ void Material::update(bool keepProps /* = true*/) {
 std::vector<scene::Pass *> Material::createPasses() {
     std::vector<scene::Pass *> passes;
     ITechniqueInfo *           tech = nullptr;
-    if (_techIdx < _effectAsset->_techniques.size()) {
-        tech = &_effectAsset->_techniques[_techIdx];
+    if (_techIdx < _effectAsset->techniques.size()) {
+        tech = &_effectAsset->techniques[_techIdx];
     }
 
     if (tech == nullptr) {

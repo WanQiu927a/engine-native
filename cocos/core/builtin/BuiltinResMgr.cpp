@@ -189,7 +189,7 @@ bool BuiltinResMgr::initBuiltinRes(gfx::Device *device) {
         assetDeserializer->deserialize(e, effect);
 
         index_t shaderIndex = 0;
-        for (auto &shaderInfo : effect->_shaders) {
+        for (auto &shaderInfo : effect->shaders) {
             const auto &shaderSource = (*shaderSources)[effectIndex][shaderIndex];
             if (!shaderSource.empty()) {
                 if (0 == strcmp(shaderVersionKey, "glsl1")) {

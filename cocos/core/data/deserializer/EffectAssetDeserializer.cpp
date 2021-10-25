@@ -461,7 +461,7 @@ static void deserializeTechnique(const rapidjson::Value &technique, ITechniqueIn
     if (technique.IsObject()) {
         if (technique.HasMember("name")) {
             cTechnique.name = technique["name"].GetString();
-            // CC_LOG_DEBUG("tech name: %s", _techniques[techIndex].name.value().c_str());
+            // CC_LOG_DEBUG("tech name: %s", techniques[techIndex].name.value().c_str());
         }
 
         if (technique.HasMember("passes")) {
@@ -703,15 +703,15 @@ void EffectAssetDeserializer::deserialize(const rapidjson::Value &serializedData
     effectAsset->_name = serializedData["name"].GetString(); //cjh TODO: name needs to be deserialize in CCObject class.
                                                              //    CC_LOG_DEBUG("EffectAsset::deserialize: %s", _name.c_str());
     if (serializedData.HasMember("techniques")) {
-        deserializeArray<ITechniqueInfo>(serializedData["techniques"], effectAsset->_techniques, deserializeTechnique);
+        deserializeArray<ITechniqueInfo>(serializedData["techniques"], effectAsset->techniques, deserializeTechnique);
     }
 
     if (serializedData.HasMember("shaders")) {
-        deserializeArray<IShaderInfo>(serializedData["shaders"], effectAsset->_shaders, deserializeShader);
+        deserializeArray<IShaderInfo>(serializedData["shaders"], effectAsset->shaders, deserializeShader);
     }
 
     if (serializedData.HasMember("combinations")) {
-        deserializeArray<IPreCompileInfo>(serializedData["combinations"], effectAsset->_combinations, deserializeCombination);
+        deserializeArray<IPreCompileInfo>(serializedData["combinations"], effectAsset->combinations, deserializeCombination);
     }
 }
 
