@@ -36,6 +36,7 @@ declare interface NativeFunction {
     arguments: NativeType[];
     argumentTips: string[];
     static: boolean;
+    min_args:number;
     is_overloaded: boolean;
     is_constructor: boolean;
     not_supported: boolean;
