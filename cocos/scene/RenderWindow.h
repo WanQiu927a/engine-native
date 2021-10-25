@@ -124,7 +124,7 @@ public:
      */
     inline bool hasOffScreenAttachments() const { return _hasOffScreenAttachments; }
 
-    inline const std::vector<Camera *> &getCamera() const { return _cameras; }
+    inline const std::vector<Camera *> &getCameras() const { return _cameras; }
 
 private:
     bool                        _hasOnScreenAttachments{false};

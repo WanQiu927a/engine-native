@@ -64,8 +64,10 @@ Director::~Director() {
 }
 
 void Director::init() {
+#if CC_RUN_IN_CPP_MODE
     _root = new Root(gfx::Device::getInstance());
     _root->initialize();
+#endif
 }
 
 void Director::runSceneImmediate(Scene *scene, const OnBeforeLoadScene &onBeforeLoadScene, const OnSceneLaunched &onLaunched) {

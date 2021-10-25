@@ -33,4 +33,4 @@
 #include "core/scene-graph/NodeEventProcessor.h"
 #include "core/scene-graph/NodeUIProperties.h"
 #include "core/scene-graph/Scene.h"
-#include "core/scene-graph/SceneGlobal.h"
+#include "core/scene-graph/SceneGlobals.h"

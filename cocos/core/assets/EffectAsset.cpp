@@ -89,7 +89,7 @@ EffectAsset *EffectAsset::get(const std::string &name) {
 }
 
 void EffectAsset::onLoaded() {
-    ProgramLib::getInstance()->registerEffect(*this);
+    ProgramLib::getInstance()->registerEffect(this);
     EffectAsset::registerAsset(this);
     //cjh TODO:    if (!EDITOR){
     //cjh    legacyCC.game.once(legacyCC.Game.EVENT_ENGINE_INITED, this._precompile, this);

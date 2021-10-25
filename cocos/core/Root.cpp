@@ -132,7 +132,7 @@ bool Root::setRenderPipeline(pipeline::RenderPipeline *rppl /* = nullptr*/) {
     // TODO: minggo
     auto *scene = Director::getInstance()->getScene();
     if (scene) {
-        scene->getSceneGlobal()->activate();
+        scene->getSceneGlobals()->activate();
     }
 
     onGlobalPipelineStateChanged();

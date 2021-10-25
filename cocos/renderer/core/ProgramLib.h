@@ -89,7 +89,7 @@ public:
     ProgramLib()  = default;
     ~ProgramLib() = default;
 
-    void registerEffect(EffectAsset &effect);
+    void registerEffect(EffectAsset *effect);
 
     /**
      * @en Register the shader template with the given info
