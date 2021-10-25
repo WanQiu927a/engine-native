@@ -1434,7 +1434,6 @@ class NativeClass(object):
             if self._current_visibility == cindex.AccessSpecifier.PUBLIC and not cursor.type.is_function_variadic():
                 m = NativeFunction(cursor, self.generator)
                 registration_name = m.func_name
-                logger.error('some function parse %s'%(registration_name))
                 # bail if the function is not supported (at least one arg not supported)
                 if m.not_supported:
                     return False
@@ -1445,16 +1444,12 @@ class NativeClass(object):
                         return False
 
                 if m.static:
-                    logger.error(' static function parse %s'%(registration_name))
                     if registration_name not in self.static_methods:
-                        logger.error('  add function %s'%(registration_name))
                         self.static_methods[registration_name] = m
                     else:
-                        logger.error('  append function %s'%(registration_name))
                         previous_m = self.static_methods[registration_name]
                         if isinstance(previous_m, NativeOverloadedFunction):
                             previous_m.append(m)
-                            logger.error('  override function %s'%(registration_name))
                         else:
                             self.static_methods[registration_name] = NativeOverloadedFunction([
                                                                                               m, previous_m])
