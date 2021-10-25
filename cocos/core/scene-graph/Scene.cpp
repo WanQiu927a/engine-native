@@ -34,7 +34,7 @@ Scene::Scene(const std::string &name)
 : Node(name) {
     _activeInHierarchy = false;
     _renderScene       = Root::getInstance()->createScene({});
-    _globals           = new SceneGlobal();
+    _globals           = new SceneGlobals();
 }
 
 Scene::~Scene() {

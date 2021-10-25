@@ -285,10 +285,10 @@ ProgramLib *ProgramLib::getInstance() {
     return &instance; //cjh TODO: how to release it ?
 }
 
-void ProgramLib::registerEffect(EffectAsset &effect) {
-    for (auto i = 0; i < effect._shaders.size(); i++) {
-        auto tmpl        = define(effect._shaders[i]);
-        tmpl->effectName = effect.getName();
+void ProgramLib::registerEffect(EffectAsset *effect) {
+    for (auto i = 0; i < effect->_shaders.size(); i++) {
+        auto tmpl        = define(effect->_shaders[i]);
+        tmpl->effectName = effect->getName();
     }
 }
 
@@ -563,11 +563,11 @@ gfx::Shader *ProgramLib::getGFXShader(gfx::Device *device, const std::string &na
     } else {
         key = *keyOut;
     }
-     auto itRes = _cache.find(key);
-     if (itRes != _cache.end()) {
-         CC_LOG_DEBUG("Found ProgramLib::_cache[%s]=%p, defines: %d", key.c_str(), itRes->second, defines.size());
-         return itRes->second;
-     }
+    auto itRes = _cache.find(key);
+    if (itRes != _cache.end()) {
+        CC_LOG_DEBUG("Found ProgramLib::_cache[%s]=%p, defines: %d", key.c_str(), itRes->second, defines.size());
+        return itRes->second;
+    }
 
     auto itTpl = _templates.find(name);
     assert(itTpl != _templates.end());

@@ -1517,8 +1517,8 @@ cocos_source_files(
     cocos/core/scene-graph/NodeUIProperties.h
     cocos/core/scene-graph/Scene.cpp
     cocos/core/scene-graph/Scene.h
-    cocos/core/scene-graph/SceneGlobal.cpp
-    cocos/core/scene-graph/SceneGlobal.h
+    cocos/core/scene-graph/SceneGlobals.cpp
+    cocos/core/scene-graph/SceneGlobals.h
     cocos/core/scene-graph/SceneGraphModuleHeader.h
 
     cocos/core/utils/IDGenerator.cpp

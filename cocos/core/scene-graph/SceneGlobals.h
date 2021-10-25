@@ -34,10 +34,10 @@ class SkyboxInfo;
 class FogInfo;
 } // namespace scene
 
-class SceneGlobal final {
+class SceneGlobals final {
 public:
-    SceneGlobal();
-    ~SceneGlobal();
+    SceneGlobals();
+    ~SceneGlobals();
 
     void activate();
 

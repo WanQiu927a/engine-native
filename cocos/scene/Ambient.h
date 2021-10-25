@@ -27,7 +27,7 @@
 
 #include <array>
 #include "base/Macros.h"
-#include "core/scene-graph/SceneGlobal.h"
+#include "core/scene-graph/SceneGlobals.h"
 #include "math/Color.h"
 
 namespace cc {

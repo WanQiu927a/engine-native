@@ -41,6 +41,7 @@ class Asset : public CCObject {
 public:
     using Super = CCObject;
 
+    Asset()          = default;
     virtual ~Asset() = default;
 
     /**
@@ -120,8 +121,6 @@ public:
     std::string toString() const override { return _nativeUrl; }
 
 protected:
-    Asset() = default;
-
     /**
      * @en
      * Set native file name for this asset.

@@ -32,7 +32,7 @@ namespace scene {
 class RenderScene;
 }
 
-class SceneGlobal;
+class SceneGlobals;
 
 class Scene final : public Node {
 public:
@@ -41,7 +41,7 @@ public:
     ~Scene() override;
 
     inline scene::RenderScene *getRenderScene() const { return _renderScene; }
-    inline SceneGlobal *       getSceneGlobal() const { return _globals; };
+    inline SceneGlobals *      getSceneGlobals() const { return _globals; };
 
     void load();
     void activate(bool active = true);
@@ -55,7 +55,7 @@ protected:
      * @zh 场景级别的渲染信息
      */
     //    @serializable
-    SceneGlobal *_globals{nullptr};
+    SceneGlobals *_globals{nullptr};
 
     scene::RenderScene *_renderScene{nullptr};
     bool                _inited{false};

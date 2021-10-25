@@ -51,6 +51,7 @@
 #include "network/Downloader.h"
 
 #include "cocos/core/geometry/Geometry.h"
+#include "renderer/core/MaterialInstance.h"
 #include "scene/Fog.h"
 #include "scene/Shadow.h"
 #include "scene/Skybox.h"
@@ -1049,15 +1050,15 @@ inline bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *c
 
 template <typename T>
 typename std::enable_if<std::is_arithmetic<T>::value, bool>::type inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
-    uint8_t *data    = nullptr;
-    size_t   byteLen = 0;
-    se::Object *obj = from.toObject();
-    if(obj->isTypedArray()) {
+    uint8_t *   data    = nullptr;
+    size_t      byteLen = 0;
+    se::Object *obj     = from.toObject();
+    if (obj->isTypedArray()) {
         obj->getTypedArrayData(&data, &byteLen);
-    }else {
+    } else {
         obj->getArrayBufferData(&data, &byteLen);
     }
-    
+
     auto buffer = std::make_shared<cc::ArrayBuffer>(byteLen);
     buffer->reset(data, byteLen);
     to->reset(buffer);
@@ -1468,29 +1469,29 @@ inline bool sevalue_to_native(const se::Value &from, T to) { // NOLINT(readabili
 }
 
 //////////////////////// scene info
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::scene::FogInfo *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::scene::ShadowInfo *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *, se::Object * /*ctx*/);
 
-
-
+template <>
+bool sevalue_to_native(const se::Value &from, cc::IMaterialInstanceInfo *, se::Object * /*ctx*/);
 
 /////////////////////// geometry
 
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::AABB *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Capsule *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Line *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Ray *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Sphere *, se::Object * /*ctx*/);
-template<>
+template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Triangle *, se::Object * /*ctx*/);
 template <>
 bool sevalue_to_native(const se::Value &from, cc::geometry::Plane *to, se::Object * /*unused*/);
@@ -1559,11 +1560,11 @@ nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) {
 template <>
 bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/); // NOLINT
 
-template <typename ...ARGS>
-bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object * ctx); // NOLINT
+template <typename... ARGS>
+bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object *ctx); // NOLINT
 
-template <typename ...ARGS>
-bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object * ctx); // NOLINT
+template <typename... ARGS>
+bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object *ctx); // NOLINT
 
 /// nativevalue_to_se std::optional
 template <typename T>
@@ -1787,7 +1788,6 @@ inline bool nativevalue_to_se(const cc::network::DownloadTask &from, se::Value &
     return DownloadTask_to_seval(from, &to);
 }
 
-
 #if __clang__
     #pragma clang diagnostic pop
 #endif
@@ -1902,26 +1902,24 @@ inline bool nativevalue_to_se(T &&from, se::Value &to) { // NOLINT(readability-i
     return nativevalue_to_se(std::forward<typename std::add_const<T>::type>(from), to, nullptr);
 }
 
-
-
-template <typename ...ARGS>
-bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object * ctx) {
+template <typename... ARGS>
+bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object *ctx) {
     bool ok = false;
-    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i){
-        if(i != from.index()) {
+    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i) {
+        if (i != from.index()) {
             return;
         }
-        ok = nativevalue_to_se(std::get<i>(from), to, ctx); 
+        ok = nativevalue_to_se(std::get<i>(from), to, ctx);
     });
     return ok;
 }
 
-template <typename ...ARGS>
-bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object * ctx) {
-    bool ok = true;
-    se::Value tmp;
-    se::Object * array = se::Object::createArrayObject(sizeof...(ARGS));
-    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i){
+template <typename... ARGS>
+bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object *ctx) {
+    bool        ok = true;
+    se::Value   tmp;
+    se::Object *array = se::Object::createArrayObject(sizeof...(ARGS));
+    se_for_each(std::make_index_sequence<sizeof...(ARGS)>{}, [&](auto i) {
         ok &= nativevalue_to_se(std::get<i>(from), tmp, ctx);
         array->setArrayElement(i, tmp);
     });
