@@ -118,6 +118,12 @@ namespace utils {
             info.is_optional = true;
             return walk_through_type_tree(info.children[0], type_convert);
         }
+
+        if(info.name.startsWith('std::array') && info.children[0].name.indexOf('::') < 0) {
+    
+            return convert_typed_array(info.children[0].name.match(/(.*)/)!)
+        }
+
         if (info.name.startsWith('std::vector') || info.name.startsWith('std::array')) {
             return walk_through_type_tree(info.children[0], type_convert) + '[]';
         }
