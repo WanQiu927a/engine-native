@@ -773,13 +773,17 @@ class NativeType(object):
 
 
 class NativeField(object):
-    def __init__(self, cursor, generator):
+    def __init__(self, cursor, native_class, generator):
         cursor = cursor.canonical
         self.cursor = cursor
         self.name = cursor.displayname
+        new_name = generator.should_rename_function(native_class, self.name) 
+        self.export_name = new_name if new_name is not None else self.name
         self.kind = cursor.type.kind
+        self.is_static = cursor.storage_class.value == 3 and cursor.kind == cindex.CursorKind.VAR_DECL
         self.location = cursor.location
         self.is_const_array = self.kind == cindex.TypeKind.CONSTANTARRAY
+        self.is_static_const = cursor.type.spelling.startswith("const ") and self.is_static
         member_field_re = re.compile('m_(\w+)')
         match = member_field_re.match(self.name)
         self.signature_name = self.name
@@ -794,7 +798,8 @@ class NativeField(object):
             "name": self.name,
             "pretty_name": self.pretty_name,
             "signature_name" : self.signature_name,
-            "type": self.ntype.toJSON()
+            "type": self.ntype.toJSON(),
+            "static": self.is_static,
         }
 
     @staticmethod
@@ -814,7 +819,7 @@ class NativeField(object):
             tpl = Template(config['definitions']['public_field'],
                            searchList=[current_class, self])
             self.signature_name = str(tpl)
-        tpl = Template(file=os.path.join(gen.target, "templates", "public_field.c"),
+        tpl = Template(file=os.path.join(gen.target, "templates", "public_field.c" if not self.is_static else "public_static_field.c"),
                        searchList=[current_class, self])
         gen.impl_file.write(unicode(tpl))
 
@@ -1236,7 +1241,7 @@ class NativeClass(object):
             should_skip = self.generator.should_skip(self.class_name, name)
             if not should_skip:
                 ret.append({"name": name, "impl": impl})
-        return ret
+        return sorted(ret, key=lambda fn: fn["name"])
 
     def override_methods_clean(self):
         '''
@@ -1247,7 +1252,7 @@ class NativeClass(object):
             should_skip = self.generator.should_skip(self.class_name, name)
             if not should_skip:
                 ret.append({"name": name, "impl": impl})
-        return ret
+        return sorted(ret, key=lambda fn: fn["name"])
 
     def toJSON(self):
         return {
@@ -1422,11 +1427,10 @@ class NativeClass(object):
 
             if parent_name == "Ref":
                 self.is_ref_class = True
-
-        elif cursor.kind == cindex.CursorKind.FIELD_DECL:
-            self.fields.append(NativeField(cursor, self.generator))
+        elif cursor.kind == cindex.CursorKind.FIELD_DECL or cursor.kind == cindex.CursorKind.VAR_DECL:
+            self.fields.append(NativeField(cursor, self, self.generator))
             if (self.is_struct or self._current_visibility == cindex.AccessSpecifier.PUBLIC) and NativeField.can_parse(cursor.type, self.generator, cursor) and not self.generator.should_skip_public_field(self.class_name, cursor.displayname):
-                self.public_fields.append(NativeField(cursor, self.generator))
+                self.public_fields.append(NativeField(cursor, self, self.generator))
         elif cursor.kind == cindex.CursorKind.CXX_ACCESS_SPEC_DECL:
             self._current_visibility = cursor.access_specifier
         elif cursor.kind == cindex.CursorKind.CXX_METHOD and get_availability(cursor) != AvailabilityKind.DEPRECATED:

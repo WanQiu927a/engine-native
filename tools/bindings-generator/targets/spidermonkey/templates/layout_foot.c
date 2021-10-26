@@ -26,3 +26,4 @@ bool register_all_${prefix}(se::Object* obj)    // NOLINT
 #if $macro_judgement
 \#endif //$macro_judgement
 #end if
+// clang-format on
