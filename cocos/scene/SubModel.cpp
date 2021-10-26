@@ -162,7 +162,7 @@ void SubModel::destroy() {
     //    CC_SAFE_DELETE(_subMesh);
     _passes.clear();
 
-    //cjh    for (gfx::Shader *shader : shaders) {
+    //cjh    for (gfx::Shader *shader : _shaders) {
     //        CC_SAFE_DESTROY(shader);
     //    }
     _shaders.clear();

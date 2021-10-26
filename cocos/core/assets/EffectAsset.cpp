@@ -105,20 +105,20 @@ void EffectAsset::initDefault(const std::optional<std::string> &uuid) {
     Super::initDefault(uuid);
     const auto *effect = EffectAsset::get("unlit");
     _name              = "unlit";
-    shaders           = effect->shaders;
-    combinations      = effect->combinations;
-    techniques        = effect->techniques; //cjh TODO: shared_ptr ?
+    _shaders           = effect->_shaders;
+    _combinations      = effect->_combinations;
+    _techniques        = effect->_techniques; //cjh TODO: shared_ptr ?
 }
 
 bool EffectAsset::validate() const {
-    return !techniques.empty() && !shaders.empty();
+    return !_techniques.empty() && !_shaders.empty();
 }
 
 void EffectAsset::precompile() {
     Root *root = Root::getInstance();
-    for (index_t i = 0; i < shaders.size(); ++i) {
-        auto shader      = shaders[i];
-        auto combination = combinations[i];
+    for (index_t i = 0; i < _shaders.size(); ++i) {
+        auto shader      = _shaders[i];
+        auto combination = _combinations[i];
         if (combination.empty()) continue;
 
         //TODO: minggo (do unit test)

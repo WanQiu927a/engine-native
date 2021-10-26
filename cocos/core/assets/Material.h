@@ -286,7 +286,7 @@ protected:
     template <typename T1, typename T2>
     void prepareInfo(const T1 &patch, std::vector<T2> &cur) {
         if (auto *pOneElement = std::get_if<T2>(&patch); pOneElement != nullptr) {
-            size_t len = _effectAsset != nullptr ? _effectAsset->techniques[_techIdx].passes.size() : 1;
+            size_t len = _effectAsset != nullptr ? _effectAsset->_techniques[_techIdx].passes.size() : 1;
 
             std::vector<T2> patchArray;
             patchArray.reserve(len);
