@@ -799,7 +799,8 @@ class NativeField(object):
             "pretty_name": self.pretty_name,
             "signature_name" : self.signature_name,
             "type": self.ntype.toJSON(),
-            "static": self.is_static,
+            "is_static": self.is_static,
+            "is_static_const": self.is_static_const,
         }
 
     @staticmethod

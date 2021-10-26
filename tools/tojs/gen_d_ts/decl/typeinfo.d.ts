@@ -27,6 +27,8 @@ declare interface NativeField {
     pretty_name: string;
     signature_name: string;
     type: NativeType;
+    is_static: boolean;
+    is_static_const:boolean;
 }
 
 
