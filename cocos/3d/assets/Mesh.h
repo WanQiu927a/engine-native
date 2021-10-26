@@ -25,8 +25,8 @@
 
 #pragma once
 
+#include <optional>
 #include "3d/assets/Types.h"
-#include "core/ArrayBuffer.h"
 #include "core/TypedArray.h"
 #include "core/assets/Asset.h"
 #include "core/geometry/AABB.h"
@@ -55,7 +55,7 @@ public:
      * 交错排列是指在实际数据的缓冲区中，每个顶点的所有属性总是依次排列，并总是出现在下一个顶点的所有属性之前。
      */
     struct IVertexBundle {
-        int _what; // TODO(PatriceJiang): avoid jsb cache map
+        std::optional<char> _padding;
         /**
          * @en The actual value for all vertex attributes.
          * You must use DataView to access the data.
@@ -211,7 +211,6 @@ public:
      * @zh 此网格的数据。
      */
     // TODO(PatriceJiang); binding generator does not support override function
-    // TODO(PatriceJiang); binding generator does not support override function
     //    inline const Uint8Array &getData() const {
     //        return _data;
     //    }
@@ -220,7 +219,6 @@ public:
         return _data;
     }
 
-    //    }
 
     inline void setData(const Uint8Array &data) {
         _data = data;
