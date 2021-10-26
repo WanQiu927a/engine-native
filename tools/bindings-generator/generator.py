@@ -1187,12 +1187,12 @@ class NativeClass(object):
         return self.namespaced_class_name.replace("::", "_")
 
     def skip_bind_function(self, method_name):
-        if self.generator.is_reserved_function(self.class_name, method_name["name"]):
-            return False
         if self.class_name in self.generator.shadowed_methods_by_getter_setter:
             ret = method_name["name"] in self.generator.shadowed_methods_by_getter_setter[self.class_name]
             # logger.info("??? skip %s contains %s , %s" %(self.generator.shadowed_methods_by_getter_setter[self.class_name], method_name, ret))
             return ret
+        if self.generator.is_reserved_function(self.class_name, method_name["name"]):
+            return False
         return False
 
     def find_method(self, method_name):
@@ -1241,7 +1241,8 @@ class NativeClass(object):
         for name, impl in iter(self.static_methods.items()):
             should_skip = self.generator.should_skip(self.class_name, name)
             if not should_skip:
-                ret.append({"name": name, "impl": impl})
+                ret.append({"name":  self.generator.should_rename_function(
+                    self.class_name, name) or name, "impl": impl})
         return sorted(ret, key=lambda fn: fn["name"])
 
     def override_methods_clean(self):
