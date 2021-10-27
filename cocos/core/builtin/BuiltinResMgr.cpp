@@ -121,6 +121,12 @@ const uint8_t DEFAULT_IMAGE_RGBA_DATA_16X16[16 * 16 * 4] = {
 BuiltinResMgr *BuiltinResMgr::getInstance() {
     if (instance == nullptr) {
         instance = new BuiltinResMgr(); //cjh how to release it?
+                                        //cjh FIXME: hacking code
+#if !defined(CC_RUN_IN_CPP_MODE) || !CC_RUN_IN_CPP_MODE
+        instance->initBuiltinRes(gfx::Device::getInstance());
+        instance->tryCompileAllPasses();
+#endif
+        //
     }
     return instance;
 }
