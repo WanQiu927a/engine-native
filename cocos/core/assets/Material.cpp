@@ -46,6 +46,9 @@ uint64_t Material::getHashForMaterial(Material *material) {
 }
 
 void Material::initialize(const IMaterialInfo &info) {
+    //cjh FIXME: remove hacking code here
+    BuiltinResMgr::getInstance();
+    //
     if (!_passes.empty()) {
         //cjh TODO:        warnID(12005);
         return;
@@ -152,6 +155,49 @@ void Material::setProperty(const std::string &name, const MaterialPropertyVarian
         CC_LOG_WARNING("illegal property name: %s.", name.c_str());
     }
 }
+
+#define CC_MATERIAL_SETPROPERTY_IMPL(funcNameSuffix, type)                                                                   \
+    void Material::setProperty##funcNameSuffix(const std::string &name, type val, index_t passIdx /* = CC_INVALID_INDEX*/) { \
+        setProperty(name, val, passIdx);                                                                                     \
+    }
+
+CC_MATERIAL_SETPROPERTY_IMPL(Float32, float)
+CC_MATERIAL_SETPROPERTY_IMPL(Int32, int32_t)
+CC_MATERIAL_SETPROPERTY_IMPL(Vec2, const Vec2 &)
+CC_MATERIAL_SETPROPERTY_IMPL(Vec3, const Vec3 &)
+CC_MATERIAL_SETPROPERTY_IMPL(Vec4, const Vec4 &)
+CC_MATERIAL_SETPROPERTY_IMPL(Color, const cc::Color &)
+CC_MATERIAL_SETPROPERTY_IMPL(Mat3, const Mat3 &)
+CC_MATERIAL_SETPROPERTY_IMPL(Mat4, const Mat4 &)
+CC_MATERIAL_SETPROPERTY_IMPL(Quaternion, const Quaternion &)
+CC_MATERIAL_SETPROPERTY_IMPL(TextureBase, TextureBase *)
+CC_MATERIAL_SETPROPERTY_IMPL(GFXTexture, gfx::Texture *)
+
+#undef CC_MATERIAL_SETPROPERTY_IMPL
+
+#define CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(funcNameSuffix, type)                                                                                        \
+    void Material::setProperty##funcNameSuffix##Array(const std::string &name, const std::vector<type> &val, index_t passIdx /* = CC_INVALID_INDEX*/) { \
+        MaterialPropertyList propertyArr;                                                                                                               \
+        propertyArr.reserve(val.size());                                                                                                                \
+        for (const auto &e : val) {                                                                                                                     \
+            propertyArr.emplace_back(e);                                                                                                                \
+        }                                                                                                                                               \
+        setProperty(name, propertyArr);                                                                                                                 \
+    }
+
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Float32, float)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Int32, int32_t)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Vec2, Vec2)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Vec3, Vec3)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Vec4, Vec4)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Color, Color)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Mat3, Mat3)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Mat4, Mat4)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(Quaternion, Quaternion)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(TextureBase, TextureBase *)
+CC_MATERIAL_SETPROPERTY_ARRAY_IMPL(GFXTexture, gfx::Texture *)
+
+#undef CC_MATERIAL_SETPROPERTY_ARRAY_IMPL
 
 MaterialPropertyVariant *Material::getProperty(const std::string &name, index_t passIdx) {
     if (passIdx == CC_INVALID_INDEX) { // try get property in all possible passes
