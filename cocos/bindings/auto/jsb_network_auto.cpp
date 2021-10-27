@@ -1,3 +1,5 @@
+
+// clang-format off
 #include "cocos/bindings/auto/jsb_network_auto.h"
 #include "cocos/bindings/manual/jsb_conversions.h"
 #include "cocos/bindings/manual/jsb_global.h"
@@ -179,8 +181,6 @@ static bool js_network_DownloaderHints_constructor(se::State& s) // NOLINT(reada
 }
 SE_BIND_CTOR(js_network_DownloaderHints_constructor, __jsb_cc_network_DownloaderHints_class, js_cc_network_DownloaderHints_finalize)
 
-
-
 static bool js_cc_network_DownloaderHints_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::network::DownloaderHints>(s));
@@ -207,6 +207,7 @@ bool js_register_network_DownloaderHints(se::Object* obj) // NOLINT(readability-
 
     __jsb_cc_network_DownloaderHints_proto = cls->getProto();
     __jsb_cc_network_DownloaderHints_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -296,8 +297,6 @@ static bool js_network_Downloader_constructor(se::State& s) // NOLINT(readabilit
 }
 SE_BIND_CTOR(js_network_Downloader_constructor, __jsb_cc_network_Downloader_class, js_cc_network_Downloader_finalize)
 
-
-
 static bool js_cc_network_Downloader_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::network::Downloader>(s));
@@ -323,6 +322,7 @@ bool js_register_network_Downloader(se::Object* obj) // NOLINT(readability-ident
     __jsb_cc_network_Downloader_proto = cls->getProto();
     __jsb_cc_network_Downloader_class = cls;
 
+
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -343,3 +343,4 @@ bool register_all_network(se::Object* obj)    // NOLINT
     return true;
 }
 
+// clang-format on

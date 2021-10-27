@@ -1,3 +1,5 @@
+
+// clang-format off
 #include "cocos/bindings/auto/jsb_extension_auto.h"
 #include "cocos/bindings/manual/jsb_conversions.h"
 #include "cocos/bindings/manual/jsb_global.h"
@@ -279,8 +281,6 @@ static bool js_extension_EventAssetsManagerEx_constructor(se::State& s) // NOLIN
 }
 SE_BIND_CTOR(js_extension_EventAssetsManagerEx_constructor, __jsb_cc_extension_EventAssetsManagerEx_class, js_cc_extension_EventAssetsManagerEx_finalize)
 
-
-
 static bool js_cc_extension_EventAssetsManagerEx_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto* cobj =SE_THIS_OBJECT<cc::extension::EventAssetsManagerEx>(s);
@@ -312,6 +312,7 @@ bool js_register_extension_EventAssetsManagerEx(se::Object* obj) // NOLINT(reada
 
     __jsb_cc_extension_EventAssetsManagerEx_proto = cls->getProto();
     __jsb_cc_extension_EventAssetsManagerEx_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -591,8 +592,6 @@ static bool js_extension_Manifest_constructor(se::State& s) // NOLINT(readabilit
 }
 SE_BIND_CTOR(js_extension_Manifest_constructor, __jsb_cc_extension_Manifest_class, js_cc_extension_Manifest_finalize)
 
-
-
 static bool js_cc_extension_Manifest_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto* cobj =SE_THIS_OBJECT<cc::extension::Manifest>(s);
@@ -623,6 +622,7 @@ bool js_register_extension_Manifest(se::Object* obj) // NOLINT(readability-ident
 
     __jsb_cc_extension_Manifest_proto = cls->getProto();
     __jsb_cc_extension_Manifest_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -1216,8 +1216,6 @@ static bool js_extension_AssetsManagerEx_constructor(se::State& s) // NOLINT(rea
 }
 SE_BIND_CTOR(js_extension_AssetsManagerEx_constructor, __jsb_cc_extension_AssetsManagerEx_class, js_cc_extension_AssetsManagerEx_finalize)
 
-
-
 static bool js_cc_extension_AssetsManagerEx_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto* cobj =SE_THIS_OBJECT<cc::extension::AssetsManagerEx>(s);
@@ -1258,6 +1256,7 @@ bool js_register_extension_AssetsManagerEx(se::Object* obj) // NOLINT(readabilit
     __jsb_cc_extension_AssetsManagerEx_proto = cls->getProto();
     __jsb_cc_extension_AssetsManagerEx_class = cls;
 
+
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -1279,3 +1278,4 @@ bool register_all_extension(se::Object* obj)    // NOLINT
     return true;
 }
 
+// clang-format on

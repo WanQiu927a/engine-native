@@ -6,11 +6,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/predefine.cmake)
 set(CWD ${CMAKE_CURRENT_LIST_DIR})
 set(COCOS2D_SOURCE_LIST)
 
-### TODO(PatriceJiang): should be remove in near future
-option(ENABLE_JSB_FILES "Compile bindings files" OFF)
-if(DEFINED ENV{ENABLE_JSB})
-    set(ENABLE_JSB_FILES ON)
-endif()
 
 # Should be enable someday in the future
 # set(CMAKE_CXX_FLAGS "${WERROR_FLAGS}")
@@ -1285,12 +1280,10 @@ if(USE_PHYSICS_PHYSX)
         cocos/physics/physx/joints/PhysXDistance.h
         cocos/physics/physx/joints/PhysXDistance.cpp
     )
-    if(ENABLE_JSB_FILES)
-        cocos_source_files(
-            cocos/bindings/auto/jsb_physics_auto.cpp
-            cocos/bindings/auto/jsb_physics_auto.h
-        )
-    endif()
+    cocos_source_files(
+        cocos/bindings/auto/jsb_physics_auto.cpp
+        cocos/bindings/auto/jsb_physics_auto.h
+    )
 endif()
 
 
@@ -1618,20 +1611,17 @@ cocos_source_files(MODULE ccgeometry
 
 ##### script bindings
 ######## dop
-if(ENABLE_JSB_FILES)
-    cocos_source_files(
-        NO_WERROR    cocos/bindings/dop/BufferPool.cpp
-                    cocos/bindings/dop/BufferPool.h
-        NO_WERROR    cocos/bindings/dop/jsb_dop.cpp
-                    cocos/bindings/dop/jsb_dop.h
-                    cocos/bindings/dop/PoolType.h
-                    cocos/bindings/dop/BufferAllocator.h
-        NO_WERROR    cocos/bindings/dop/BufferAllocator.cpp
-    )
-endif()
+cocos_source_files(
+    NO_WERROR    cocos/bindings/dop/BufferPool.cpp
+                cocos/bindings/dop/BufferPool.h
+    NO_WERROR    cocos/bindings/dop/jsb_dop.cpp
+                cocos/bindings/dop/jsb_dop.h
+                cocos/bindings/dop/PoolType.h
+                cocos/bindings/dop/BufferAllocator.h
+    NO_WERROR    cocos/bindings/dop/BufferAllocator.cpp
+)
 
 ######## auto
-if(ENABLE_JSB_FILES)
 cocos_source_files(
     NO_WERROR    cocos/bindings/auto/jsb_cocos_auto.cpp
                  cocos/bindings/auto/jsb_cocos_auto.h
@@ -1650,23 +1640,22 @@ cocos_source_files(
     NO_WERROR    cocos/bindings/auto/jsb_geometry_auto.cpp
                  cocos/bindings/auto/jsb_geometry_auto.h
 )
-endif()
 
-if(USE_AUDIO AND ENABLE_JSB_FILES)
+if(USE_AUDIO)
     cocos_source_files(
         NO_WERROR    cocos/bindings/auto/jsb_audio_auto.cpp
                      cocos/bindings/auto/jsb_audio_auto.h
     )
 endif()
 
-if(USE_VIDEO AND ENABLE_JSB_FILES)
+if(USE_VIDEO)
     cocos_source_files(
         NO_WERROR    cocos/bindings/auto/jsb_video_auto.cpp
                      cocos/bindings/auto/jsb_video_auto.h
     )
 endif()
 
-if(USE_WEBVIEW AND ENABLE_JSB_FILES)
+if(USE_WEBVIEW)
     cocos_source_files(
         NO_WERROR    cocos/bindings/auto/jsb_webview_auto.cpp
                      cocos/bindings/auto/jsb_webview_auto.h
@@ -1692,12 +1681,10 @@ if(USE_MIDDLEWARE)
                      cocos/editor-support/TypedArrayPool.h
     )
 
-    if(ENABLE_JSB_FILES)
-        cocos_source_files(
-            NO_WERROR    cocos/bindings/auto/jsb_editor_support_auto.cpp
-                        cocos/bindings/auto/jsb_editor_support_auto.h
-        )
-    endif()
+    cocos_source_files(
+        NO_WERROR    cocos/bindings/auto/jsb_editor_support_auto.cpp
+                    cocos/bindings/auto/jsb_editor_support_auto.h
+    )
 
     if(USE_SPINE)
         cocos_source_files(
@@ -1865,14 +1852,12 @@ if(USE_MIDDLEWARE)
                          cocos/editor-support/spine-creator-support/VertexEffectDelegate.h
 
         )
-        if(ENABLE_JSB_FILES)
-            cocos_source_files(
-            NO_WERROR    cocos/bindings/auto/jsb_spine_auto.cpp
-                         cocos/bindings/auto/jsb_spine_auto.h
-            NO_WERROR    cocos/bindings/manual/jsb_spine_manual.cpp
-                         cocos/bindings/manual/jsb_spine_manual.h
-            )
-        endif()
+        cocos_source_files(
+        NO_WERROR    cocos/bindings/auto/jsb_spine_auto.cpp
+                        cocos/bindings/auto/jsb_spine_auto.h
+        NO_WERROR    cocos/bindings/manual/jsb_spine_manual.cpp
+                        cocos/bindings/manual/jsb_spine_manual.h
+        )
     endif()
 
     if(USE_DRAGONBONES)
@@ -1963,19 +1948,16 @@ if(USE_MIDDLEWARE)
                          cocos/editor-support/dragonbones-creator-support/CCTextureAtlasData.h
 
         )
-        if(ENABLE_JSB_FILES)
-            cocos_source_files(
-                NO_WERROR    cocos/bindings/auto/jsb_dragonbones_auto.cpp
-                            cocos/bindings/auto/jsb_dragonbones_auto.h
-                NO_WERROR    cocos/bindings/manual/jsb_dragonbones_manual.cpp
-                            cocos/bindings/manual/jsb_dragonbones_manual.h
-            )
-        endif()
+        cocos_source_files(
+            NO_WERROR    cocos/bindings/auto/jsb_dragonbones_auto.cpp
+                        cocos/bindings/auto/jsb_dragonbones_auto.h
+            NO_WERROR    cocos/bindings/manual/jsb_dragonbones_manual.cpp
+                        cocos/bindings/manual/jsb_dragonbones_manual.h
+        )
     endif()
 endif()
 
 ######## manual
-if(ENABLE_JSB_FILES)
 cocos_source_files(
     NO_WERROR    cocos/bindings/manual/jsb_classtype.cpp
                  cocos/bindings/manual/jsb_classtype.h
@@ -2003,9 +1985,8 @@ cocos_source_files(
                  cocos/bindings/manual/jsb_pipeline_manual.h
     NO_WERROR    cocos/bindings/manual/jsb_pipeline_manual.cpp
 )
-endif()
 
-if(USE_SOCKET AND ENABLE_JSB_FILES)
+if(USE_SOCKET)
     cocos_source_files(
         NO_WERROR    cocos/bindings/manual/jsb_socketio.cpp
                      cocos/bindings/manual/jsb_socketio.h
@@ -2014,14 +1995,13 @@ if(USE_SOCKET AND ENABLE_JSB_FILES)
     )
 endif()
 
-if(NOT IOS AND USE_WEBSOCKET_SERVER AND ENABLE_JSB_FILES)
+if(NOT IOS AND USE_WEBSOCKET_SERVER)
     cocos_source_files(
         NO_WERROR    cocos/bindings/manual/jsb_websocket_server.cpp
                      cocos/bindings/manual/jsb_websocket_server.h
     )
 endif()
 
-if(ENABLE_JSB_FILES)
     if(ANDROID)
         cocos_source_files(
                         cocos/bindings/manual/jsb_platform_android.cpp
@@ -2045,7 +2025,6 @@ if(ENABLE_JSB_FILES)
             NO_WERROR    cocos/bindings/manual/jsb_platfrom_win32.cpp
         )
     endif()
-endif()
 
 ############# module bindings 
 if(USE_SE_V8)
@@ -2134,12 +2113,10 @@ cocos_source_files(MODULE ccbindings
                  cocos/bindings/jswrapper/Value.h 
 )
 
-if(ENABLE_JSB_FILES)
-    cocos_source_files(
-        NO_WERROR    cocos/bindings/manual/jsb_global_init.cpp
-                    cocos/bindings/manual/jsb_global_init.h
-    )
-endif()
+cocos_source_files(
+    NO_WERROR    cocos/bindings/manual/jsb_global_init.cpp
+                cocos/bindings/manual/jsb_global_init.h
+)
 
 cocos_source_files(
                  cocos/bindings/event/CustomEventTypes.h

@@ -1,3 +1,4 @@
+// clang-format off
 #pragma once
 #include "base/Config.h"
 #if (USE_VIDEO > 0)
@@ -30,3 +31,5 @@ SE_DECLARE_FUNC(js_video_VideoPlayer_stop);
 SE_DECLARE_FUNC(js_video_VideoPlayer_VideoPlayer);
 
 #endif //#if (USE_VIDEO > 0)
+
+// clang-format on

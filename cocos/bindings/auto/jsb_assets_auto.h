@@ -1,21 +1,22 @@
+// clang-format off
 #pragma once
-#include <type_traits>
 #include "base/Config.h"
+#include <type_traits>
+#include "cocos/bindings/jswrapper/SeApi.h"
+#include "cocos/bindings/manual/jsb_conversions.h"
+#include "cocos/bindings/auto/jsb_gfx_auto.h"
+#include "cocos/bindings/auto/jsb_pipeline_auto.h"
+#include "cocos/core/assets/AssetsModuleHeader.h"
 #include "cocos/3d/assets/Mesh.h"
 #include "cocos/3d/assets/Morph.h"
 #include "cocos/3d/assets/MorphRendering.h"
 #include "cocos/3d/assets/Skeleton.h"
-#include "cocos/bindings/auto/jsb_gfx_auto.h"
-#include "cocos/bindings/auto/jsb_pipeline_auto.h"
-#include "cocos/bindings/jswrapper/SeApi.h"
-#include "cocos/bindings/manual/jsb_conversions.h"
-#include "cocos/core/assets/AssetsModuleHeader.h"
 
 extern se::Object *__jsb_cc_BoundingBox_proto; // NOLINT
 extern se::Class * __jsb_cc_BoundingBox_class; // NOLINT
 
 bool js_register_cc_BoundingBox(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::BoundingBox *, se::Object *ctx);
@@ -25,7 +26,7 @@ extern se::Object *__jsb_cc_VertexIdChannel_proto; // NOLINT
 extern se::Class * __jsb_cc_VertexIdChannel_class; // NOLINT
 
 bool js_register_cc_VertexIdChannel(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);            // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::VertexIdChannel *, se::Object *ctx);
@@ -35,7 +36,7 @@ extern se::Object *__jsb_cc_Asset_proto; // NOLINT
 extern se::Class * __jsb_cc_Asset_class; // NOLINT
 
 bool js_register_cc_Asset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);  // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Asset);
 SE_DECLARE_FUNC(js_assets_Asset_addRef);
@@ -53,12 +54,13 @@ SE_DECLARE_FUNC(js_assets_Asset_serialize);
 SE_DECLARE_FUNC(js_assets_Asset_setNativeAsset);
 SE_DECLARE_FUNC(js_assets_Asset_toString);
 SE_DECLARE_FUNC(js_assets_Asset_validate);
+SE_DECLARE_FUNC(js_assets_Asset_Asset);
 
 extern se::Object *__jsb_cc_BufferAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_BufferAsset_class; // NOLINT
 
 bool js_register_cc_BufferAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::BufferAsset);
 SE_DECLARE_FUNC(js_assets_BufferAsset_getBuffer);
@@ -67,7 +69,7 @@ extern se::Object *__jsb_cc_TextureBase_proto; // NOLINT
 extern se::Class * __jsb_cc_TextureBase_class; // NOLINT
 
 bool js_register_cc_TextureBase(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::TextureBase);
 SE_DECLARE_FUNC(js_assets_TextureBase_getAnisotropy);
@@ -89,7 +91,7 @@ extern se::Object *__jsb_cc_IGeometricInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IGeometricInfo_class; // NOLINT
 
 bool js_register_cc_IGeometricInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);           // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IGeometricInfo *, se::Object *ctx);
@@ -99,7 +101,7 @@ extern se::Object *__jsb_cc_IFlatBuffer_proto; // NOLINT
 extern se::Class * __jsb_cc_IFlatBuffer_class; // NOLINT
 
 bool js_register_cc_IFlatBuffer(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IFlatBuffer *, se::Object *ctx);
@@ -109,32 +111,18 @@ extern se::Object *__jsb_cc_RenderingSubMesh_proto; // NOLINT
 extern se::Class * __jsb_cc_RenderingSubMesh_class; // NOLINT
 
 bool js_register_cc_RenderingSubMesh(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);             // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::RenderingSubMesh);
 SE_DECLARE_FUNC(js_assets_RenderingSubMesh_enableVertexIdChannel);
 SE_DECLARE_FUNC(js_assets_RenderingSubMesh_genFlatBuffers);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_geometricInfo);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getAttributes);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getFlatBuffers);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getIaInfo);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getIndexBuffer);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getJointMappedBuffers);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getMesh);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getPrimitiveMode);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getSubMeshIdx);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_getVertexBuffers);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_indirectBuffer);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_setFlatBuffers);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_setMesh);
-SE_DECLARE_FUNC(js_assets_RenderingSubMesh_setSubMeshIdx);
 SE_DECLARE_FUNC(js_assets_RenderingSubMesh_RenderingSubMesh);
 
 extern se::Object *__jsb_cc_IMemoryImageSource_proto; // NOLINT
 extern se::Class * __jsb_cc_IMemoryImageSource_class; // NOLINT
 
 bool js_register_cc_IMemoryImageSource(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);               // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IMemoryImageSource *, se::Object *ctx);
@@ -144,7 +132,7 @@ extern se::Object *__jsb_cc_ImageAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_ImageAsset_class; // NOLINT
 
 bool js_register_cc_ImageAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);       // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::ImageAsset);
 SE_DECLARE_FUNC(js_assets_ImageAsset_isCompressed);
@@ -154,7 +142,7 @@ extern se::Object *__jsb_cc_SimpleTexture_proto; // NOLINT
 extern se::Class * __jsb_cc_SimpleTexture_class; // NOLINT
 
 bool js_register_cc_SimpleTexture(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::SimpleTexture);
 SE_DECLARE_FUNC(js_assets_SimpleTexture_assignImage);
@@ -168,7 +156,7 @@ extern se::Object *__jsb_cc_ITexture2DSerializeData_proto; // NOLINT
 extern se::Class * __jsb_cc_ITexture2DSerializeData_class; // NOLINT
 
 bool js_register_cc_ITexture2DSerializeData(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                    // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITexture2DSerializeData *, se::Object *ctx);
@@ -178,7 +166,7 @@ extern se::Object *__jsb_cc_ITexture2DCreateInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_ITexture2DCreateInfo_class; // NOLINT
 
 bool js_register_cc_ITexture2DCreateInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                 // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITexture2DCreateInfo *, se::Object *ctx);
@@ -188,7 +176,7 @@ extern se::Object *__jsb_cc_Texture2D_proto; // NOLINT
 extern se::Class * __jsb_cc_Texture2D_class; // NOLINT
 
 bool js_register_cc_Texture2D(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);      // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Texture2D);
 SE_DECLARE_FUNC(js_assets_Texture2D_create);
@@ -209,7 +197,7 @@ extern se::Object *__jsb_cc_IPropertyInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IPropertyInfo_class; // NOLINT
 
 bool js_register_cc_IPropertyInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IPropertyInfo *, se::Object *ctx);
@@ -219,7 +207,7 @@ extern se::Object *__jsb_cc_ITechniqueInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_ITechniqueInfo_class; // NOLINT
 
 bool js_register_cc_ITechniqueInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);           // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITechniqueInfo *, se::Object *ctx);
@@ -229,7 +217,7 @@ extern se::Object *__jsb_cc_IBlockInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IBlockInfo_class; // NOLINT
 
 bool js_register_cc_IBlockInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);       // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IBlockInfo *, se::Object *ctx);
@@ -239,7 +227,7 @@ extern se::Object *__jsb_cc_ISamplerTextureInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_ISamplerTextureInfo_class; // NOLINT
 
 bool js_register_cc_ISamplerTextureInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ISamplerTextureInfo *, se::Object *ctx);
@@ -249,7 +237,7 @@ extern se::Object *__jsb_cc_IAttributeInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IAttributeInfo_class; // NOLINT
 
 bool js_register_cc_IAttributeInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);           // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IAttributeInfo *, se::Object *ctx);
@@ -259,7 +247,7 @@ extern se::Object *__jsb_cc_IDefineInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IDefineInfo_class; // NOLINT
 
 bool js_register_cc_IDefineInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IDefineInfo *, se::Object *ctx);
@@ -269,7 +257,7 @@ extern se::Object *__jsb_cc_IBuiltin_proto; // NOLINT
 extern se::Class * __jsb_cc_IBuiltin_class; // NOLINT
 
 bool js_register_cc_IBuiltin(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);     // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IBuiltin *, se::Object *ctx);
@@ -279,7 +267,7 @@ extern se::Object *__jsb_cc_IBuiltinInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IBuiltinInfo_class; // NOLINT
 
 bool js_register_cc_IBuiltinInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);         // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IBuiltinInfo *, se::Object *ctx);
@@ -289,7 +277,7 @@ extern se::Object *__jsb_cc_IBuiltins_proto; // NOLINT
 extern se::Class * __jsb_cc_IBuiltins_class; // NOLINT
 
 bool js_register_cc_IBuiltins(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);      // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IBuiltins *, se::Object *ctx);
@@ -299,7 +287,7 @@ extern se::Object *__jsb_cc_IShaderSource_proto; // NOLINT
 extern se::Class * __jsb_cc_IShaderSource_class; // NOLINT
 
 bool js_register_cc_IShaderSource(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IShaderSource *, se::Object *ctx);
@@ -309,7 +297,7 @@ extern se::Object *__jsb_cc_IShaderInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IShaderInfo_class; // NOLINT
 
 bool js_register_cc_IShaderInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IShaderInfo *, se::Object *ctx);
@@ -320,20 +308,20 @@ extern se::Object *__jsb_cc_EffectAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_EffectAsset_class; // NOLINT
 
 bool js_register_cc_EffectAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::EffectAsset);
-SE_DECLARE_FUNC(js_assets_EffectAsset_registerAsset);
-SE_DECLARE_FUNC(js_assets_EffectAsset_getAll);
-SE_DECLARE_FUNC(js_assets_EffectAsset_remove);
 SE_DECLARE_FUNC(js_assets_EffectAsset_get);
+SE_DECLARE_FUNC(js_assets_EffectAsset_getAll);
+SE_DECLARE_FUNC(js_assets_EffectAsset_registerAsset);
+SE_DECLARE_FUNC(js_assets_EffectAsset_remove);
 SE_DECLARE_FUNC(js_assets_EffectAsset_EffectAsset);
 
 extern se::Object *__jsb_cc_JsonAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_JsonAsset_class; // NOLINT
 
 bool js_register_cc_JsonAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);      // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::JsonAsset);
 SE_DECLARE_FUNC(js_assets_JsonAsset_JsonAsset);
@@ -342,7 +330,7 @@ extern se::Object *__jsb_cc_IMaterialInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IMaterialInfo_class; // NOLINT
 
 bool js_register_cc_IMaterialInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IMaterialInfo *, se::Object *ctx);
@@ -352,7 +340,7 @@ extern se::Object *__jsb_cc_Material_proto; // NOLINT
 extern se::Class * __jsb_cc_Material_class; // NOLINT
 
 bool js_register_cc_Material(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);     // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Material);
 SE_DECLARE_FUNC(js_assets_Material_copy);
@@ -376,7 +364,7 @@ extern se::Object *__jsb_cc_Prefab_proto; // NOLINT
 extern se::Class * __jsb_cc_Prefab_class; // NOLINT
 
 bool js_register_cc_Prefab(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);   // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Prefab);
 SE_DECLARE_FUNC(js_assets_Prefab_instantiate);
@@ -386,7 +374,7 @@ extern se::Object *__jsb_cc_IRenderTextureCreateInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_IRenderTextureCreateInfo_class; // NOLINT
 
 bool js_register_cc_IRenderTextureCreateInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                     // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IRenderTextureCreateInfo *, se::Object *ctx);
@@ -396,7 +384,7 @@ extern se::Object *__jsb_cc_RenderTexture_proto; // NOLINT
 extern se::Class * __jsb_cc_RenderTexture_class; // NOLINT
 
 bool js_register_cc_RenderTexture(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::RenderTexture);
 SE_DECLARE_FUNC(js_assets_RenderTexture_getHeight);
@@ -412,7 +400,7 @@ extern se::Object *__jsb_cc_SceneAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_SceneAsset_class; // NOLINT
 
 bool js_register_cc_SceneAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);       // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::SceneAsset);
 SE_DECLARE_FUNC(js_assets_SceneAsset_getScene);
@@ -422,7 +410,7 @@ extern se::Object *__jsb_cc_TextAsset_proto; // NOLINT
 extern se::Class * __jsb_cc_TextAsset_class; // NOLINT
 
 bool js_register_cc_TextAsset(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);      // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::TextAsset);
 SE_DECLARE_FUNC(js_assets_TextAsset_TextAsset);
@@ -431,7 +419,7 @@ extern se::Object *__jsb_cc_ITextureCubeMipmap_proto; // NOLINT
 extern se::Class * __jsb_cc_ITextureCubeMipmap_class; // NOLINT
 
 bool js_register_cc_ITextureCubeMipmap(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);               // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITextureCubeMipmap *, se::Object *ctx);
@@ -441,7 +429,7 @@ extern se::Object *__jsb_cc_ITextureCubeSerializeMipmapData_proto; // NOLINT
 extern se::Class * __jsb_cc_ITextureCubeSerializeMipmapData_class; // NOLINT
 
 bool js_register_cc_ITextureCubeSerializeMipmapData(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                            // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITextureCubeSerializeMipmapData *, se::Object *ctx);
@@ -451,7 +439,7 @@ extern se::Object *__jsb_cc_ITextureCubeSerializeData_proto; // NOLINT
 extern se::Class * __jsb_cc_ITextureCubeSerializeData_class; // NOLINT
 
 bool js_register_cc_ITextureCubeSerializeData(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);                      // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::ITextureCubeSerializeData *, se::Object *ctx);
@@ -461,7 +449,7 @@ extern se::Object *__jsb_cc_TextureCube_proto; // NOLINT
 extern se::Class * __jsb_cc_TextureCube_class; // NOLINT
 
 bool js_register_cc_TextureCube(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::TextureCube);
 SE_DECLARE_FUNC(js_assets_TextureCube_getGfxTextureCreateInfo);
@@ -479,7 +467,7 @@ extern se::Object *__jsb_cc_IMeshBufferView_proto; // NOLINT
 extern se::Class * __jsb_cc_IMeshBufferView_class; // NOLINT
 
 bool js_register_cc_IMeshBufferView(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);            // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::IMeshBufferView *, se::Object *ctx);
@@ -489,7 +477,7 @@ extern se::Object *__jsb_cc_MorphTarget_proto; // NOLINT
 extern se::Class * __jsb_cc_MorphTarget_class; // NOLINT
 
 bool js_register_cc_MorphTarget(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);        // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::MorphTarget *, se::Object *ctx);
@@ -499,7 +487,7 @@ extern se::Object *__jsb_cc_SubMeshMorph_proto; // NOLINT
 extern se::Class * __jsb_cc_SubMeshMorph_class; // NOLINT
 
 bool js_register_cc_SubMeshMorph(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);         // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::SubMeshMorph *, se::Object *ctx);
@@ -509,7 +497,7 @@ extern se::Object *__jsb_cc_Morph_proto; // NOLINT
 extern se::Class * __jsb_cc_Morph_class; // NOLINT
 
 bool js_register_cc_Morph(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);  // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::Morph *, se::Object *ctx);
@@ -519,7 +507,7 @@ extern se::Object *__jsb_cc_Mesh_IVertexBundle_proto; // NOLINT
 extern se::Class * __jsb_cc_Mesh_IVertexBundle_class; // NOLINT
 
 bool js_register_cc_Mesh_IVertexBundle(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);               // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::Mesh::IVertexBundle *, se::Object *ctx);
@@ -529,7 +517,7 @@ extern se::Object *__jsb_cc_Mesh_ISubMesh_proto; // NOLINT
 extern se::Class * __jsb_cc_Mesh_ISubMesh_class; // NOLINT
 
 bool js_register_cc_Mesh_ISubMesh(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);          // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::Mesh::ISubMesh *, se::Object *ctx);
@@ -539,7 +527,7 @@ extern se::Object *__jsb_cc_Mesh_IStruct_proto; // NOLINT
 extern se::Class * __jsb_cc_Mesh_IStruct_class; // NOLINT
 
 bool js_register_cc_Mesh_IStruct(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);         // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::Mesh::IStruct *, se::Object *ctx);
@@ -549,7 +537,7 @@ extern se::Object *__jsb_cc_Mesh_ICreateInfo_proto; // NOLINT
 extern se::Class * __jsb_cc_Mesh_ICreateInfo_class; // NOLINT
 
 bool js_register_cc_Mesh_ICreateInfo(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);             // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 template <>
 bool sevalue_to_native(const se::Value &, cc::Mesh::ICreateInfo *, se::Object *ctx);
@@ -559,7 +547,7 @@ extern se::Object *__jsb_cc_Mesh_proto; // NOLINT
 extern se::Class * __jsb_cc_Mesh_class; // NOLINT
 
 bool js_register_cc_Mesh(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj); // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Mesh);
 SE_DECLARE_FUNC(js_assets_Mesh_assign);
@@ -580,7 +568,7 @@ extern se::Object *__jsb_cc_MorphRendering_proto; // NOLINT
 extern se::Class * __jsb_cc_MorphRendering_class; // NOLINT
 
 bool js_register_cc_MorphRendering(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);           // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::MorphRendering);
 SE_DECLARE_FUNC(js_assets_MorphRendering_createInstance);
@@ -601,7 +589,7 @@ extern se::Object *__jsb_cc_StdMorphRendering_proto; // NOLINT
 extern se::Class * __jsb_cc_StdMorphRendering_class; // NOLINT
 
 bool js_register_cc_StdMorphRendering(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);              // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::StdMorphRendering);
 SE_DECLARE_FUNC(js_assets_StdMorphRendering_StdMorphRendering);
@@ -610,7 +598,7 @@ extern se::Object *__jsb_cc_Skeleton_proto; // NOLINT
 extern se::Class * __jsb_cc_Skeleton_class; // NOLINT
 
 bool js_register_cc_Skeleton(se::Object *obj); // NOLINT
-bool register_all_assets(se::Object *obj);     // NOLINT
+bool register_all_assets(se::Object *obj);                   // NOLINT
 
 JSB_REGISTER_OBJECT_TYPE(cc::Skeleton);
 SE_DECLARE_FUNC(js_assets_Skeleton_getBindposes);
@@ -619,3 +607,6 @@ SE_DECLARE_FUNC(js_assets_Skeleton_getInverseBindposes);
 SE_DECLARE_FUNC(js_assets_Skeleton_getJoints);
 SE_DECLARE_FUNC(js_assets_Skeleton_setBindposes);
 SE_DECLARE_FUNC(js_assets_Skeleton_setJoints);
+
+
+// clang-format on
