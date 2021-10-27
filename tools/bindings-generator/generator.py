@@ -773,13 +773,17 @@ class NativeType(object):
 
 
 class NativeField(object):
-    def __init__(self, cursor, generator):
+    def __init__(self, cursor, native_class, generator):
         cursor = cursor.canonical
         self.cursor = cursor
         self.name = cursor.displayname
+        new_name = generator.should_rename_function(native_class.class_name, self.name)
+        self.export_name = new_name if new_name is not None else self.name
         self.kind = cursor.type.kind
+        self.is_static = cursor.storage_class.value == 3 and cursor.kind == cindex.CursorKind.VAR_DECL
         self.location = cursor.location
         self.is_const_array = self.kind == cindex.TypeKind.CONSTANTARRAY
+        self.is_static_const = cursor.type.spelling.startswith("const ") and self.is_static
         member_field_re = re.compile('m_(\w+)')
         match = member_field_re.match(self.name)
         self.signature_name = self.name
@@ -791,10 +795,12 @@ class NativeField(object):
 
     def toJSON(self):
         return {
-            "name": self.name,
+            "name": self.export_name,
             "pretty_name": self.pretty_name,
             "signature_name" : self.signature_name,
-            "type": self.ntype.toJSON()
+            "type": self.ntype.toJSON(),
+            "is_static": self.is_static,
+            "is_static_const": self.is_static_const,
         }
 
     @staticmethod
@@ -814,7 +820,7 @@ class NativeField(object):
             tpl = Template(config['definitions']['public_field'],
                            searchList=[current_class, self])
             self.signature_name = str(tpl)
-        tpl = Template(file=os.path.join(gen.target, "templates", "public_field.c"),
+        tpl = Template(file=os.path.join(gen.target, "templates", "public_field.c" if not self.is_static else "public_static_field.c"),
                        searchList=[current_class, self])
         gen.impl_file.write(unicode(tpl))
 
@@ -884,6 +890,7 @@ class NativeFunction(object):
             "arguments": list(map(lambda x : x.toJSON(), self.arguments)),
             "argumentTips": self.argumtntTips,
             "static": self.static,
+            "min_args": self.min_args,
             # "implementations": self.implementations,
             "is_overloaded": self.is_overloaded,
             "is_constructor": self.is_constructor,
@@ -1180,12 +1187,12 @@ class NativeClass(object):
         return self.namespaced_class_name.replace("::", "_")
 
     def skip_bind_function(self, method_name):
-        if self.generator.is_reserved_function(self.class_name, method_name["name"]):
-            return False
         if self.class_name in self.generator.shadowed_methods_by_getter_setter:
             ret = method_name["name"] in self.generator.shadowed_methods_by_getter_setter[self.class_name]
             # logger.info("??? skip %s contains %s , %s" %(self.generator.shadowed_methods_by_getter_setter[self.class_name], method_name, ret))
             return ret
+        if self.generator.is_reserved_function(self.class_name, method_name["name"]):
+            return False
         return False
 
     def find_method(self, method_name):
@@ -1234,8 +1241,9 @@ class NativeClass(object):
         for name, impl in iter(self.static_methods.items()):
             should_skip = self.generator.should_skip(self.class_name, name)
             if not should_skip:
-                ret.append({"name": name, "impl": impl})
-        return ret
+                ret.append({"name":  self.generator.should_rename_function(
+                    self.class_name, name) or name, "impl": impl})
+        return sorted(ret, key=lambda fn: fn["name"])
 
     def override_methods_clean(self):
         '''
@@ -1246,7 +1254,7 @@ class NativeClass(object):
             should_skip = self.generator.should_skip(self.class_name, name)
             if not should_skip:
                 ret.append({"name": name, "impl": impl})
-        return ret
+        return sorted(ret, key=lambda fn: fn["name"])
 
     def toJSON(self):
         return {
@@ -1271,7 +1279,7 @@ class NativeClass(object):
                         "names": x["names"],
                         "type": x["getter"].ret_type.toJSON() if x["getter"] is not None else (x["setter"].arguments[0].toJSON() if x["setter"] is not None else None)
                     }, self.getter_setter)),
-            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.generator.should_skip(self.class_name,f[0]), self.methods.items()))),
+            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.skip_bind_function({"name":f[0]}), self.methods.items()))),
             "static_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda x: not self.generator.should_skip(self.class_name, x[0]), self.static_methods.items()))),
             "dict_of_override_method_should_be_bound": dict(map(lambda kv: (kv[0], list(map(lambda x: x.toJSON(), kv[1]))), self.dict_of_override_method_should_be_bound.items())),
         }
@@ -1421,11 +1429,10 @@ class NativeClass(object):
 
             if parent_name == "Ref":
                 self.is_ref_class = True
-
-        elif cursor.kind == cindex.CursorKind.FIELD_DECL:
-            self.fields.append(NativeField(cursor, self.generator))
+        elif cursor.kind == cindex.CursorKind.FIELD_DECL or cursor.kind == cindex.CursorKind.VAR_DECL:
+            self.fields.append(NativeField(cursor, self, self.generator))
             if (self.is_struct or self._current_visibility == cindex.AccessSpecifier.PUBLIC) and NativeField.can_parse(cursor.type, self.generator, cursor) and not self.generator.should_skip_public_field(self.class_name, cursor.displayname):
-                self.public_fields.append(NativeField(cursor, self.generator))
+                self.public_fields.append(NativeField(cursor, self, self.generator))
         elif cursor.kind == cindex.CursorKind.CXX_ACCESS_SPEC_DECL:
             self._current_visibility = cursor.access_specifier
         elif cursor.kind == cindex.CursorKind.CXX_METHOD and get_availability(cursor) != AvailabilityKind.DEPRECATED:

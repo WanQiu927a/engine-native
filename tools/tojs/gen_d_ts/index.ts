@@ -1,13 +1,22 @@
 
-import { kMaxLength, kStringMaxLength } from 'buffer';
-import fs, { linkSync } from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 const dir = path.normalize(path.join(__dirname, '../../../../cocos/bindings/auto'));
 const jsonFiles = fs.readdirSync(dir).filter(x => x.endsWith('.json')).map(x => path.join(dir, x));
 const outFilePath = path.join(__dirname, 'jsb_auto.d.ts');
-const copyTo = path.normalize(path.join(__dirname, '../../../../../engine/@types/jsb.auto.d.ts'));
+let copyTo = path.normalize(path.join(__dirname, '../../../../../engine/@types/jsb.auto.d.ts'));
 const copyFiles: string[] = [path.join(__dirname, '../decl/predefine.d.ts'), outFilePath];
+
+if(process.argv.length >= 3) {
+    const argv = process.argv;
+    if( !fs.existsSync(path.join(argv[2], '@types'))) {
+        console.error(`Directory '${argv[2]}/@types' does not exists, not a engine path?`);
+        process.exit(-2);
+    }
+    copyTo = path.join(argv[2], '@types/jsb.auto.d.ts');
+}
+
 
 const outFile = fs.openSync(outFilePath, 'w');
 const exportNamespaces = ['gfx', 'cc', 'jsb', 'nr'];
@@ -109,6 +118,12 @@ namespace utils {
             info.is_optional = true;
             return walk_through_type_tree(info.children[0], type_convert);
         }
+
+        if(info.name.startsWith('std::array') && info.children[0].name.indexOf('::') < 0) {
+    
+            return convert_typed_array(info.children[0].name.match(/(.*)/)!)
+        }
+
         if (info.name.startsWith('std::vector') || info.name.startsWith('std::array')) {
             return walk_through_type_tree(info.children[0], type_convert) + '[]';
         }
@@ -226,13 +241,16 @@ namespace utils {
         if (r)
             r = r.trim();
         r = fallback_step(t, r!);
-        r = r.replace(/::/g,'.').replace(/\*|&/,'').trim();
+        r = r.replace(/::/g,'.').replace(/\*|&/,'').replace(/^const /,'').trim();
         if (r.startsWith('?:') || r.startsWith(':')) return r;
         return ': ' + r;
     }
 
 
     function fallback_step(t: IType, r: string): string {
+        if(r.startsWith("const ")) {
+            r = r.slice(6);
+        }
         let full = cpptype_to_script_ns(r);
         if (full) {
             return full;
@@ -363,15 +381,19 @@ function processMethod(m: NativeFunction | NativeOverloadedFunction): string[] {
         return ret;
     } else {
         let tips = method.argumentTips || [];
-        let args = method.arguments.map((x, i) => `${tips[i] || ('arg' + i)}${UF(x)}`).join(', ');
+        let args = method.arguments.map((x, i) => `${tips[i] || ('arg' + i)}${UF(x)}`);//.join(', ');
         if (method.is_constructor) {
             //return [`new (${args}): ${method.current_class_name};`];
-            return [`constructor(${args});`];
+            return [`constructor(${args.join(', ')});`];
         }
-        const prefix = args.indexOf('??') > 0 ? '// ' : '';
+        const prefix = args.join(', ').indexOf('??') > 0 ? '// ' : '';
         const comment = method.comment.length > 0 ? `/**\n${utils.formatComment(method.comment).map(x => ' * ' + x).join('\n')}\n */\n` : '';
         const static_prefix = method.static ? 'static ' : '';
-        return [`${comment}${prefix}${static_prefix}${name}(${args}):${UFU(method.ret_type)}; // ${method.ret_type.namespaced_class_name}`]
+        let functions:string[] = []; // [`// min_args ${method.min_args} - ${method.arguments.length}`];
+        for(let i = method.min_args; i  <= method.arguments.length;i++) {
+            functions.push(`${prefix}${static_prefix}${name}(${args.slice(0, i).join(', ')}):${UFU(method.ret_type)}; // ${method.ret_type.namespaced_class_name}`)
+        }
+        return [`${comment}${functions.join('\n')}`];
     }
 }
 
@@ -436,7 +458,7 @@ function processClass(klass: NativeClass): string {
             let maxMiddle = 0;
             let lines: [string, string, string][] = [];
             for (let attr of klass.public_fields) {
-                let p: [string, string, string] = [`${attr.name}`, `${UF(attr.type)};`, `// ${attr.type.namespaced_class_name}`];
+                let p: [string, string, string] = [`${attr.is_static?"static ":""}${attr.is_static_const?"readonly ":""}${attr.name}`, `${UF(attr.type)};`, `// ${attr.type.namespaced_class_name}`];
                 maxLeft = Math.max(maxLeft, p[0].length);
                 maxMiddle = Math.max(maxMiddle, p[1].length);
                 lines.push(p);
@@ -556,9 +578,10 @@ fs.writeFileSync(outFile, `\n\n\n//  ${all_classes.length} classes process!\n`);
 fs.closeSync(outFile);
 
 {
+    copyTo = path.normalize(copyTo);
     let finalFile = fs.openSync(copyTo, 'w');
     copyFiles.forEach(arr => fs.writeFileSync(finalFile, fs.readFileSync(arr).toString('utf8')));
     fs.closeSync(finalFile);
+    console.log(` -> copy jsb.auto.d.ts to ${copyTo}`)
 }
-
-console.log(` -> ${all_classes.length}`);
+console.log(` -> ${all_classes.length} classes exported`);

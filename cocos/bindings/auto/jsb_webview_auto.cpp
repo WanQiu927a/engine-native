@@ -1,3 +1,5 @@
+
+// clang-format off
 #include "cocos/bindings/auto/jsb_webview_auto.h"
 #if USE_WEBVIEW > 0
 #include "cocos/bindings/manual/jsb_conversions.h"
@@ -635,8 +637,6 @@ static bool js_webview_WebView_create_static(se::State& s) // NOLINT(readability
     return false;
 }
 SE_BIND_FUNC(js_webview_WebView_create_static)
-
-
 static bool js_cc_WebView_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     // destructor is skipped
@@ -695,6 +695,7 @@ bool js_register_webview_WebView(se::Object* obj) // NOLINT(readability-identifi
     __jsb_cc_WebView_proto = cls->getProto();
     __jsb_cc_WebView_class = cls;
 
+
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -715,3 +716,4 @@ bool register_all_webview(se::Object* obj)    // NOLINT
 }
 
 #endif //#if USE_WEBVIEW > 0
+// clang-format on

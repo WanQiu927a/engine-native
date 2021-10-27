@@ -27,6 +27,8 @@ declare interface NativeField {
     pretty_name: string;
     signature_name: string;
     type: NativeType;
+    is_static: boolean;
+    is_static_const:boolean;
 }
 
 
@@ -36,6 +38,7 @@ declare interface NativeFunction {
     arguments: NativeType[];
     argumentTips: string[];
     static: boolean;
+    min_args:number;
     is_overloaded: boolean;
     is_constructor: boolean;
     not_supported: boolean;

@@ -181,6 +181,7 @@ def main():
             if filename is None: filename = 'jsb_%s_auto' % section
             print ('!!----------Generating bindings for %s----------!!' % (section))
             command = '%s -W ignore %s %s -s %s -t %s -o %s -n %s' % (python_bin, generator_py, cfg, section, target, directory, filename)
+            print ("command : %s" % (command))
             # tasks.append(_run_cmd(command))
             _run_cmd(command).communicate()
 

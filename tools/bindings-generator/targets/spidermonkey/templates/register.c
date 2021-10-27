@@ -11,7 +11,6 @@ ${current_class.generate_struct_constructor()}
 #set constructor = $current_class.methods.constructor
 ${current_class.methods.constructor.generate_code($current_class)}
 #end if
-
 #if $generator.in_listed_extend_classed($current_class.class_name) and $has_constructor
 #if not $constructor.is_overloaded
     ${constructor.generate_code($current_class, None, False, True)}
@@ -19,7 +18,6 @@ ${current_class.methods.constructor.generate_code($current_class)}
     ${constructor.generate_code($current_class, False, True)}
 #end if
 #end if
-
 #if not $current_class.is_abstract
 static bool js_${current_class.underlined_class_name}_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
@@ -90,8 +88,8 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
 #end if
 
 #for m in public_fields
-    #if  $current_class.should_export_field(m.name)
-    cls->defineProperty("${m.name}", _SE(${m.signature_name}_get_${m.name}), _SE(${m.signature_name}_set_${m.name}));
+    #if  $current_class.should_export_field(m.name) and not m.is_static
+    cls->defineProperty("${m.export_name}", _SE(${m.signature_name}_get_${m.name}), _SE(${m.signature_name}_set_${m.name}));
     #end if
 #end for
 #for m in $current_class.getter_setter
@@ -117,6 +115,14 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
     cls->defineStaticFunction("${m['name']}", _SE(${fn.signature_name}));
     #end for
 #end if
+#set static_fields = list(filter(lambda m: $current_class.should_export_field(m.name) and m.is_static, public_fields))
+#if len(static_fields) > 0
+    // static fields
+#for m in static_fields
+    #set static_setter = "_SE("+m.signature_name+"_set_"+m.name+")" if not m.is_static_const else "nullptr"
+    cls->defineStaticProperty("${m.export_name}", _SE(${m.signature_name}_get_${m.name}), ${static_setter});
+#end for
+#end if
 #if not $current_class.is_abstract
     cls->defineFinalizeFunction(_SE(js_${current_class.underlined_class_name}_finalize));
 #end if
@@ -129,6 +135,7 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
 #if $generator.in_listed_extend_classed($current_class.class_name) and not $current_class.is_abstract
     jsb_set_extend_property("${generator.target_ns}", "${current_class.target_class_name}");
 #end if
+
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }

@@ -331,7 +331,7 @@ void SimpleDemo::testShadow() {
     planeMeshRenderer->setShadowCastingMode(ModelShadowCastingMode::OFF);
     planeMeshRenderer->setReceiveShadow(ModelShadowReceivingMode::ON);
 
-    auto *shadowInfo = _scene->getSceneGlobal()->getShadowInfo();
+    auto *shadowInfo = _scene->getSceneGlobals()->getShadowInfo();
     shadowInfo->setEnabled(true);
     // shadowInfo->setType(cc::scene::ShadowType::PLANAR);
     shadowInfo->setType(cc::scene::ShadowType::SHADOW_MAP);
@@ -339,8 +339,8 @@ void SimpleDemo::testShadow() {
 
 void SimpleDemo::testTerrain() {
     // deserialize terrain asset
-    auto fileUtils        = FileUtils::getInstance();
-    auto terrainAssetJson = fileUtils->getStringFromFile("bb4eed63-fb14-4bf8-a8f3-7c9b271a9f18.json");
+    auto *fileUtils        = FileUtils::getInstance();
+    auto  terrainAssetJson = fileUtils->getStringFromFile("bb4eed63-fb14-4bf8-a8f3-7c9b271a9f18.json");
     CC_ASSERT(!terrainAssetJson.empty());
 
     rapidjson::Document doc;
