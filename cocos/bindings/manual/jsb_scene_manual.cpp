@@ -226,6 +226,32 @@ static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-
 }
 SE_BIND_FUNC(js_scene_Node_registerListeners) // NOLINT(readability-identifier-naming)
 
+static bool js_scene_Pass_blocks_getter(se::State& s) {
+    auto *cobj = SE_THIS_OBJECT<cc::scene::Pass>(s);
+    SE_PRECONDITION2(cobj, false, "js_scene_Node_registerListeners : Invalid Native Object");
+    auto *thiz = s.thisObject();
+
+    se::Value blocksVal;
+    if (thiz->getProperty("_blocks", &blocksVal) && blocksVal.isObject() && blocksVal.toObject()->isArray()) {
+        s.rval() = blocksVal;
+        return true;
+    }
+
+    const auto& blocks = cobj->getBlocks();
+
+    se::HandleObject jsBlocks{se::Object::createArrayObject(blocks.size())};
+    int32_t i = 0;
+    for (const auto& block : blocks) {
+        se::HandleObject jsBlock{se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, block.data, block.size * 4)};
+        jsBlocks->setArrayElement(i, se::Value(jsBlock));
+        ++i;
+    }
+    thiz->setProperty("_blocks", se::Value(jsBlocks));
+    s.rval().setObject(jsBlocks);
+    return true;
+}
+SE_BIND_PROP_GET(js_scene_Pass_blocks_getter)
+
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
     // Get the ns
@@ -241,5 +267,8 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
 
     // Node TS wrapper will invoke this function to let native object listen some events.
     __jsb_cc_Node_proto->defineFunction("_registerListeners", _SE(js_scene_Node_registerListeners));
+
+    __jsb_cc_scene_Pass_proto->defineProperty("blocks", _SE(js_scene_Pass_blocks_getter), nullptr);
+    
     return true;
 }
