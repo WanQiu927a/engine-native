@@ -45,6 +45,7 @@ declare interface NativeFunction {
     ret_type: NativeType;
     current_class_name: string;
     comment: string;
+    should_skip_function:boolean;
 }
 
 
@@ -56,6 +57,7 @@ declare interface NativeOverloadedFunction {
     is_ctor: boolean;
     current_class_name: string|null;
     implementations: NativeFunction[];
+    should_skip_function:boolean;
 }
 
 declare interface NativeAttribute {

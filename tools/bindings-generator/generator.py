@@ -840,7 +840,7 @@ def iterate_param_node(param_node, depth=1):
 
 
 class NativeFunction(object):
-    def __init__(self, cursor, generator):
+    def __init__(self, cursor, current_class, generator):
         self.cursor = cursor
         self.func_name = cursor.spelling
         self.signature_name = self.func_name
@@ -855,6 +855,7 @@ class NativeFunction(object):
         self.ret_type = NativeType.from_type(cursor.result_type, generator)
         self.comment = self.get_comment(cursor.raw_comment)
         self.current_class = None
+        self.should_skip_function = current_class.skip_bind_function({"name":self.func_name})
 
         # parse the arguments
         # if self.func_name == "spriteWithFile":
@@ -981,6 +982,7 @@ class NativeOverloadedFunction(object):
         self.func_name = func_array[0].func_name
         self.signature_name = func_array[0].signature_name
         self.ret_type = func_array[0].ret_type
+        self.should_skip_function = func_array[0].should_skip_function
         self.min_args = 100
         self.is_constructor = False
         self.is_overloaded = True
@@ -1140,27 +1142,29 @@ class NativeClass(object):
             for field_name in iter(generator.getter_setter[self.class_name].keys()):
                 field = generator.getter_setter[self.class_name][field_name]
                 name_array ='{' +", ".join(list(map(lambda x: "\"%s\"" % x, field["names"]))) +'}'
+                setter = self.find_method(field["setter"])
+                getter = self.find_method(field["getter"])
                 item = {
                     "name": '"'+field_name+'"' if len(field["names"]) == 1 else name_array,
                     "field_name": field_name,
                     "names": field["names"],
-                    "getter": self.find_method(field["getter"]),
-                    "setter": self.find_method(field["setter"]),
+                    "getter": getter,
+                    "setter": setter,
                 }
-                if item["getter"] is None and item["setter"] is None:
+                if getter is None and setter is None:
                     logger.info("gettter %s, setter %s" % (field["getter"], field["setter"]))
                     raise Exception("getter_setter for %s.%s both None" % (
                         self.class_name, field_name))
-                if item["getter"] is not None:
-                    self.getter_list.append(get_func_name(item["getter"]))
-                if item["setter"] is not None:
-                    self.setter_list.append(get_func_name(item["setter"]))
-                if item["getter"] is not None and isinstance(item["getter"], NativeOverloadedFunction):
-                    old = item["getter"]
-                    # logger.error(" old getter %s" % old.__dict__)
-                    # logger.error(" getter_list %s\n setter_list: %s", self.getter_list, self.setter_list)
-                    item["getter"] = item["getter"].implementations[0]
-                    item["getter"].signature_name = "js_%s_%s_%s" % (self.generator.prefix, self.class_name, old.func_name)
+                if getter is not None:
+                    self.getter_list.append(get_func_name(getter))
+                    if isinstance(getter, NativeOverloadedFunction):
+                        old = getter
+                        # logger.error(" old getter %s" % old.__dict__)
+                        # logger.error(" getter_list %s\n setter_list: %s", self.getter_list, self.setter_list)
+                        item["getter"] = getter.implementations[0]
+                        item["getter"].signature_name = "js_%s_%s_%s" % (self.generator.prefix, self.class_name, old.func_name)    
+                if setter is not None:
+                    self.setter_list.append(get_func_name(setter))
                 self.getter_setter.append(item)
 
     @property
@@ -1201,14 +1205,14 @@ class NativeClass(object):
                 return self.methods[m]
         return None
 
-    def is_getter_method(self, method_name):
+    def is_getter_attribute(self, method_name):
         return method_name in self.getter_list
 
-    def is_setter_method(self, method_name):
+    def is_setter_attribute(self, method_name):
         return method_name in self.setter_list
 
     def is_getter_or_setter(self, method_name):
-        return self.is_getter_method(method_name) or self.is_setter_method(method_name)
+        return self.is_getter_attribute(method_name) or self.is_setter_attribute(method_name)
 
     def parse(self):
         '''
@@ -1279,7 +1283,7 @@ class NativeClass(object):
                         "names": x["names"],
                         "type": x["getter"].ret_type.toJSON() if x["getter"] is not None else (x["setter"].arguments[0].toJSON() if x["setter"] is not None else None)
                     }, self.getter_setter)),
-            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.skip_bind_function({"name":f[0]}), self.methods.items()))),
+            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not f[1].should_skip_function, self.methods.items()))),
             "static_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda x: not self.generator.should_skip(self.class_name, x[0]), self.static_methods.items()))),
             "dict_of_override_method_should_be_bound": dict(map(lambda kv: (kv[0], list(map(lambda x: x.toJSON(), kv[1]))), self.dict_of_override_method_should_be_bound.items())),
         }
@@ -1438,7 +1442,7 @@ class NativeClass(object):
         elif cursor.kind == cindex.CursorKind.CXX_METHOD and get_availability(cursor) != AvailabilityKind.DEPRECATED:
             # skip if variadic
             if self._current_visibility == cindex.AccessSpecifier.PUBLIC and not cursor.type.is_function_variadic():
-                m = NativeFunction(cursor, self.generator)
+                m = NativeFunction(cursor, self, self.generator)
                 registration_name = m.func_name
                 # bail if the function is not supported (at least one arg not supported)
                 if m.not_supported:
@@ -1482,7 +1486,7 @@ class NativeClass(object):
                 # logger.debug("Skip copy constructor: " + cursor.displayname)
                 return True
 
-            m = NativeFunction(cursor, self.generator)
+            m = NativeFunction(cursor, self, self.generator)
             m.is_constructor = True
             self.has_constructor = True
             if 'constructor' not in self.methods:
@@ -1706,54 +1710,44 @@ class Generator(object):
         if "getter_setter" in opts:
             #logger.info(" getter_setter : %s" % opts["getter_setter"])
             list_of_getter_setter = re.split(",\n?", opts['getter_setter'])
+
+            def list_get_or(arr, idx, defaultValue):
+                if idx >= len(arr) or arr[idx] is None or len(arr[idx]) == 0:
+                    return defaultValue
+                return arr[idx]
+
             for line in list_of_getter_setter:
                 #logger.info(" line %s" % line)
                 if len(line) == 0:
                     continue
-                gs_kls, gs_fields_txt = line.split("::")
-                gs_obj = self.getter_setter[gs_kls] = {}
-                gs_sd = self.shadowed_methods_by_getter_setter[gs_kls] = []
-                match = re.match("\[([^]]+)\]", gs_fields_txt)
+                getter_setter_class_name, getter_setter_fields_raw = line.split("::")
+                getter_setter_map = self.getter_setter[getter_setter_class_name] = {}
+                shadow_methods = self.shadowed_methods_by_getter_setter[getter_setter_class_name] = []
+                match = re.match("\[([^]]+)\]", getter_setter_fields_raw)
                 if match:
-                    list_of_fields = match.group(1).split(" ")
+                    list_of_fields = list(filter(lambda x: len(x.strip()) > 0, match.group(1).split(" ")))
                     for segment in list_of_fields:
                         field_components = segment.split("/")
                         name_variants = field_components[0].split(":")
                         field_name = name_variants[0]
-                        cap = capitalize(field_name)
-                        default_getter = "get" + cap
-                        default_setter = "set" + cap
-                        if len(field_components) == 1:
-                            #getter = field_name
-                            gs_obj[field_name] = {
-                                "getter": default_getter,
-                                "setter": default_setter,
-                                "names": name_variants,
-                                }
-                            gs_sd.extend(
-                                [field_name, default_getter, default_setter, name_variants])
-                        elif len(field_components) == 2:
-                            gs_obj[field_name] = {
-                                "getter": field_components[1],
-                                "setter": default_setter,
-                                "names": name_variants,
-                                 }
-                            gs_sd.extend(
-                                [field_name, field_components[1], default_setter, name_variants])
-                        elif len(field_components) == 3:
-                            getter = field_components[1] if len(
-                                field_components[1]) > 0 else default_getter
-                            setter = field_components[2] if len(
-                                field_components[2]) > 0 else default_setter
-                            gs_obj[field_name] = {
-                                "getter": getter,
-                                "setter": setter,
-                                "names": name_variants,
-                                }
-                            gs_sd.extend([field_name, getter, setter, name_variants])
-                        else:
-                            raise Exception(
-                                "getter_setter parse %s:%s failed" % (gs_kls, field_name))
+                        cap_field_name = capitalize(field_name)
+                        
+                        if len(field_components) > 3:
+                            raise Exception("getter_setter parse %s:%s failed" % (getter_setter_class_name, field_name))
+
+                        getter_raw = list_get_or(field_components, 1,  "get" + cap_field_name).split("?")
+                        setter_raw = list_get_or(field_components, 2,  "set" + cap_field_name).split("?")
+                        getter_setter_map[field_name] = {
+                            "getter": getter_raw[0],
+                            "setter": setter_raw[0],
+                            "names": name_variants,
+                            }
+                        shadow_methods.append(field_name)
+                        shadow_methods.extend(name_variants)
+                        if len(getter_raw) < 2:
+                            shadow_methods.append(getter_raw[0])
+                        if len(setter_raw) < 2:
+                            shadow_methods.append(setter_raw[0])
 
     def is_reserved_function(self, class_name, method_name):
         if class_name in self.rename_functions:
