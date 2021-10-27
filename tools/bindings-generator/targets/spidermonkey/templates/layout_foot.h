@@ -1,6 +1,6 @@
 
 #if $macro_judgement
 \#endif //$macro_judgement
-    #end if
+#end if
 
-    // clang-format on
+// clang-format on
