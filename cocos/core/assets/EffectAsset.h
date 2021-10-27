@@ -195,29 +195,13 @@ public:
      */
     static RegisteredEffectAssetMap &getAll() { return __effects; }
 
-    /**
-     * @en The techniques used by the current effect.
-     * @zh 当前 effect 的所有可用 technique。
+    inline void setTechniques(const std::vector<ITechniqueInfo> &val) { _techniques = val; }
+    inline void setShaders(const std::vector<IShaderInfo> &val) { _shaders = val; }
+    inline void setCombinations(const std::vector<IPreCompileInfo> &val) { _combinations = val; }
 
-    @serializable
-    @editable*/
-    std::vector<ITechniqueInfo> _techniques;
-
-    /**
-     * @en The shaders used by the current effect.
-     * @zh 当前 effect 使用的所有 shader。
-
-    @serializable
-    @editable*/
-    std::vector<IShaderInfo> _shaders;
-
-    /**
-     * @en The preprocess macro combinations for the shader
-     * @zh 每个 shader 需要预编译的宏定义组合。
-
-    @serializable
-    @editable*/
-    std::vector<IPreCompileInfo> _combinations;
+    inline const std::vector<ITechniqueInfo> & getTechniques() const { return _techniques; }
+    inline const std::vector<IShaderInfo> &    getShaders() const { return _shaders; }
+    inline const std::vector<IPreCompileInfo> &getCombinations() const { return _combinations; }
 
     /*
     @serializable
@@ -244,11 +228,39 @@ protected:
     void precompile();
 
 protected:
+    /**
+     * @en The techniques used by the current effect.
+     * @zh 当前 effect 的所有可用 technique。
+
+    @serializable
+    @editable*/
+    std::vector<ITechniqueInfo> _techniques;
+
+    /**
+     * @en The shaders used by the current effect.
+     * @zh 当前 effect 使用的所有 shader。
+
+    @serializable
+    @editable*/
+    std::vector<IShaderInfo> _shaders;
+
+    /**
+     * @en The preprocess macro combinations for the shader
+     * @zh 每个 shader 需要预编译的宏定义组合。
+
+    @serializable
+    @editable*/
+    std::vector<IPreCompileInfo> _combinations;
+
     static RegisteredEffectAssetMap __effects; //cjh TODO: how to clear when game exits.
 
     CC_DISALLOW_COPY_MOVE_ASSIGN(EffectAsset);
 
     friend class EffectAssetDeserializer;
+    friend class Material;
+    friend class ProgramLib;
+    friend class MaterialInstance;
+    friend class BuiltinResMgr;
 };
 
 } // namespace cc
