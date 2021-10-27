@@ -271,6 +271,10 @@ public:
     inline const IPassDynamics &         getDynamics() const { return _dynamics; }
     inline const std::vector<IBlockRef> &getBlocks() const { return _blocks; }
     inline bool                          isRootBufferDirty() const { return _rootBufferDirty; }
+    //NOTE: _setRootBufferDirty name must contain a _ as prefix to make bindings-generator work correctly.
+    // In ts engine, Pass has rootBufferDirty getter and without setter, but it contains a protected function named _setRootBufferDirty.
+    // If we remove _ prefix in C++, bindings-generator doesn't support to bind rootBufferDirty property as getter and ignore to bind setRootBufferDirty as setter at the same time.
+    // So let's keep the _ prefix temporarily.
     inline void                          _setRootBufferDirty(bool val) { _rootBufferDirty = val; }
     // states
     inline pipeline::RenderPriority  getPriority() const { return _priority; }
