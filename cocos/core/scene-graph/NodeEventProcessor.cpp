@@ -270,7 +270,7 @@ namespace cc {
 NodeEventProcessor::NodeEventProcessor(Node *node) : _node(node) {}
 
 bool NodeEventProcessor::checkListeners(cc::Node *node, const std::vector<std::string> &events) {
-    if (!node->getPersistNode()) {
+    if (!node->isPersistNode()) {
         if (node->getEventProcessor()->_bubblingTargets) {
             for (const auto &event : events) {
                 if (node->getEventProcessor()->_bubblingTargets->hasEventListener(event)) {
