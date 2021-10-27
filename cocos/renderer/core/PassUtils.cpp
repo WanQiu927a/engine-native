@@ -115,9 +115,17 @@ const std::unordered_map<gfx::Type, GFXTypeWriterCallback> type2writer = {
          CC_LOG_ERROR("type2writer unknown type");
      }},
     {gfx::Type::INT, [](float *a, const MaterialProperty &v, index_t idx) {
-         const int32_t *p = std::get_if<int32_t>(&v);
-         CC_ASSERT(p != nullptr);
-         a[idx] = *p;
+         const int32_t *p      = std::get_if<int32_t>(&v);
+         const float *  pFloat = nullptr;
+         if (p != nullptr) {
+             a[idx] = static_cast<float>(*p);
+         } else {
+             pFloat = std::get_if<float>(&v);
+             if (pFloat != nullptr) {
+                 a[idx] = *p;
+             }
+         }
+         CC_ASSERT(p != nullptr || pFloat != nullptr);
      }},
     {gfx::Type::INT2, [](float *a, const MaterialProperty &v, index_t idx) {
          const auto *p = std::get_if<Vec2>(&v);
@@ -141,9 +149,17 @@ const std::unordered_map<gfx::Type, GFXTypeWriterCallback> type2writer = {
          a[idx + 3] = p->w;
      }},
     {gfx::Type::FLOAT, [](float *a, const MaterialProperty &v, index_t idx) {
-         const float *p = std::get_if<float>(&v);
-         CC_ASSERT(p != nullptr);
-         a[idx] = *p;
+         const float *  p    = std::get_if<float>(&v);
+         const int32_t *pInt = nullptr;
+         if (p != nullptr) {
+             a[idx] = *p;
+         } else {
+             pInt = std::get_if<int32_t>(&v);
+             if (pInt != nullptr) {
+                 a[idx] = static_cast<float>(*pInt);
+             }
+         }
+         CC_ASSERT(p != nullptr || pInt != nullptr);
      }},
     {gfx::Type::FLOAT2, [](float *a, const MaterialProperty &v, index_t idx) {
          const auto *p = std::get_if<Vec2>(&v);
