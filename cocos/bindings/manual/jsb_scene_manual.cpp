@@ -121,7 +121,7 @@ static void registerOnParentChanged(cc::Node *node, se::Object *jsObject) {
 
 static void registerOnLayerChanged(cc::Node *node, se::Object *jsObject) {
     node->on(
-        cc::NodeEventType::PARENT_CHANGED,
+        cc::NodeEventType::LAYER_CHANGED,
         [jsObject](uint32_t layer) {
             se::AutoHandleScope hs;
             se::Value           funcVal;
@@ -138,7 +138,7 @@ static void registerOnLayerChanged(cc::Node *node, se::Object *jsObject) {
 
 static void registerOnChildRemoved(cc::Node *node, se::Object *jsObject) {
     node->on(
-        cc::NodeEventType::PARENT_CHANGED,
+        cc::NodeEventType::CHILD_REMOVED,
         [jsObject](cc::Node *child) {
             se::AutoHandleScope hs;
             se::Value           funcVal;
@@ -156,7 +156,7 @@ static void registerOnChildRemoved(cc::Node *node, se::Object *jsObject) {
 static void registerOnChildAdded(cc::Node *node, se::Object *jsObject) {
     cc::CallbackInfoBase::ID skip;
     node->on(
-        cc::NodeEventType::PARENT_CHANGED,
+        cc::NodeEventType::CHILD_ADDED,
         [jsObject](cc::Node *child) {
             se::AutoHandleScope hs;
             se::Value           funcVal;
@@ -175,7 +175,7 @@ static void registerOnChildAdded(cc::Node *node, se::Object *jsObject) {
 static void registerOnActiveNode(cc::Node *node, se::Object *jsObject) {
     cc::CallbackInfoBase::ID skip;
     node->on(
-        cc::NodeEventType::PARENT_CHANGED,
+        cc::EventTypesToJS::NODE_ACTIVE_NODE,
         [jsObject](bool shouldActiveNow) {
             se::AutoHandleScope hs;
             se::Value           funcVal;
