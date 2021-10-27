@@ -93,8 +93,8 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
     #end if
 #end for
 #for m in $current_class.getter_setter
-    #set tmp_getter = "nullptr" if m["getter"] is None else "_SE(" + m["getter"].signature_name + ")"
-    #set tmp_setter = "nullptr" if m["setter"] is None else "_SE(" + m["setter"].signature_name + ")"
+    #set tmp_getter = "nullptr" if m["getter"] is None else "_SE(" + m["getter"].signature_name + "_asGetter)"
+    #set tmp_setter = "nullptr" if m["setter"] is None else "_SE(" + m["setter"].signature_name + "_asSetter)"
     cls->defineProperty(${m.name}, ${tmp_getter}, ${tmp_setter});
 #end for
 #for m in methods
