@@ -271,6 +271,7 @@ public:
     inline const IPassDynamics &         getDynamics() const { return _dynamics; }
     inline const std::vector<IBlockRef> &getBlocks() const { return _blocks; }
     inline bool                          isRootBufferDirty() const { return _rootBufferDirty; }
+    inline void                          _setRootBufferDirty(bool val) { _rootBufferDirty = val; }
     // states
     inline pipeline::RenderPriority  getPriority() const { return _priority; }
     inline gfx::PrimitiveMode        getPrimitive() const { return _primitive; }

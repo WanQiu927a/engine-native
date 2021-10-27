@@ -179,11 +179,11 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
         _fpsTime    = 0.0;
     }
 
-    _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_UPDATE, this); //cjh added for sync logic in ts.
-
     for (auto *scene : _scenes) {
         scene->removeBatches();
     }
+
+    _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_UPDATE, this); //cjh added for sync logic in ts.
 
     //TODO: minggo
     //    if (_batcher) {
