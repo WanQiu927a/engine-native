@@ -777,7 +777,7 @@ class NativeField(object):
         cursor = cursor.canonical
         self.cursor = cursor
         self.name = cursor.displayname
-        new_name = generator.should_rename_function(native_class, self.name) 
+        new_name = generator.should_rename_function(native_class.class_name, self.name)
         self.export_name = new_name if new_name is not None else self.name
         self.kind = cursor.type.kind
         self.is_static = cursor.storage_class.value == 3 and cursor.kind == cindex.CursorKind.VAR_DECL
@@ -795,7 +795,7 @@ class NativeField(object):
 
     def toJSON(self):
         return {
-            "name": self.name,
+            "name": self.export_name,
             "pretty_name": self.pretty_name,
             "signature_name" : self.signature_name,
             "type": self.ntype.toJSON(),
@@ -1279,7 +1279,7 @@ class NativeClass(object):
                         "names": x["names"],
                         "type": x["getter"].ret_type.toJSON() if x["getter"] is not None else (x["setter"].arguments[0].toJSON() if x["setter"] is not None else None)
                     }, self.getter_setter)),
-            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.generator.should_skip(self.class_name,f[0]), self.methods.items()))),
+            "methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda f: not self.skip_bind_function({"name":f[0]}), self.methods.items()))),
             "static_methods": dict(map(lambda kv: (kv[0], kv[1].toJSON()), filter(lambda x: not self.generator.should_skip(self.class_name, x[0]), self.static_methods.items()))),
             "dict_of_override_method_should_be_bound": dict(map(lambda kv: (kv[0], list(map(lambda x: x.toJSON(), kv[1]))), self.dict_of_override_method_should_be_bound.items())),
         }
