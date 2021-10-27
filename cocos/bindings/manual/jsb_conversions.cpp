@@ -925,25 +925,25 @@ bool sevalue_to_native(const se::Value &from, cc::scene::FogInfo *to, se::Object
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::scene::ShadowInfo *to, se::Object * /*ctx*/) {
+bool sevalue_to_native(const se::Value &from, cc::scene::ShadowsInfo *to, se::Object * /*ctx*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to ShadowInfo failed!");
     se::Object *obj = from.toObject();
     se::Value   tmp;
-    set_member_field<cc::scene::ShadowType>(obj, to, "type", &cc::scene::ShadowInfo::setType, tmp);
-    set_member_field<bool>(obj, to, "enabled", &cc::scene::ShadowInfo::setEnabled, tmp);
-    set_member_field<cc::Vec3>(obj, to, "normal", &cc::scene::ShadowInfo::setNormal, tmp);
-    set_member_field<float>(obj, to, "distance", &cc::scene::ShadowInfo::setDistance, tmp);
-    set_member_field<cc::Color>(obj, to, "shadowColor", &cc::scene::ShadowInfo::setshadowColor, tmp);
-    set_member_field<bool>(obj, to, "autoAdapt", &cc::scene::ShadowInfo::setAutoAdapt, tmp);
-    set_member_field<cc::scene::PCFType>(obj, to, "pcf", &cc::scene::ShadowInfo::setPcf, tmp);
-    set_member_field<float>(obj, to, "bias", &cc::scene::ShadowInfo::setBias, tmp);
-    set_member_field<float>(obj, to, "normalBias", &cc::scene::ShadowInfo::setNormalBias, tmp);
-    set_member_field<float>(obj, to, "near", &cc::scene::ShadowInfo::setNear, tmp);
-    set_member_field<float>(obj, to, "far", &cc::scene::ShadowInfo::setFar, tmp);
-    set_member_field<float>(obj, to, "orthoSize", &cc::scene::ShadowInfo::setOrthoSize, tmp);
-    set_member_field<float>(obj, to, "maxReceived", &cc::scene::ShadowInfo::setMaxReceived, tmp);
-    set_member_field<float>(obj, to, "size", &cc::scene::ShadowInfo::setShadowMapSize, tmp);
-    set_member_field<float>(obj, to, "saturation", &cc::scene::ShadowInfo::setSaturation, tmp);
+    set_member_field<cc::scene::ShadowType>(obj, to, "type", &cc::scene::ShadowsInfo::setType, tmp);
+    set_member_field<bool>(obj, to, "enabled", &cc::scene::ShadowsInfo::setEnabled, tmp);
+    set_member_field<cc::Vec3>(obj, to, "normal", &cc::scene::ShadowsInfo::setNormal, tmp);
+    set_member_field<float>(obj, to, "distance", &cc::scene::ShadowsInfo::setDistance, tmp);
+    set_member_field<cc::Color>(obj, to, "shadowColor", &cc::scene::ShadowsInfo::setshadowColor, tmp);
+    set_member_field<bool>(obj, to, "autoAdapt", &cc::scene::ShadowsInfo::setAutoAdapt, tmp);
+    set_member_field<cc::scene::PCFType>(obj, to, "pcf", &cc::scene::ShadowsInfo::setPcf, tmp);
+    set_member_field<float>(obj, to, "bias", &cc::scene::ShadowsInfo::setBias, tmp);
+    set_member_field<float>(obj, to, "normalBias", &cc::scene::ShadowsInfo::setNormalBias, tmp);
+    set_member_field<float>(obj, to, "near", &cc::scene::ShadowsInfo::setNear, tmp);
+    set_member_field<float>(obj, to, "far", &cc::scene::ShadowsInfo::setFar, tmp);
+    set_member_field<float>(obj, to, "orthoSize", &cc::scene::ShadowsInfo::setOrthoSize, tmp);
+    set_member_field<float>(obj, to, "maxReceived", &cc::scene::ShadowsInfo::setMaxReceived, tmp);
+    set_member_field<float>(obj, to, "size", &cc::scene::ShadowsInfo::setShadowMapSize, tmp);
+    set_member_field<float>(obj, to, "saturation", &cc::scene::ShadowsInfo::setSaturation, tmp);
     //TODO(PatriceJiang): covnert resource ??
     // set_member_field<cc::scene::Shadow>(obj, to, "resource", &cc::scene::ShadowInfo::setResource, tmp);
 

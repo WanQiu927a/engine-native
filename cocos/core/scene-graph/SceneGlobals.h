@@ -29,7 +29,7 @@ namespace cc {
 
 namespace scene {
 class AmbientInfo;
-class ShadowInfo;
+class ShadowsInfo;
 class SkyboxInfo;
 class FogInfo;
 } // namespace scene
@@ -42,13 +42,13 @@ public:
     void activate();
 
     inline scene::AmbientInfo *getAmbientInfo() const { return _ambientInfo; }
-    inline scene::ShadowInfo * getShadowInfo() const { return _shadowInfo; }
+    inline scene::ShadowsInfo * getShadowInfo() const { return _shadowInfo; }
     inline scene::SkyboxInfo * getSkyboxInfo() const { return _skyboxInfo; }
     inline scene::FogInfo *    getFogInfo() const { return _fogInfo; }
 
 private:
     scene::AmbientInfo *_ambientInfo{nullptr};
-    scene::ShadowInfo * _shadowInfo{nullptr};
+    scene::ShadowsInfo * _shadowInfo{nullptr};
     scene::SkyboxInfo * _skyboxInfo{nullptr};
     scene::FogInfo *    _fogInfo{nullptr};
 };
