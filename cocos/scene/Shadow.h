@@ -134,7 +134,7 @@ enum class PCFType {
 
 class Shadow;
 
-class ShadowInfo final {
+class ShadowsInfo final {
 public:
     /**
      * @en Whether activate planar shadow
@@ -316,7 +316,7 @@ public:
     Shadow()  = default;
     ~Shadow() = default;
 
-    void         initialize(const ShadowInfo &shadowsInfo);
+    void         initialize(const ShadowsInfo &shadowsInfo);
     void         destroy();
     gfx::Shader *getPlanarShader(const std::vector<IMacroPatch> &patches);
     gfx::Shader *getPlanarInstanceShader(const std::vector<IMacroPatch> &patches);

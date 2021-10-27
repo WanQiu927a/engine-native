@@ -1475,7 +1475,7 @@ inline bool sevalue_to_native(const se::Value &from, T to) { // NOLINT(readabili
 template <>
 bool sevalue_to_native(const se::Value &from, cc::scene::FogInfo *, se::Object * /*ctx*/);
 template <>
-bool sevalue_to_native(const se::Value &from, cc::scene::ShadowInfo *, se::Object * /*ctx*/);
+bool sevalue_to_native(const se::Value &from, cc::scene::ShadowsInfo *, se::Object * /*ctx*/);
 template <>
 bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *, se::Object * /*ctx*/);
 
