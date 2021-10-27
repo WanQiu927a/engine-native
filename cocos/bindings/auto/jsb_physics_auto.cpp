@@ -1,3 +1,5 @@
+
+// clang-format off
 #include "cocos/bindings/auto/jsb_physics_auto.h"
 #include "cocos/bindings/manual/jsb_conversions.h"
 #include "cocos/bindings/manual/jsb_global.h"
@@ -384,8 +386,6 @@ static bool js_physics_World_constructor(se::State& s) // NOLINT(readability-ide
 }
 SE_BIND_CTOR(js_physics_World_constructor, __jsb_cc_physics_World_class, js_cc_physics_World_finalize)
 
-
-
 static bool js_cc_physics_World_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::World>(s));
@@ -427,6 +427,7 @@ bool js_register_physics_World(se::Object* obj) // NOLINT(readability-identifier
 
     __jsb_cc_physics_World_proto = cls->getProto();
     __jsb_cc_physics_World_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -1222,8 +1223,6 @@ static bool js_physics_RigidBody_constructor(se::State& s) // NOLINT(readability
 }
 SE_BIND_CTOR(js_physics_RigidBody_constructor, __jsb_cc_physics_RigidBody_class, js_cc_physics_RigidBody_finalize)
 
-
-
 static bool js_cc_physics_RigidBody_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::RigidBody>(s));
@@ -1286,6 +1285,7 @@ bool js_register_physics_RigidBody(se::Object* obj) // NOLINT(readability-identi
 
     __jsb_cc_physics_RigidBody_proto = cls->getProto();
     __jsb_cc_physics_RigidBody_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -1610,8 +1610,6 @@ static bool js_physics_SphereShape_constructor(se::State& s) // NOLINT(readabili
 }
 SE_BIND_CTOR(js_physics_SphereShape_constructor, __jsb_cc_physics_SphereShape_class, js_cc_physics_SphereShape_finalize)
 
-
-
 static bool js_cc_physics_SphereShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::SphereShape>(s));
@@ -1651,6 +1649,7 @@ bool js_register_physics_SphereShape(se::Object* obj) // NOLINT(readability-iden
 
     __jsb_cc_physics_SphereShape_proto = cls->getProto();
     __jsb_cc_physics_SphereShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -1979,8 +1978,6 @@ static bool js_physics_BoxShape_constructor(se::State& s) // NOLINT(readability-
 }
 SE_BIND_CTOR(js_physics_BoxShape_constructor, __jsb_cc_physics_BoxShape_class, js_cc_physics_BoxShape_finalize)
 
-
-
 static bool js_cc_physics_BoxShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::BoxShape>(s));
@@ -2020,6 +2017,7 @@ bool js_register_physics_BoxShape(se::Object* obj) // NOLINT(readability-identif
 
     __jsb_cc_physics_BoxShape_proto = cls->getProto();
     __jsb_cc_physics_BoxShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -2382,8 +2380,6 @@ static bool js_physics_CapsuleShape_constructor(se::State& s) // NOLINT(readabil
 }
 SE_BIND_CTOR(js_physics_CapsuleShape_constructor, __jsb_cc_physics_CapsuleShape_class, js_cc_physics_CapsuleShape_finalize)
 
-
-
 static bool js_cc_physics_CapsuleShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::CapsuleShape>(s));
@@ -2425,6 +2421,7 @@ bool js_register_physics_CapsuleShape(se::Object* obj) // NOLINT(readability-ide
 
     __jsb_cc_physics_CapsuleShape_proto = cls->getProto();
     __jsb_cc_physics_CapsuleShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -2772,8 +2769,6 @@ static bool js_physics_PlaneShape_constructor(se::State& s) // NOLINT(readabilit
 }
 SE_BIND_CTOR(js_physics_PlaneShape_constructor, __jsb_cc_physics_PlaneShape_class, js_cc_physics_PlaneShape_finalize)
 
-
-
 static bool js_cc_physics_PlaneShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::PlaneShape>(s));
@@ -2814,6 +2809,7 @@ bool js_register_physics_PlaneShape(se::Object* obj) // NOLINT(readability-ident
 
     __jsb_cc_physics_PlaneShape_proto = cls->getProto();
     __jsb_cc_physics_PlaneShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -3157,8 +3153,6 @@ static bool js_physics_TrimeshShape_constructor(se::State& s) // NOLINT(readabil
 }
 SE_BIND_CTOR(js_physics_TrimeshShape_constructor, __jsb_cc_physics_TrimeshShape_class, js_cc_physics_TrimeshShape_finalize)
 
-
-
 static bool js_cc_physics_TrimeshShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::TrimeshShape>(s));
@@ -3199,6 +3193,7 @@ bool js_register_physics_TrimeshShape(se::Object* obj) // NOLINT(readability-ide
 
     __jsb_cc_physics_TrimeshShape_proto = cls->getProto();
     __jsb_cc_physics_TrimeshShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -3546,8 +3541,6 @@ static bool js_physics_CylinderShape_constructor(se::State& s) // NOLINT(readabi
 }
 SE_BIND_CTOR(js_physics_CylinderShape_constructor, __jsb_cc_physics_CylinderShape_class, js_cc_physics_CylinderShape_finalize)
 
-
-
 static bool js_cc_physics_CylinderShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::CylinderShape>(s));
@@ -3588,6 +3581,7 @@ bool js_register_physics_CylinderShape(se::Object* obj) // NOLINT(readability-id
 
     __jsb_cc_physics_CylinderShape_proto = cls->getProto();
     __jsb_cc_physics_CylinderShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -3935,8 +3929,6 @@ static bool js_physics_ConeShape_constructor(se::State& s) // NOLINT(readability
 }
 SE_BIND_CTOR(js_physics_ConeShape_constructor, __jsb_cc_physics_ConeShape_class, js_cc_physics_ConeShape_finalize)
 
-
-
 static bool js_cc_physics_ConeShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::ConeShape>(s));
@@ -3977,6 +3969,7 @@ bool js_register_physics_ConeShape(se::Object* obj) // NOLINT(readability-identi
 
     __jsb_cc_physics_ConeShape_proto = cls->getProto();
     __jsb_cc_physics_ConeShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -4307,8 +4300,6 @@ static bool js_physics_TerrainShape_constructor(se::State& s) // NOLINT(readabil
 }
 SE_BIND_CTOR(js_physics_TerrainShape_constructor, __jsb_cc_physics_TerrainShape_class, js_cc_physics_TerrainShape_finalize)
 
-
-
 static bool js_cc_physics_TerrainShape_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::TerrainShape>(s));
@@ -4348,6 +4339,7 @@ bool js_register_physics_TerrainShape(se::Object* obj) // NOLINT(readability-ide
 
     __jsb_cc_physics_TerrainShape_proto = cls->getProto();
     __jsb_cc_physics_TerrainShape_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -4556,8 +4548,6 @@ static bool js_physics_RevoluteJoint_constructor(se::State& s) // NOLINT(readabi
 }
 SE_BIND_CTOR(js_physics_RevoluteJoint_constructor, __jsb_cc_physics_RevoluteJoint_class, js_cc_physics_RevoluteJoint_finalize)
 
-
-
 static bool js_cc_physics_RevoluteJoint_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::RevoluteJoint>(s));
@@ -4591,6 +4581,7 @@ bool js_register_physics_RevoluteJoint(se::Object* obj) // NOLINT(readability-id
 
     __jsb_cc_physics_RevoluteJoint_proto = cls->getProto();
     __jsb_cc_physics_RevoluteJoint_class = cls;
+
 
     se::ScriptEngine::getInstance()->clearException();
     return true;
@@ -4776,8 +4767,6 @@ static bool js_physics_DistanceJoint_constructor(se::State& s) // NOLINT(readabi
 }
 SE_BIND_CTOR(js_physics_DistanceJoint_constructor, __jsb_cc_physics_DistanceJoint_class, js_cc_physics_DistanceJoint_finalize)
 
-
-
 static bool js_cc_physics_DistanceJoint_finalize(se::State& s) // NOLINT(readability-identifier-naming)
 {
     auto iter = se::NonRefNativePtrCreatedByCtorMap::find(SE_THIS_OBJECT<cc::physics::DistanceJoint>(s));
@@ -4811,6 +4800,7 @@ bool js_register_physics_DistanceJoint(se::Object* obj) // NOLINT(readability-id
     __jsb_cc_physics_DistanceJoint_proto = cls->getProto();
     __jsb_cc_physics_DistanceJoint_class = cls;
 
+
     se::ScriptEngine::getInstance()->clearException();
     return true;
 }
@@ -4841,3 +4831,4 @@ bool register_all_physics(se::Object* obj)    // NOLINT
     return true;
 }
 
+// clang-format on

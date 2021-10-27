@@ -5,7 +5,6 @@ set(CC_PLATFORM_ANDROID 3)
 set(CC_PLATFORM_MAC_OSX 4)
 set(CC_PLATFORM_OHOS    5)
 set(CC_PLATFORM 1)
-set(ENABLE_JSB_FILES ON) #TODO: remove this line
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(WINDOWS TRUE)

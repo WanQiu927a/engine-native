@@ -115,6 +115,14 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
     cls->defineStaticFunction("${m['name']}", _SE(${fn.signature_name}));
     #end for
 #end if
+#set static_fields = list(filter(lambda m: $current_class.should_export_field(m.name) and m.is_static, public_fields))
+#if len(static_fields) > 0
+    // static fields
+#for m in static_fields
+    #set static_setter = "_SE("+m.signature_name+"_set_"+m.name+")" if not m.is_static_const else "nullptr"
+    cls->defineStaticProperty("${m.export_name}", _SE(${m.signature_name}_get_${m.name}), ${static_setter});
+#end for
+#end if
 #if not $current_class.is_abstract
     cls->defineFinalizeFunction(_SE(js_${current_class.underlined_class_name}_finalize));
 #end if
@@ -124,14 +132,6 @@ bool js_register_${generator.prefix}_${current_class.nested_class_name}(se::Obje
     __jsb_${current_class.underlined_class_name}_proto = cls->getProto();
     __jsb_${current_class.underlined_class_name}_class = cls;
 
-    #set static_fields = list(filter(lambda m: $current_class.should_export_field(m.name) and m.is_static, public_fields))
-#if len(static_fields) > 0
-    // static fields
-#for m in static_fields
-    #set static_setter = "_SE("+m.signature_name+"_set_"+m.name+")" if not m.is_static_const else "nullptr"
-    __jsb_${current_class.underlined_class_name}_proto->defineProperty("${m.export_name}", _SE(${m.signature_name}_get_${m.name}), ${static_setter});
-#end for
-#end if
 #if $generator.in_listed_extend_classed($current_class.class_name) and not $current_class.is_abstract
     jsb_set_extend_property("${generator.target_ns}", "${current_class.target_class_name}");
 #end if

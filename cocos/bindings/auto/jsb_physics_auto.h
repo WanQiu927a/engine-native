@@ -1,3 +1,4 @@
+// clang-format off
 #pragma once
 #include "base/Config.h"
 #include <type_traits>
@@ -325,3 +326,5 @@ SE_DECLARE_FUNC(js_physics_DistanceJoint_setPivotA);
 SE_DECLARE_FUNC(js_physics_DistanceJoint_setPivotB);
 SE_DECLARE_FUNC(js_physics_DistanceJoint_DistanceJoint);
 
+
+// clang-format on

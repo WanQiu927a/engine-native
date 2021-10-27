@@ -35,7 +35,6 @@
     #include "cocos/bindings/manual/jsb_conversions.h"
     #include "cocos/bindings/manual/jsb_global.h"
     #include "cocos/network/WebSocketServer.h"
-    #include "uv/uv.h"
 
 using namespace cc;
 using namespace cc::network;
@@ -103,12 +102,12 @@ static bool WebSocketServer_listen(se::State &s) {
     bool ok;
 
     if (argc >= 1) { // port
-        ok = seval_to_int32(args[0], &arg_port);
+        ok = sevalue_to_native(args[0], &arg_port);
         SE_PRECONDITION2(ok, false, "Convert args[0] to port failed");
     }
     if (argc >= 2) {              // host or callback
         if (args[1].isString()) { //to host
-            ok = seval_to_std_string(args[1], &arg_host);
+            ok = sevalue_to_native(args[1], &arg_host);
             SE_PRECONDITION2(ok, false, "Convert args[1] to host failed");
         }
         se::Object *funObj = nullptr;
@@ -409,7 +408,7 @@ static bool WebSocketServer_Connection_send(se::State &s) {
         bool ok = false;
         if (args[0].isString()) {
             std::string data;
-            ok = seval_to_std_string(args[0], &data);
+            ok = sevalue_to_native(args[0], &data);
             SE_PRECONDITION2(ok, false, "Convert string failed");
             (*cobj)->sendTextAsync(data, callback);
         } else if (args[0].isObject()) {
@@ -460,12 +459,12 @@ static bool WebSocketServer_Connection_close(se::State &s) {
 
     if (argc >= 1) {
 
-        ok = seval_to_int32(args[0], &arg_code);
+        ok = sevalue_to_native(args[0], &arg_code);
         SE_PRECONDITION2(ok, false, "Convert args[0] should be a number");
 
         if (argc >= 2) {
 
-            ok = seval_to_std_string(args[1], &arg_reason);
+            ok = sevalue_to_native(args[1], &arg_reason);
             SE_PRECONDITION2(ok, false, "Convert args[1] should be a string");
         }
     }
