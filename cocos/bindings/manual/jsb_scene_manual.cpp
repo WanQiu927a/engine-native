@@ -25,10 +25,10 @@
 
 #include "jsb_scene_manual.h"
 #include "bindings/auto/jsb_scene_auto.h"
-#include "scene/Model.h"
 #include "core/event/EventTypesToJS.h"
-#include "core/scene-graph/NodeEvent.h"
 #include "core/scene-graph/Node.h"
+#include "core/scene-graph/NodeEvent.h"
+#include "scene/Model.h"
 
 #ifndef JSB_ALLOC
     #define JSB_ALLOC(kls, ...) new (std::nothrow) kls(__VA_ARGS__)
@@ -240,6 +240,6 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     __jsb_cc_Root_proto->defineFunction("_registerListeners", _SE(js_root_registerListeners));
 
     // Node TS wrapper will invoke this function to let native object listen some events.
-    __jsb_cc_Node_proto->defineFunction("_registerListners", _SE(js_scene_Node_registerListeners));
+    __jsb_cc_Node_proto->defineFunction("_registerListeners", _SE(js_scene_Node_registerListeners));
     return true;
 }
