@@ -458,7 +458,7 @@ function processClass(klass: NativeClass): string {
             let maxMiddle = 0;
             let lines: [string, string, string][] = [];
             for (let attr of klass.public_fields) {
-                let p: [string, string, string] = [`${attr.name}`, `${UF(attr.type)};`, `// ${attr.type.namespaced_class_name}`];
+                let p: [string, string, string] = [`${attr.is_static?"static ":""}${attr.is_static_const?"readonly ":""}${attr.name}`, `${UF(attr.type)};`, `// ${attr.type.namespaced_class_name}`];
                 maxLeft = Math.max(maxLeft, p[0].length);
                 maxMiddle = Math.max(maxMiddle, p[1].length);
                 lines.push(p);
