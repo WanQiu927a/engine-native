@@ -184,7 +184,7 @@ public:
     void off(const std::string &type, void (Target::*memberFn)(Args...), Target *target, bool useCapture = false);
 
     template <typename... Args>
-    void emit(const std::string &type, Args &&... args);
+    void emit(const std::string &type, Args &&...args);
 
     void dispatchEvent(event::Event *event);
     bool hasEventListener(const std::string &type) const;
@@ -232,24 +232,30 @@ public:
     void removeAllChildren();
     bool isChildOf(Node *parent);
 
-    inline void setPersistNode(bool val) {
-        val ? _objFlags |= Flags::DONT_DESTROY : _objFlags &= ~Flags::DONT_DESTROY;
-    };
     inline void setName(const std::string &name) {
         _name = name;
     }
+
     void setActive(bool isActive);
+
     void setSiblingIndex(index_t idx);
 
-    inline bool getPersistNode() const {
+    inline bool isPersistNode() const {
         return static_cast<FlagBits>(_objFlags & Flags::DONT_DESTROY) > 0;
     }
-    inline std::string getName() const {
+
+    inline void setPersistNode(bool val) {
+        val ? _objFlags |= Flags::DONT_DESTROY : _objFlags &= ~Flags::DONT_DESTROY;
+    };
+
+    inline const std::string &getName() const {
         return _name;
     }
-    inline std::string getUUid() const {
+
+    inline const std::string &getUuid() const {
         return _id;
     }
+
     inline bool isActive() const { return _active; }
     inline bool isActiveInHierarchy() const { return _activeInHierarchy; }
 
@@ -387,6 +393,12 @@ public:
     const Vec3 &getWorldScale();
 
     void setWorldRotationFromEuler(float x, float y, float z);
+
+    /**
+     * @en Local transformation matrix
+     * @zh 本地坐标系变换矩阵
+     */
+    void setMatrix(const Mat4 &val);
 
     /**
      * @en Update the world transform information if outdated
@@ -642,7 +654,7 @@ bool Node::isNode(T *obj) {
 }
 
 template <typename... Args>
-void Node::emit(const std::string &type, Args &&... args) {
+void Node::emit(const std::string &type, Args &&...args) {
     _eventProcessor->emit(type, std::forward<Args>(args)...);
 }
 
