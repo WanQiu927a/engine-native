@@ -66,12 +66,13 @@ void Root::initialize() {
     renderPassInfo.depthStencilAttachment.depthStoreOp   = gfx::StoreOp::DISCARD;
     renderPassInfo.depthStencilAttachment.stencilStoreOp = gfx::StoreOp::DISCARD;
 
-    _mainWindow = createWindow({"rootMainWindow",
-                                _device->getWidth(),
-                                _device->getHeight(),
-                                renderPassInfo,
-                                -1, // always on screen
-                                false});
+    scene::IRenderWindowInfo info{"rootMainWindow",
+                                  _device->getWidth(),
+                                  _device->getHeight(),
+                                  renderPassInfo,
+                                  -1, // always on screen
+                                  false};
+    _mainWindow = createWindow(info);
 
     _curWindow = _mainWindow;
 
@@ -219,7 +220,7 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
     //cjh TODO:    if (this._batcher) this._batcher.reset();
 }
 
-scene::RenderWindow *Root::createWindow(const scene::IRenderWindowInfo &info) {
+scene::RenderWindow *Root::createWindow(scene::IRenderWindowInfo &info) {
     auto *window = new scene::RenderWindow();
 
     window->initialize(_device, info);

@@ -90,7 +90,7 @@ public:
      * 创建窗口
      * @param info GFX 窗口描述信息
      */
-    scene::RenderWindow *createWindow(const scene::IRenderWindowInfo &);
+    scene::RenderWindow *createWindow(scene::IRenderWindowInfo &);
 
     /**
      * @zh
