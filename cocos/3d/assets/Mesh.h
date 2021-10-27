@@ -55,7 +55,7 @@ public:
      * 交错排列是指在实际数据的缓冲区中，每个顶点的所有属性总是依次排列，并总是出现在下一个顶点的所有属性之前。
      */
     struct IVertexBundle {
-        std::optional<char> _padding;
+        std::optional<char> _padding; // TODO(PatriceJiang): avoid jsb cache map
         /**
          * @en The actual value for all vertex attributes.
          * You must use DataView to access the data.
