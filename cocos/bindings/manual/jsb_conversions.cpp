@@ -713,6 +713,49 @@ bool sevalue_to_native(const se::Value &from, cc::Vec4 *to, se::Object * /*unuse
 }
 
 template <>
+bool sevalue_to_native(const se::Value &from, cc::Mat3 *to, se::Object * /*unused*/) {
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Matrix3 failed!");
+    se::Object *obj = from.toObject();
+
+    if (obj->isTypedArray()) {
+        // typed array
+        SE_PRECONDITION2(obj->isTypedArray(), false, "Convert parameter to Matrix3 failed!");
+
+        size_t   length = 0;
+        uint8_t *ptr    = nullptr;
+        obj->getTypedArrayData(&ptr, &length);
+
+        memcpy(to->m, ptr, length);
+    } else {
+        bool        ok = false;
+        se::Value   tmp;
+        std::string prefix = "m";
+        for (uint32_t i = 0; i < 9; ++i) {
+            std::string name;
+            if (i < 10) {
+                name = prefix + "0" + std::to_string(i);
+            } else {
+                name = prefix + std::to_string(i);
+            }
+            ok = obj->getProperty(name.c_str(), &tmp);
+            SE_PRECONDITION3(ok, false, *to = cc::Mat3::IDENTITY);
+
+            if (tmp.isNumber()) {
+                to->m[i] = tmp.toFloat();
+            } else {
+                SE_REPORT_ERROR("%u, not supported type in matrix", i);
+                *to = cc::Mat3::IDENTITY;
+                return false;
+            }
+
+            tmp.setUndefined();
+        }
+    }
+
+    return true;
+}
+
+template <>
 bool sevalue_to_native(const se::Value &from, cc::Mat4 *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Matrix4 failed!");
     se::Object *obj = from.toObject();
