@@ -70,7 +70,7 @@ void BakedSkinningModel::bindSkeleton(Skeleton *skeleton, Node *skinningRoot, Me
     _mesh     = mesh;
     if (skeleton == nullptr || skinningRoot == nullptr || mesh == nullptr) return;
     setTransform(skinningRoot);
-    _jointMedium.animInfo = _dataPoolManager->jointAnimationInfo->getData(skinningRoot->getUUid());
+    _jointMedium.animInfo = _dataPoolManager->jointAnimationInfo->getData(skinningRoot->getUuid());
     if (_jointMedium.buffer == nullptr) {
         _jointMedium.buffer = _device->createBuffer({
             gfx::BufferUsageBit::UNIFORM | gfx::BufferUsageBit::TRANSFER_DST,

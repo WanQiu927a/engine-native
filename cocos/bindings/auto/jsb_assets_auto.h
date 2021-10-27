@@ -608,5 +608,4 @@ SE_DECLARE_FUNC(js_assets_Skeleton_getJoints);
 SE_DECLARE_FUNC(js_assets_Skeleton_setBindposes);
 SE_DECLARE_FUNC(js_assets_Skeleton_setJoints);
 
-
 // clang-format on

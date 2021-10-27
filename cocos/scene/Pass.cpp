@@ -384,6 +384,10 @@ bool Pass::tryCompile() {
     return true;
 }
 
+gfx::Shader *Pass::getShaderVariant() {
+    return getShaderVariant({});
+}
+
 gfx::Shader *Pass::getShaderVariant(const std::vector<IMacroPatch> &patches) {
     if (!_shader && !tryCompile()) {
         CC_LOG_WARNING("pass resources incomplete");

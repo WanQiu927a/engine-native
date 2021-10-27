@@ -252,6 +252,7 @@ public:
      * @zh 结合指定的编译宏组合获取当前 Pass 的 Shader Variant
      * @param patches The macro patches
      */
+    gfx::Shader *getShaderVariant();
     gfx::Shader *getShaderVariant(const std::vector<IMacroPatch> &patches);
 
     IPassInfoFull getPassInfoFull() const;
@@ -278,7 +279,7 @@ public:
     inline gfx::RasterizerState *    getRasterizerState() const { return _rs; }
     inline gfx::DepthStencilState *  getDepthStencilState() const { return _depthStencilState; }
     inline gfx::BlendState *         getBlendState() const { return _blendState; }
-    inline gfx::DynamicStateFlagBit  getDynamicState() const { return _dynamicStates; }
+    inline gfx::DynamicStateFlagBit  getDynamicStates() const { return _dynamicStates; }
     inline BatchingSchemes           getBatchingScheme() const { return _batchingScheme; }
     inline gfx::DescriptorSet *      getDescriptorSet() const { return _descriptorSet; }
     inline uint64_t                  getHash() const { return _hash; }

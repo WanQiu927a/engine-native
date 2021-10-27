@@ -117,5 +117,4 @@ bool register_all_engine(se::Object *obj);                   // NOLINT
 JSB_REGISTER_OBJECT_TYPE(cc::SAXParser);
 SE_DECLARE_FUNC(js_engine_SAXParser_init);
 
-
 // clang-format on

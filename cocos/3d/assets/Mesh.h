@@ -169,7 +169,7 @@ public:
     void setAssetData(const cc::ArrayBuffer::Ptr data) {
         _data = Uint8Array(data);
     }
-    const Uint8Array & getAssetData() {
+    const Uint8Array &getAssetData() {
         return _data;
     }
 
@@ -219,11 +219,10 @@ public:
         return _data;
     }
 
-
     inline void setData(const Uint8Array &data) {
         _data = data;
     }
-    
+
     /**
      * @en The hash of the mesh
      * @zh 此网格的哈希值。

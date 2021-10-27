@@ -81,11 +81,11 @@ void Game::init(IGameConfig *config) {
     // return this._initEngine().then(() => {}
 }
 void Game::addPersistRootNode(Node *node) {
-    if (!node || !Node::isNode(node) || !node->getUUid().empty()) {
+    if (!node || !Node::isNode(node) || !node->getUuid().empty()) {
         // debug.warnID(3800);
         return;
     }
-    std::string id = node->getUUid();
+    std::string id = node->getUuid();
     if (_persistRootNodes.find(id) == _persistRootNodes.end()) {
         Scene *scene = Director::getInstance()->getScene();
         if (scene->isValid()) {
@@ -99,7 +99,7 @@ void Game::addPersistRootNode(Node *node) {
                 // debug.warnID(3802);
                 return;
             } else {
-                // node->_originalSceneId = scene->getUUid();
+                // node->_originalSceneId = scene->getUuid();
             }
         }
         _persistRootNodes[id] = node;
@@ -109,7 +109,7 @@ void Game::addPersistRootNode(Node *node) {
 }
 
 void Game::removePersistRootNode(Node *node) {
-    std::string id = node ? node->getUUid() : "";
+    std::string id = node ? node->getUuid() : "";
     if (node == _persistRootNodes[id]) {
         _persistRootNodes.erase(id);
         // node->_persistNode = false;

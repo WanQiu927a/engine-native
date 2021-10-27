@@ -886,5 +886,4 @@ SE_DECLARE_FUNC(js_scene_PassInstance_getParent);
 SE_DECLARE_FUNC(js_scene_PassInstance_tryCompile);
 SE_DECLARE_FUNC(js_scene_PassInstance_PassInstance);
 
-
 // clang-format on

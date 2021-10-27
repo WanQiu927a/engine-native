@@ -27,11 +27,11 @@
 #include "core/Director.h"
 #include "core/Game.h"
 #include "core/data/Object.h"
+#include "core/event/EventTypesToJS.h"
 #include "core/scene-graph/Find.h"
 #include "core/scene-graph/NodeActivator.h"
 #include "core/scene-graph/NodeEnum.h"
 #include "core/scene-graph/Scene.h"
-#include "core/event/EventTypesToJS.h"
 
 namespace cc {
 
@@ -115,10 +115,10 @@ void Node::onHierarchyChangedBase(Node *oldParent) {
     Scene *scene     = dynamic_cast<Scene *>(newParent);
     if (_persistNode && scene) {
         emit(EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE);
-         
-//        if (EDITOR) {
-//            warnID(1623);
-//        }
+
+        //        if (EDITOR) {
+        //            warnID(1623);
+        //        }
     }
     // TODO
     //if (EDITOR) {
@@ -771,7 +771,7 @@ void Node::onSetParent(Node *oldParent, bool keepWorldTransform) {
         Node *parent = _parent;
         if (parent) {
             parent->updateWorldTransform();
-            Mat4 mTemp{Mat4::IDENTITY};
+            Mat4 mTemp{Mat4::IDENTITY}; //cjh FIXME: the logic is different from ts version.
             Mat4::inverseTranspose(parent->getWorldMatrix(), &mTemp);
             mTemp *= _worldMatrix;
 
@@ -826,6 +826,15 @@ void Node::inverseTransformPoint(Vec3 &out, const Vec3 &p) {
         Vec3::transformInverseRTS(out, out, cur->getRotation(), cur->getPosition(), cur->getScale());
         --i;
         cur = dirtyNodes[i];
+    }
+}
+
+void Node::setMatrix(const Mat4 &val) {
+    val.decompose(&_localScale, &_localRotation, &_localPosition);
+    invalidateChildren(TransformBit::TRS);
+    _eulerDirty = true;
+    if (_eventMask & TRANSFORM_ON) {
+        emit(NodeEventType::TRANSFORM_CHANGED, TransformBit::TRS);
     }
 }
 
@@ -918,6 +927,7 @@ bool Node::onPreDestroy() {
 }
 
 void Node::onHierarchyChanged(Node *oldParent) {
+    emit(EventTypesToJS::NODE_REATTACH);
     _eventProcessor->reattach();
     onHierarchyChangedBase(oldParent);
 }

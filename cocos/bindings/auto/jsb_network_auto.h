@@ -26,5 +26,4 @@ JSB_REGISTER_OBJECT_TYPE(cc::network::Downloader);
 SE_DECLARE_FUNC(js_network_Downloader_setOnTaskProgress);
 SE_DECLARE_FUNC(js_network_Downloader_Downloader);
 
-
 // clang-format on

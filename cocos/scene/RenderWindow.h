@@ -57,7 +57,7 @@ public:
     RenderWindow()  = default;
     ~RenderWindow() = default;
 
-    bool initialize(gfx::Device *device, const IRenderWindowInfo &info);
+    bool initialize(gfx::Device *device, IRenderWindowInfo &info);
     void destroy();
 
     /**

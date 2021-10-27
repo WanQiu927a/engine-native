@@ -1006,6 +1006,9 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec4 *to, se::Object * /*unused*/);
 
 template <>
+bool sevalue_to_native(const se::Value &from, cc::Mat3 *to, se::Object * /*unused*/);
+
+template <>
 bool sevalue_to_native(const se::Value &from, cc::Mat4 *to, se::Object * /*unused*/);
 
 template <>

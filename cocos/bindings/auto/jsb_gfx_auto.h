@@ -856,5 +856,4 @@ SE_DECLARE_FUNC(js_gfx_DeviceManager_addCustomEvent);
 SE_DECLARE_FUNC(js_gfx_DeviceManager_create);
 SE_DECLARE_FUNC(js_gfx_DeviceManager_destroy);
 
-
 // clang-format on

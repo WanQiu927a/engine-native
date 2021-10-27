@@ -28,7 +28,7 @@
 
 namespace cc {
 namespace scene {
-bool RenderWindow::initialize(gfx::Device *device, const IRenderWindowInfo &info) {
+bool RenderWindow::initialize(gfx::Device *device, IRenderWindowInfo &info) {
     if (info.title.has_value() && !info.title.value().empty()) {
         _title = info.title.value();
     }
@@ -42,8 +42,8 @@ bool RenderWindow::initialize(gfx::Device *device, const IRenderWindowInfo &info
     _width  = info.width;
     _height = info.height;
 
-    gfx::ColorAttachmentList    colorAttachments       = info.renderPassInfo.colorAttachments;
-    gfx::DepthStencilAttachment depthStencilAttachment = info.renderPassInfo.depthStencilAttachment;
+    gfx::ColorAttachmentList &   colorAttachments       = info.renderPassInfo.colorAttachments;
+    gfx::DepthStencilAttachment &depthStencilAttachment = info.renderPassInfo.depthStencilAttachment;
     for (auto &colorAttachment : colorAttachments) {
         if (colorAttachment.format == gfx::Format::UNKNOWN) {
             colorAttachment.format = device->getColorFormat();

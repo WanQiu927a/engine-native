@@ -340,7 +340,7 @@ void SimpleDemo::testShadow() {
 void SimpleDemo::testTerrain() {
     // deserialize terrain asset
     auto *fileUtils        = FileUtils::getInstance();
-    auto terrainAssetJson = fileUtils->getStringFromFile("bb4eed63-fb14-4bf8-a8f3-7c9b271a9f18.json");
+    auto  terrainAssetJson = fileUtils->getStringFromFile("bb4eed63-fb14-4bf8-a8f3-7c9b271a9f18.json");
     CC_ASSERT(!terrainAssetJson.empty());
 
     rapidjson::Document doc;

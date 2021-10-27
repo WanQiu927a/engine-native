@@ -171,6 +171,30 @@ public:
      */
     void setProperty(const std::string &name, const MaterialPropertyVariant &val, index_t passIdx = CC_INVALID_INDEX);
 
+    void setPropertyFloat32(const std::string &name, float val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyInt32(const std::string &name, int32_t val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec2(const std::string &name, const Vec2 &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec3(const std::string &name, const Vec3 &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec4(const std::string &name, const Vec4 &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyColor(const std::string &name, const Color &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyMat3(const std::string &name, const Mat3 &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyMat4(const std::string &name, const Mat4 &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyQuaternion(const std::string &name, const Quaternion &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyTextureBase(const std::string &name, TextureBase *val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyGFXTexture(const std::string &name, gfx::Texture *val, index_t passIdx = CC_INVALID_INDEX);
+
+    void setPropertyFloat32Array(const std::string &name, const std::vector<float> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyInt32Array(const std::string &name, const std::vector<int32_t> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec2Array(const std::string &name, const std::vector<Vec2> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec3Array(const std::string &name, const std::vector<Vec3> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyVec4Array(const std::string &name, const std::vector<Vec4> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyColorArray(const std::string &name, const std::vector<cc::Color> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyMat3Array(const std::string &name, const std::vector<Mat3> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyMat4Array(const std::string &name, const std::vector<Mat4> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyQuaternionArray(const std::string &name, const std::vector<Quaternion> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyTextureBaseArray(const std::string &name, const std::vector<TextureBase *> &val, index_t passIdx = CC_INVALID_INDEX);
+    void setPropertyGFXTextureArray(const std::string &name, const std::vector<gfx::Texture *> &val, index_t passIdx = CC_INVALID_INDEX);
+
     /**
      * @en
      * Get the specified uniform value for this material.<br>

@@ -258,5 +258,4 @@ SE_DECLARE_FUNC(js_pipeline_PostprocessStage_getGlobalSet);
 SE_DECLARE_FUNC(js_pipeline_PostprocessStage_getInitializeInfo);
 SE_DECLARE_FUNC(js_pipeline_PostprocessStage_PostprocessStage);
 
-
 // clang-format on
