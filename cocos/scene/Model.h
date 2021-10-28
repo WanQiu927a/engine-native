@@ -104,6 +104,7 @@ public:
         _worldBounds = world;
         _modelBounds->set(_worldBounds->getCenter(), _worldBounds->getHalfExtents());
     }
+    inline void setInstancedAttributeBlock(const InstancedAttributeBlock &val) { _instanceAttributeBlock = val; }
 
     inline bool                               isInited() const { return _inited; };
     inline bool                               getCastShadow() const { return _castShadow; }
