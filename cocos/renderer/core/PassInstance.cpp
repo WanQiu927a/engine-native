@@ -29,7 +29,7 @@ namespace cc {
 
 PassInstance::PassInstance(scene::Pass *parent, MaterialInstance *owner) : Super(parent->getRoot()), _parent(parent), _owner(owner) {
     doInit(_parent->getPassInfoFull());
-    for (const auto &b : _shaderInfo->blocks) { // seem logically useless in ts?
+    for (const auto &b : _shaderInfo->blocks) { //cjh FIXME:logic is wrong!!! seem logically useless in ts?
         scene::IBlockRef block       = _blocks[b.binding];
         scene::IBlockRef parentBlock = _parent->getBlocks()[b.binding];
         block                        = parentBlock;
