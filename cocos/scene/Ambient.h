@@ -62,7 +62,8 @@ public:
     inline const Color &getGroundAlbedo() { return _groundAlbedo; }
     void                activate(Ambient *resource);
 
-private:
+//cjh JSB need to bind the property, so need to make it public
+//private:
     Color    _skyColor{51, 128, 204, 1};
     float    _skyIllum{20000.0F};
     Color    _groundAlbedo{51, 51, 51, 255};

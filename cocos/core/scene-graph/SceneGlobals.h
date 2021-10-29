@@ -42,15 +42,20 @@ public:
     void activate();
 
     inline scene::AmbientInfo *getAmbientInfo() const { return _ambientInfo; }
-    inline scene::ShadowsInfo * getShadowInfo() const { return _shadowInfo; }
+    inline scene::ShadowsInfo * getShadowsInfo() const { return _shadowInfo; }
     inline scene::SkyboxInfo * getSkyboxInfo() const { return _skyboxInfo; }
     inline scene::FogInfo *    getFogInfo() const { return _fogInfo; }
 
+    inline void setAmbientInfo(scene::AmbientInfo * info) { _ambientInfo = info; }
+    inline void setShadowsInfo(scene::ShadowsInfo * info) { _shadowInfo = info; }
+    inline void setSkyboxInfo(scene::SkyboxInfo * info) { _skyboxInfo = info; }
+    inline void setFogInfo(scene::FogInfo * info) { _fogInfo = info; }
+
 private:
-    scene::AmbientInfo *_ambientInfo{nullptr};
+    scene::AmbientInfo * _ambientInfo{nullptr};
     scene::ShadowsInfo * _shadowInfo{nullptr};
-    scene::SkyboxInfo * _skyboxInfo{nullptr};
-    scene::FogInfo *    _fogInfo{nullptr};
+    scene::SkyboxInfo *  _skyboxInfo{nullptr};
+    scene::FogInfo *     _fogInfo{nullptr};
 };
 
 } // namespace cc

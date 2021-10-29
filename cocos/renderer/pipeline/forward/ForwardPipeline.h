@@ -40,7 +40,7 @@ public:
     ~ForwardPipeline() override = default;
 
     bool initialize(const RenderPipelineInfo &info) override;
-    void destroy() override;
+    bool destroy() override;
     bool activate() override;
     void render(const vector<scene::Camera *> &cameras) override;
 

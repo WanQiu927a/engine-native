@@ -34,6 +34,7 @@
 
 #include "renderer/core/PassUtils.h"
 #include "scene/Camera.h"
+#include "core/assets/Asset.h"
 
 namespace cc {
 namespace gfx {
@@ -51,15 +52,16 @@ struct CC_DLL RenderPipelineInfo {
     RenderFlowList flows;
 };
 
-class CC_DLL RenderPipeline : public Object {
+class CC_DLL RenderPipeline : public Asset {
 public:
+    using Super = Asset;
     static RenderPipeline *getInstance();
 
     RenderPipeline();
     ~RenderPipeline() override;
 
     virtual bool activate();
-    virtual void destroy();
+    bool destroy() override;
     virtual bool initialize(const RenderPipelineInfo &info);
     virtual void render(const vector<scene::Camera *> &cameras);
     virtual void resize(uint width, uint height){};

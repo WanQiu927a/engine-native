@@ -66,7 +66,8 @@ public:
 
     void activate(Skybox *resource);
 
-protected:
+//cjh JSB need to bind the property, so need to make it public
+//private:
     TextureCube *_envmap{nullptr};
     bool         _isRGBE{false};
     bool         _enabled{false};
