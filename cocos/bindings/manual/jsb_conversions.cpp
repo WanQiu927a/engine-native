@@ -1007,15 +1007,6 @@ bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Obj
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::IMaterialInstanceInfo *to, se::Object * /*ctx*/) {
-    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to ShadowInfo failed!");
-    se::Object *obj = from.toObject();
-    //cjh TODO:
-    CC_ASSERT(false);
-    return false;
-}
-
-template <>
 bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
     uint8_t *   data    = nullptr;
     size_t      byteLen = 0;
