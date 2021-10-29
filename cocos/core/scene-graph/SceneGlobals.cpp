@@ -34,7 +34,7 @@ namespace cc {
 
 SceneGlobals::SceneGlobals() {
     _ambientInfo = new scene::AmbientInfo();
-    _shadowInfo  = new scene::ShadowInfo();
+    _shadowInfo  = new scene::ShadowsInfo();
     _skyboxInfo  = new scene::SkyboxInfo();
     _fogInfo     = new scene::FogInfo();
 }
