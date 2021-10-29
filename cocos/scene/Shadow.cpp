@@ -54,7 +54,7 @@ void ShadowsInfo::setType(ShadowType val) {
     }
 }
 
-void ShadowsInfo::setshadowColor(const Color &val) {
+void ShadowsInfo::setShadowColor(const Color &val) {
     _shadowColor.set(val);
     if (_resource != nullptr) {
         _resource->setShadowColor(val);

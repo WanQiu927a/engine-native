@@ -137,7 +137,8 @@ public:
 
     void activate(Fog *resource);
 
-private:
+//cjh JSB need to bind the property, so need to make it public
+//private:
     FogType _type{FogType::LINEAR};
     Color   _fogColor{200, 200, 200, 255};
     bool    _isEnabled{false};

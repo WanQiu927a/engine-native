@@ -136,6 +136,8 @@ class Shadow;
 
 class ShadowsInfo final {
 public:
+    ShadowsInfo() = default;
+    ~ShadowsInfo() = default;
     /**
      * @en Whether activate planar shadow
      * @zh 是否启用平面阴影？
@@ -154,7 +156,7 @@ public:
      * @en Shadow color
      * @zh 阴影颜色
      */
-    void                setshadowColor(const Color &val);
+    void                setShadowColor(const Color &val);
     inline const Color &getShadowColor() const {
         return _shadowColor;
     }
@@ -280,7 +282,7 @@ public:
 
     void activate(Shadow *resource);
 
-private:
+public:
     Color      _shadowColor{0, 0, 0, 76};
     bool       _enabled{false};
     Vec3       _normal{0.F, 1.F, 0.F};

@@ -25,37 +25,11 @@
 
 #pragma once
 
+#include "core/data/Object.h"
+
 namespace cc {
 
-namespace scene {
-class AmbientInfo;
-class ShadowsInfo;
-class SkyboxInfo;
-class FogInfo;
-} // namespace scene
-
-class SceneGlobals final {
-public:
-    SceneGlobals();
-    ~SceneGlobals();
-
-    void activate();
-
-    inline scene::AmbientInfo *getAmbientInfo() const { return _ambientInfo; }
-    inline scene::ShadowsInfo * getShadowsInfo() const { return _shadowInfo; }
-    inline scene::SkyboxInfo * getSkyboxInfo() const { return _skyboxInfo; }
-    inline scene::FogInfo *    getFogInfo() const { return _fogInfo; }
-
-    inline void setAmbientInfo(scene::AmbientInfo * info) { _ambientInfo = info; }
-    inline void setShadowsInfo(scene::ShadowsInfo * info) { _shadowInfo = info; }
-    inline void setSkyboxInfo(scene::SkyboxInfo * info) { _skyboxInfo = info; }
-    inline void setFogInfo(scene::FogInfo * info) { _fogInfo = info; }
-
-private:
-    scene::AmbientInfo * _ambientInfo{nullptr};
-    scene::ShadowsInfo * _shadowInfo{nullptr};
-    scene::SkyboxInfo *  _skyboxInfo{nullptr};
-    scene::FogInfo *     _fogInfo{nullptr};
+class BaseNode : public CCObject {
 };
 
-} // namespace cc
+}

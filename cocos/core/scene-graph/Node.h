@@ -30,8 +30,8 @@
 
 #include "base/TypeDef.h"
 #include "core/components/Component.h"
-#include "core/data/Object.h"
 #include "core/event/Event.h"
+#include "core/scene-graph/BaseNode.h"
 #include "core/scene-graph/NodeEnum.h"
 #include "core/scene-graph/NodeEvent.h"
 #include "core/scene-graph/NodeEventProcessor.h"
@@ -57,9 +57,9 @@ using EventType = NodeEventType;
  */
 using TransformDirtyBit = TransformBit;
 
-class Node : public CCObject {
+class Node : public BaseNode {
 public:
-    using Super = CCObject;
+    using Super = BaseNode;
 
     static const uint32_t TRANSFORM_ON;
     static const uint32_t DESTROYING;

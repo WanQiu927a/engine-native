@@ -401,7 +401,7 @@ void DeferredPipeline::resize(uint width, uint height) {
     initFrameGraphExternalTexture();
 }
 
-void DeferredPipeline::destroy() {
+bool DeferredPipeline::destroy() {
     destroyQuadInputAssembler();
     destroyDeferredData();
 
@@ -428,7 +428,7 @@ void DeferredPipeline::destroy() {
 
     _commandBuffers.clear();
 
-    RenderPipeline::destroy();
+    return RenderPipeline::destroy();
 }
 
 void DeferredPipeline::destroyDeferredData() {

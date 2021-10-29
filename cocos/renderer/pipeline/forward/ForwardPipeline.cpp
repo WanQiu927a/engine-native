@@ -174,7 +174,7 @@ bool ForwardPipeline::activeRenderer() {
     return true;
 }
 
-void ForwardPipeline::destroy() {
+bool ForwardPipeline::destroy() {
     if (_descriptorSet) {
         _descriptorSet->getBuffer(UBOGlobal::BINDING)->destroy();
         _descriptorSet->getBuffer(UBOCamera::BINDING)->destroy();
@@ -192,7 +192,7 @@ void ForwardPipeline::destroy() {
 
     _commandBuffers.clear();
 
-    RenderPipeline::destroy();
+    return RenderPipeline::destroy();
 }
 
 } // namespace pipeline
