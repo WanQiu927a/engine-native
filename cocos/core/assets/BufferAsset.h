@@ -32,14 +32,14 @@ namespace cc {
 
 class BufferAsset final : public Asset {
 public:
-//    BufferAsset()           = default;
+    //    BufferAsset()           = default;
     ~BufferAsset() override = default;
 
     inline const ArrayBuffer::Ptr &getBuffer() const { return _buffer; }
 
-    std::any     getNativeAsset() const override;
-    void         setNativeAsset(const std::any &obj) override;
-    virtual bool validate() const override { return !_buffer; }
+    std::any getNativeAsset() const override;
+    void     setNativeAsset(const std::any &obj) override;
+    bool     validate() const override { return _buffer != nullptr; }
 
 private:
     ArrayBuffer::Ptr _buffer{nullptr};
