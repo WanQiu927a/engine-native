@@ -1052,19 +1052,9 @@ inline bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *c
 ////////////////// TypedArray
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, bool>::type inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
-    uint8_t *   data    = nullptr;
-    size_t      byteLen = 0;
-    se::Object *obj     = from.toObject();
-    if (obj->isTypedArray()) {
-        obj->getTypedArrayData(&data, &byteLen);
-    } else {
-        obj->getArrayBufferData(&data, &byteLen);
-    }
-
-    auto buffer = std::make_shared<cc::ArrayBuffer>(byteLen);
-    buffer->reset(data, byteLen);
-    to->reset(buffer);
+typename std::enable_if<std::is_arithmetic<T>::value, bool>::type 
+inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
+    to->setJSTypedArray(from.toObject());
     return true;
 }
 
@@ -1560,6 +1550,9 @@ nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) {
 template <>
 bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/); // NOLINT
 
+template <>
+bool nativevalue_to_se(const cc::ArrayBuffer &arrayBuffer, se::Value &to, se::Object * /*ctx*/); // NOLINT
+
 template <typename... ARGS>
 bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Object *ctx); // NOLINT
 
@@ -1578,8 +1571,8 @@ bool nativevalue_to_se(const std::optional<T> &from, se::Value &to, se::Object *
 
 template <typename T>
 inline bool nativevalue_to_se(const cc::TypedArrayTemp<T> &typedArray, se::Value &to, se::Object *ctx) {
-    cc::TypedArray ta{typedArray};
-    return nativevalue_to_se(ta, to, ctx);
+    to.setObject(typedArray.getJSTypedArray());
+    return true;
 }
 
 template <typename T, typename allocator>

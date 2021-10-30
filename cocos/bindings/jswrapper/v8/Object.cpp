@@ -185,7 +185,7 @@ Object *Object::createArrayObject(size_t length) {
     return obj;
 }
 
-Object *Object::createArrayBufferObject(void *data, size_t byteLength) {
+Object *Object::createArrayBufferObject(const void *data, size_t byteLength) {
     v8::Local<v8::ArrayBuffer> jsobj = v8::ArrayBuffer::New(__isolate, byteLength);
     if (data) {
         memcpy(jsobj->GetBackingStore()->Data(), data, byteLength);
@@ -250,6 +250,63 @@ Object *Object::createTypedArray(TypedArrayType type, const void *data, size_t b
     return obj;
 }
 
+Object *Object::createTypedArrayWithBuffer(TypedArrayType type, const Object *obj) {
+    return Object::createTypedArrayWithBuffer(type, obj, 0);
+}
+
+Object *Object::createTypedArrayWithBuffer(TypedArrayType type, const Object *obj, size_t offet) {
+    uint32_t byteLength = 0;
+    obj->getArrayLength(&byteLength);
+    return Object::createTypedArrayWithBuffer(type, obj, 0, byteLength);
+}
+
+Object *Object::createTypedArrayWithBuffer(TypedArrayType type, const Object *obj, size_t offet, size_t byteLength) {
+    if (type == TypedArrayType::NONE) {
+        SE_LOGE("Don't pass se::Object::TypedArrayType::NONE to createTypedArray API!");
+        return nullptr;
+    }
+
+    if (type == TypedArrayType::UINT8_CLAMPED) {
+        SE_LOGE("Doesn't support to create Uint8ClampedArray with Object::createTypedArray API!");
+        return nullptr;
+    }
+
+    v8::Local<v8::Object> typedArray;
+    assert(obj->isArrayBuffer());
+    v8::Local<v8::ArrayBuffer> jsobj = obj->_getJSObject().As<v8::ArrayBuffer>();
+    switch (type) {
+        case TypedArrayType::INT8:
+            typedArray = v8::Int8Array::New(jsobj, offet, byteLength);
+            break;
+        case TypedArrayType::INT16:
+            typedArray = v8::Int16Array::New(jsobj, offet, byteLength / 2);
+            break;
+        case TypedArrayType::INT32:
+            typedArray = v8::Int32Array::New(jsobj, offet, byteLength / 4);
+            break;
+        case TypedArrayType::UINT8:
+            typedArray = v8::Uint8Array::New(jsobj, offet, byteLength);
+            break;
+        case TypedArrayType::UINT16:
+            typedArray = v8::Uint16Array::New(jsobj, offet, byteLength / 2);
+            break;
+        case TypedArrayType::UINT32:
+            typedArray = v8::Uint32Array::New(jsobj, offet, byteLength / 4);
+            break;
+        case TypedArrayType::FLOAT32:
+            typedArray = v8::Float32Array::New(jsobj, offet, byteLength / 4);
+            break;
+        case TypedArrayType::FLOAT64:
+            typedArray = v8::Float64Array::New(jsobj, offet, byteLength / 8);
+            break;
+        default:
+            assert(false); // Should never go here.
+            break;
+    }
+
+    return Object::_createJSObject(nullptr, typedArray);
+}
+
 Object *Object::createUint8TypedArray(uint8_t *bytes, size_t byteLength) {
     return createTypedArray(TypedArrayType::UINT8, bytes, byteLength);
 }
@@ -282,8 +339,8 @@ bool Object::init(Class *cls, v8::Local<v8::Object> obj) {
 
     #if CC_DEBUG
     this->_objectId = ++nativeObjectId;
-//    this->setProperty("__object_id__", se::Value(this->_objectId));
-//    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
+        //    this->setProperty("__object_id__", se::Value(this->_objectId));
+        //    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
     #endif
 
     return true;
