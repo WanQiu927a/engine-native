@@ -653,50 +653,17 @@ bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unuse
     return Rect_to_seval(from, &to);
 }
 
-template <typename T>
-constexpr std::enable_if_t<std::is_arithmetic_v<T>, se::Object::TypedArrayType>
-get_typed_array_type() { // NOLINT(readability-identifier-naming)
-    se::Object::TypedArrayType                           arrayType{};
-    constexpr std::array<se::Object::TypedArrayType, 12> typeIndex = {
-        se::Object::TypedArrayType::NONE,
-        se::Object::TypedArrayType::NONE,
-        se::Object::TypedArrayType::INT8,
-        se::Object::TypedArrayType::UINT8,
-        se::Object::TypedArrayType::INT16,
-        se::Object::TypedArrayType::UINT16,
-        se::Object::TypedArrayType::NONE,
-        se::Object::TypedArrayType::NONE,
-        se::Object::TypedArrayType::INT32,
-        se::Object::TypedArrayType::UINT32,
-        se::Object::TypedArrayType::FLOAT32,
-        se::Object::TypedArrayType::FLOAT64,
-    };
-    if (std::is_integral_v<T>) {
-        arrayType = typeIndex[sizeof(T) * 2 + (std::is_signed_v<T> ? 0 : 1)];
-    } else {
-        arrayType = typeIndex[10 + (sizeof(T) == 4 ? 0 : 1)];
-    }
-    return arrayType;
+template <>
+bool nativevalue_to_se(const cc::ArrayBuffer &arrayBuffer, se::Value &to, se::Object * /*ctx*/) {
+    to.setObject(arrayBuffer.getJSArrayBuffer());
+    return true;
 }
 
 template <>
-bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
-    std::shared_ptr<cc::ArrayBuffer> buffer;
-    se::Object *                     ret;
-
-    se_for_each(std::make_index_sequence<std::variant_size<cc::TypedArray>::value>{}, [&](auto vidx) {
-        if (vidx != typedArray.index()) {
-            return;
-        }
-        using AT                             = std::remove_reference_t<decltype(std::get<vidx>(typedArray))>;
-        using VT                             = typename AT::value_type;
-        auto &                     arr       = std::get<vidx>(typedArray);
-        se::Object::TypedArrayType arrayType = get_typed_array_type<VT>();
-        auto                       buffer    = arr.buffer();
-        ret                                  = se::Object::createTypedArray(arrayType, buffer ? buffer->getData() : nullptr, buffer ? buffer->byteLength() : 0);
-    });
-
-    to.setObject(ret);
+bool nativevalue_to_se(const cc::TypedArray &from, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
+    std::visit([&](auto &typedArray) {
+        to.setObject(typedArray.getJSTypedArray());
+    }, from);
     return true;
 }
 
@@ -1008,15 +975,8 @@ bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Obj
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
-    uint8_t *   data    = nullptr;
-    size_t      byteLen = 0;
-    se::Object *obj     = from.toObject();
-    if (obj->isTypedArray()) {
-        obj->getTypedArrayData(&data, &byteLen);
-    } else {
-        obj->getArrayBufferData(&data, &byteLen);
-    }
-    to->reset(data, byteLen);
+    assert(from.isObject());
+    to->setJSArrayBuffer(from.toObject());
     return true;
 }
 template <>
@@ -1030,30 +990,9 @@ bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *
 }
 template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
-    auto &   typedArray = *to;
-    uint8_t *data       = nullptr;
-    size_t   byteLen    = 0;
-    from.toObject()->getTypedArrayData(&data, &byteLen);
-    auto arrayBuffer = std::make_shared<cc::ArrayBuffer>(byteLen);
-    if (std::holds_alternative<cc::Int8Array>(typedArray)) {
-        *to = cc::Int8Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint8Array>(typedArray)) {
-        *to = cc::Uint8Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Int16Array>(typedArray)) {
-        *to = cc::Int16Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint16Array>(typedArray)) {
-        *to = cc::Uint16Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Int32Array>(typedArray)) {
-        *to = cc::Int32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Uint32Array>(typedArray)) {
-        *to = cc::Uint32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Float32Array>(typedArray)) {
-        *to = cc::Float32Array{arrayBuffer};
-    } else if (std::holds_alternative<cc::Float64Array>(typedArray)) {
-        *to = cc::Float64Array{arrayBuffer};
-    } else {
-        assert(false);
-    }
+    std::visit([&](auto& typedArray) {
+        typedArray.setJSTypedArray(from.toObject());
+    }, *to);
 
     return true;
 }

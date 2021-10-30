@@ -101,13 +101,27 @@ public:
     static Object *createTypedArray(TypedArrayType type, const void *data, size_t byteLength);
 
     /**
+         *  @brief Creates a JavaScript Typed Array Object with a se::Object, which is a ArrayBuffer,
+                   if provide a null pointer,then will create a empty JavaScript Typed Array Object.
+         *  @param[in] type The format of typed array.
+         *  @param[in] obj A ArrayBuffer to TypedArray.
+         *  @param[in] offset Offset of ArrayBuffer to create with.
+         *  @param[in] byteLength The number of bytes pointed to by the parameter bytes.
+         *  @return A JavaScript Typed Array Object which refers to the ArrayBuffer Object, or nullptr if there is an error.
+         *  @note The return value (non-null) has to be released manually.
+         */
+    static Object *createTypedArrayWithBuffer(TypedArrayType type, const Object *obj);
+    static Object *createTypedArrayWithBuffer(TypedArrayType type, const Object *obj, size_t offet);
+    static Object *createTypedArrayWithBuffer(TypedArrayType type, const Object *obj, size_t offet, size_t byteLength);
+
+    /**
          *  @brief Creates a JavaScript Array Buffer object from an existing pointer.
          *  @param[in] bytes A pointer to the byte buffer to be used as the backing store of the Typed Array object.
          *  @param[in] byteLength The number of bytes pointed to by the parameter bytes.
          *  @return A Array Buffer Object whose backing store is the same as the one pointed to data, or nullptr if there is an error.
          *  @note The return value (non-null) has to be released manually.
          */
-    static Object *createArrayBufferObject(void *data, size_t byteLength);
+    static Object *createArrayBufferObject(const void *data, size_t byteLength);
 
     /**
          *  @brief Creates a JavaScript Object from a JSON formatted string.

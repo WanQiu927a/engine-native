@@ -27,6 +27,7 @@
 
 #include <memory>
 #include "base/Macros.h"
+#include "bindings/jswrapper/Object.h"
 
 namespace cc {
 
@@ -35,7 +36,8 @@ public:
     using Ptr = std::shared_ptr<ArrayBuffer>;
 
     explicit ArrayBuffer(uint32_t length) : _byteLength{length} {
-        _data = static_cast<uint8_t *>(malloc(_byteLength));
+        _jsArrayBuffer = se::Object::createArrayBufferObject(nullptr, length);
+        _jsArrayBuffer->getArrayBufferData(static_cast<uint8_t **>(&_data), nullptr);
         memset(_data, 0x00, _byteLength);
     }
 
@@ -46,8 +48,20 @@ public:
     ArrayBuffer() = default;
 
     ~ArrayBuffer() {
-        free(_data);
+        if (_jsArrayBuffer) {
+            _jsArrayBuffer->decRef();
+        }
     }
+
+    inline void setJSArrayBuffer(se::Object *arrayBuffer) {
+        if (_jsArrayBuffer) {
+            _jsArrayBuffer->decRef();
+        }
+
+        _jsArrayBuffer = arrayBuffer;
+        _jsArrayBuffer->getArrayBufferData(static_cast<uint8_t **>(&_data), nullptr);
+    }
+    inline se::Object *getJSArrayBuffer() const { return _jsArrayBuffer; }
 
     inline uint32_t byteLength() const { return _byteLength; }
 
@@ -55,17 +69,16 @@ public:
     const uint8_t *getData() const { return _data; }
 
     inline void reset(const uint8_t *data, uint32_t length) {
-        free(_data);
-        _data       = static_cast<uint8_t *>(malloc(length));
+        _jsArrayBuffer->decRef();
+        _jsArrayBuffer = se::Object::createArrayBufferObject(data, length);
+        _jsArrayBuffer->getArrayBufferData(static_cast<uint8_t **>(&_data), nullptr);
         _byteLength = length;
-        if (data) {
-            memcpy(_data, data, _byteLength);
-        }
     }
 
 private:
-    uint8_t *_data{nullptr};
-    uint32_t _byteLength{0};
+    se::Object *_jsArrayBuffer{nullptr};
+    uint8_t *   _data{nullptr};
+    uint32_t    _byteLength{0};
 
     template <class T>
     friend class TypedArrayTemp;

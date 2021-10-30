@@ -30,8 +30,58 @@
 #include <variant>
 #include "base/TypeDef.h"
 #include "core/ArrayBuffer.h"
+#include "bindings/jswrapper/Object.h"
 
 namespace cc {
+
+namespace {
+
+template <typename T>
+se::Object::TypedArrayType toTypedArrayType() {
+    return se::Object::TypedArrayType::NONE;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<int8_t>() {
+    return se::Object::TypedArrayType::INT8;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<int16_t>() {
+    return se::Object::TypedArrayType::INT16;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<int32_t>() {
+    return se::Object::TypedArrayType::INT32;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<uint8_t>() {
+    return se::Object::TypedArrayType::UINT8;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<uint16_t>() {
+    return se::Object::TypedArrayType::UINT16;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<uint32_t>() {
+    return se::Object::TypedArrayType::UINT32;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<float>() {
+    return se::Object::TypedArrayType::FLOAT32;
+}
+
+template <>
+se::Object::TypedArrayType toTypedArrayType<double>() {
+    return se::Object::TypedArrayType::FLOAT64;
+}
+
+} // namespace
 
 template <typename T>
 class TypedArrayTemp {
@@ -58,6 +108,7 @@ public:
       _byteLength(length * BYTES_PER_ELEMENT),
       _byteEndPos(byteOffset + length) {
         CC_ASSERT(_byteEndPos <= _buffer->byteLength());
+        _jsTypedArray = se::Object::createTypedArrayWithBuffer(toTypedArrayType<T>(), buffer->getJSArrayBuffer(), byteOffset, length);
     }
 
     ~TypedArrayTemp() {
@@ -106,6 +157,7 @@ public:
         _byteLength               = _buffer->byteLength();
         _byteOffset               = 0;
         _byteEndPos               = byteLength;
+        _jsTypedArray             = se::Object::createTypedArrayWithBuffer(toTypedArrayType<T>(), _buffer->getJSArrayBuffer(), 0, length);
     }
 
     void reset(const ArrayBuffer::Ptr &buffer, uint32_t offset = 0, uint32_t length = std::numeric_limits<uint32_t>::max()) {
@@ -120,12 +172,25 @@ public:
     inline uint32_t                length() const { return _byteLength / BYTES_PER_ELEMENT; }
     inline uint32_t                byteOffset() const { return _byteOffset; }
     inline bool                    empty() const { return _byteLength == 0; }
+    inline se::Object *            getJSTypedArray() const { return _jsTypedArray; }
+    inline void                    setJSTypedArray(se::Object *typedArray) {
+        _jsTypedArray = typedArray;
+
+        se::Value bufferVal;
+        _jsTypedArray->getProperty("buffer", &bufferVal);
+        assert(bufferVal.isObject());
+        assert(bufferVal.toObject()->isArrayBuffer());
+
+        _buffer = std::make_shared<ArrayBuffer>();
+        _buffer->setJSArrayBuffer(bufferVal.toObject());
+    }
 
 private:
     ArrayBuffer::Ptr _buffer{nullptr};
     uint32_t         _byteOffset{0};
     uint32_t         _byteLength{0};
     uint32_t         _byteEndPos{0};
+    se::Object *     _jsTypedArray{nullptr};
 };
 
 using Int8Array             = TypedArrayTemp<int8_t>;
