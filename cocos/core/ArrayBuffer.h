@@ -54,6 +54,10 @@ public:
     }
 
     inline void setJSArrayBuffer(se::Object *arrayBuffer) {
+        if (_jsArrayBuffer) {
+            _jsArrayBuffer->decRef();
+        }
+
         _jsArrayBuffer = arrayBuffer;
         _jsArrayBuffer->getArrayBufferData(static_cast<uint8_t **>(&_data), nullptr);
     }
