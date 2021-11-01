@@ -588,6 +588,7 @@ public:
     Node *   _getChild(index_t i);
     void     _setChildrenSize(uint32_t size);
     uint32_t _getChildrenSize();
+    void     _setChildren(std::vector<Node *> &&children);
     //
 
 protected:

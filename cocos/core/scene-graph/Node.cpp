@@ -961,6 +961,11 @@ void Node::_setChildrenSize(uint32_t size) {
 uint32_t Node::_getChildrenSize() {
     return _children.size();
 }
+
+void Node::_setChildren(std::vector<Node *> &&children) {
+    _children = std::move(children);
+}
+
 //
 
 } // namespace cc
