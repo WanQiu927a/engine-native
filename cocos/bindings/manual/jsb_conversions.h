@@ -1711,6 +1711,9 @@ inline bool nativevalue_to_se(const bool &from, se::Value &to, se::Object * /*ct
 template <>
 bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx);
 
+template <>
+bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx);
+
 template <typename R, typename... Args>
 inline bool nativevalue_to_se(std::function<R(Args...)> & /*from*/, se::Value & /*to*/, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
     SE_LOGE("Can not convert C++ lambda to JS object");                                                         // TODO(jiangzhan)

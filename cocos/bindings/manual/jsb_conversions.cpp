@@ -1090,6 +1090,16 @@ bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx) {
 }
 
 template <>
+bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx) {
+    se::HandleObject obj(se::Object::createPlainObject());
+    obj->setProperty("uuid", se::Value(from.uuid));
+    obj->setProperty("ext", se::Value(from.ext));
+    obj->setProperty("__isNative__", se::Value(from.__isNative__));
+    to.setObject(obj);
+    return true;
+}
+
+template <>
 bool seval_to_Map_string_key(const se::Value &v, cc::Map<std::string, cc::middleware::Texture2D *> *ret) {
     assert(ret != nullptr);
     assert(v.isObject());
