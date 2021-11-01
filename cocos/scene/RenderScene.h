@@ -84,9 +84,7 @@ public:
     void removeModel(Model *model);
     void removeModels();
 
-    void updateBatches(std::vector<DrawBatch2D *> &&);
     void addBatch(DrawBatch2D *);
-    void removeBatch(index_t index);
     void removeBatch(DrawBatch2D *);
     void removeBatches();
 

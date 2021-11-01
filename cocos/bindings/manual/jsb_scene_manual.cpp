@@ -38,25 +38,6 @@
     #define JSB_FREE(ptr) delete ptr
 #endif
 
-static bool js_scene_RenderScene_updateBatches(se::State &s) // NOLINT(readability-identifier-naming)
-{
-    auto *cobj = SE_THIS_OBJECT<cc::scene::RenderScene>(s);
-    SE_PRECONDITION2(cobj, false, "js_scene_RenderScene_updateBatches : Invalid Native Object");
-    const auto &   args = s.args();
-    size_t         argc = args.size();
-    CC_UNUSED bool ok   = true;
-    if (argc == 1) {
-        HolderType<std::vector<cc::scene::DrawBatch2D *>, false> arg0 = {};
-        ok &= sevalue_to_native(args[0], &arg0, s.thisObject());
-        SE_PRECONDITION2(ok, false, "js_scene_RenderScene_updateBatches : Error processing arguments");
-        cobj->updateBatches(std::move(arg0.value()));
-        return true;
-    }
-    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 1);
-    return false;
-}
-SE_BIND_FUNC(js_scene_RenderScene_updateBatches) // NOLINT(readability-identifier-naming)
-
 static bool js_root_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
 {
     auto *cobj = SE_THIS_OBJECT<cc::Root>(s);
@@ -262,7 +243,6 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
         obj->setProperty("ns", nsVal);
     }
 
-    __jsb_cc_scene_RenderScene_proto->defineFunction("updateBatches", _SE(js_scene_RenderScene_updateBatches));
     __jsb_cc_Root_proto->defineFunction("_registerListeners", _SE(js_root_registerListeners));
 
     // Node TS wrapper will invoke this function to let native object listen some events.
