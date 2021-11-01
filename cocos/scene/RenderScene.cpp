@@ -206,19 +206,8 @@ void RenderScene::removeBatch(DrawBatch2D *drawBatch2D) {
     }
 }
 
-void RenderScene::removeBatch(index_t index) {
-    if (index >= static_cast<index_t>(_batches.size())) {
-        return;
-    }
-    removeBatch(_batches[index]);
-}
-
 void RenderScene::removeBatches() {
     _batches.clear();
-}
-
-void RenderScene::updateBatches(std::vector<DrawBatch2D *> &&batches) {
-    _batches = batches;
 }
 
 void RenderScene::onGlobalPipelineStateChanged() {
