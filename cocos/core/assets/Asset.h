@@ -51,7 +51,7 @@ public:
      * 返回该资源对应的目标平台资源的 URL，如果没有将返回一个空字符串。
      * @readOnly
      */
-    const std::string &getNativeUrl() const;
+    std::string getNativeUrl() const;
 
     NativeDep getNativeDep() const;
 
