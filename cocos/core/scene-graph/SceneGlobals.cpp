@@ -40,18 +40,29 @@ SceneGlobals::SceneGlobals() {
 }
 
 SceneGlobals::~SceneGlobals() {
-    CC_SAFE_DELETE(_ambientInfo);
-    CC_SAFE_DELETE(_shadowInfo);
-    CC_SAFE_DELETE(_skyboxInfo);
-    CC_SAFE_DELETE(_fogInfo);
+    //cjh FIXME:    CC_SAFE_DELETE(_ambientInfo);
+    //    CC_SAFE_DELETE(_shadowInfo);
+    //    CC_SAFE_DELETE(_skyboxInfo);
+    //    CC_SAFE_DELETE(_fogInfo);
 }
 
 void SceneGlobals::activate() {
     auto *sceneData = Root::getInstance()->getPipeline()->getPipelineSceneData();
-    _ambientInfo->activate(sceneData->getAmbient());
-    _skyboxInfo->activate(sceneData->getSkybox());
-    _shadowInfo->activate(sceneData->getShadow());
-    _fogInfo->activate(sceneData->getFog());
+    if (_ambientInfo != nullptr) {
+        _ambientInfo->activate(sceneData->getAmbient());
+    }
+
+    if (_skyboxInfo != nullptr) {
+        _skyboxInfo->activate(sceneData->getSkybox());
+    }
+
+    if (_shadowInfo != nullptr) {
+        _shadowInfo->activate(sceneData->getShadow());
+    }
+
+    if (_fogInfo != nullptr) {
+        _fogInfo->activate(sceneData->getFog());
+    }
 }
 
 } // namespace cc
