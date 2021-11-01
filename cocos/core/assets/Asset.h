@@ -51,7 +51,7 @@ public:
      * 返回该资源对应的目标平台资源的 URL，如果没有将返回一个空字符串。
      * @readOnly
      */
-    std::string getNativeUrl() const;
+    const std::string &getNativeUrl() const;
 
     NativeDep getNativeDep() const;
 
@@ -92,8 +92,8 @@ public:
      */
     virtual void createNode(const CreateNodeCallback &cb) {}
 
-    void            addRef();
-    void            decRef(bool autoRelease = true);
+    Asset *         addRef();
+    Asset *         decRef(bool autoRelease = true);
     inline uint32_t getRefCount() const { return _ref; }
 
     virtual void onLoaded() {}
@@ -120,6 +120,16 @@ public:
 
     std::string toString() const override { return _nativeUrl; }
 
+    //cjh FOR JSB, Consider remove this?
+    void setNativeAssetBase(const std::string &val) {
+        CC_ASSERT(false);
+    }
+    std::string getNativeAssetBase() {
+        CC_ASSERT(false);
+        return "";
+    }
+    //
+
 protected:
     /**
      * @en
@@ -134,9 +144,12 @@ protected:
      */
     void setRawAsset(const std::string &filename, bool inLibrary = true);
 
+    // Make _native, _nativeUrl public for deserialization
+public:
     std::string _native;
     std::string _nativeUrl;
 
+protected:
     std::string _uuid;
 
     std::any _file;

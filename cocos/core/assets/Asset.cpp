@@ -34,7 +34,7 @@ std::string getAssetUrlWithUuid(const std::string &uuid, bool isNative, const st
 }
 //
 
-std::string Asset::getNativeUrl() const {
+const std::string &Asset::getNativeUrl() const {
     if (!_nativeUrl.empty()) {
         if (!_native.empty()) {
             return "";
@@ -72,11 +72,12 @@ void Asset::setRawAsset(const std::string &filename, bool inLibrary /* = true*/)
     }
 }
 
-void Asset::addRef() {
+Asset *Asset::addRef() {
     ++_ref;
+    return this;
 }
 
-void Asset::decRef(bool autoRelease /* = true*/) {
+Asset *Asset::decRef(bool autoRelease /* = true*/) {
     if (_ref > 0) {
         --_ref;
     }
@@ -84,6 +85,7 @@ void Asset::decRef(bool autoRelease /* = true*/) {
     if (autoRelease) {
         //cjh TODO:
     }
+    return this;
 }
 
 void Asset::initDefault(const std::optional<std::string> &uuid) {
