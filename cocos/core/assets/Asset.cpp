@@ -34,12 +34,12 @@ std::string getAssetUrlWithUuid(const std::string &uuid, bool isNative, const st
 }
 //
 
-const std::string &Asset::getNativeUrl() const {
-    if (!_nativeUrl.empty()) {
-        if (!_native.empty()) {
+std::string Asset::getNativeUrl() const {
+    if (_nativeUrl.empty()) {
+        if (_native.empty()) {
             return "";
         }
-        const auto name = _native;
+        const auto &name = _native;
         if (name[0] == 47) { // '/'
             // remove library tag
             // not imported in library, just created on-the-fly
