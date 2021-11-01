@@ -38,13 +38,13 @@ class Scene final : public Node {
 public:
     using Super = Node;
     explicit Scene(const std::string &name);
-    Scene() = default;
+    Scene();
     ~Scene() override;
 
     inline scene::RenderScene *getRenderScene() const { return _renderScene; }
     inline SceneGlobals *      getSceneGlobals() const { return _globals; }
-    inline bool isAutoReleaseAssets() const { return _autoReleaseAssets; }
-    inline void setAutoReleaseAssets(bool val) { _autoReleaseAssets = val; }
+    inline bool                isAutoReleaseAssets() const { return _autoReleaseAssets; }
+    inline void                setAutoReleaseAssets(bool val) { _autoReleaseAssets = val; }
 
     void load();
     void activate(bool active = true);
@@ -67,8 +67,8 @@ protected:
      * @en Indicates whether all (directly or indirectly) static referenced assets of this scene are releasable by default after scene unloading.
      * @zh 指示该场景中直接或间接静态引用到的所有资源是否默认在场景切换后自动释放。
      */
-//    @serializable
-//    @editable
+    //    @serializable
+    //    @editable
     bool _autoReleaseAssets{false};
 
     CC_DISALLOW_COPY_MOVE_ASSIGN(Scene);
