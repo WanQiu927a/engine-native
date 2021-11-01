@@ -305,6 +305,18 @@ bool Vec4_to_seval(const cc::Vec4 &v, se::Value *ret) { // NOLINT(readability-id
     return true;
 }
 
+bool Quaternion_to_seval(const cc::Quaternion &v, se::Value *ret) { // NOLINT(readability-identifier-naming)
+    assert(ret != nullptr);
+    se::HandleObject obj(se::Object::createPlainObject());
+    obj->setProperty("x", se::Value(v.x));
+    obj->setProperty("y", se::Value(v.y));
+    obj->setProperty("z", se::Value(v.z));
+    obj->setProperty("w", se::Value(v.w));
+    ret->setObject(obj);
+
+    return true;
+}
+
 bool Mat4_to_seval(const cc::Mat4 &v, se::Value *ret) { // NOLINT(readability-identifier-naming)
     assert(ret != nullptr);
     se::HandleObject obj(se::Object::createArrayObject(16));
@@ -646,6 +658,11 @@ bool nativevalue_to_se(const cc::Size &from, se::Value &to, se::Object * /*unuse
 template <>
 bool nativevalue_to_se(const cc::extension::ManifestAsset &from, se::Value &to, se::Object * /*unused*/) {
     return ManifestAsset_to_seval(from, &to);
+}
+
+template <>
+bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx) {
+    return Quaternion_to_seval(from, &to);
 }
 
 template <>
@@ -1059,6 +1076,27 @@ bool nativevalue_to_se(const spine::Vector<spine::String> &v, se::Value &ret, se
     }
 
     return ok;
+}
+
+template <>
+bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx) {
+    se::HandleObject obj(se::Object::createPlainObject());
+    obj->setProperty("r", se::Value(from.r));
+    obj->setProperty("g", se::Value(from.g));
+    obj->setProperty("b", se::Value(from.b));
+    obj->setProperty("a", se::Value(from.a));
+    to.setObject(obj);
+    return true;
+}
+
+template <>
+bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx) {
+    se::HandleObject obj(se::Object::createPlainObject());
+    obj->setProperty("uuid", se::Value(from.uuid));
+    obj->setProperty("ext", se::Value(from.ext));
+    obj->setProperty("__isNative__", se::Value(from.__isNative__));
+    to.setObject(obj);
+    return true;
 }
 
 template <>

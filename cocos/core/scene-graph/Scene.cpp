@@ -37,6 +37,10 @@ Scene::Scene(const std::string &name)
     _globals           = new SceneGlobals();
 }
 
+Scene::Scene()
+: Scene("") {
+}
+
 Scene::~Scene() {
     CC_SAFE_DELETE(_globals);
 }

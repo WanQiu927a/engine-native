@@ -72,6 +72,8 @@ class Fog;
 
 class FogInfo final {
 public:
+    FogInfo()  = default;
+    ~FogInfo() = default;
     /**
      * @zh 是否启用全局雾效
      * @en Enable global fog
@@ -137,8 +139,8 @@ public:
 
     void activate(Fog *resource);
 
-//cjh JSB need to bind the property, so need to make it public
-//private:
+    //cjh JSB need to bind the property, so need to make it public
+    //private:
     FogType _type{FogType::LINEAR};
     Color   _fogColor{200, 200, 200, 255};
     bool    _isEnabled{false};

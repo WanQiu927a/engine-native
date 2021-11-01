@@ -583,6 +583,13 @@ public:
     friend void componentCorrupted(Node *node, Component *comp, uint32_t index);
     // ------------------  Component code end -----------------------------
 
+    // For deserialization
+    void     _setChild(index_t i, Node *child);
+    Node *   _getChild(index_t i);
+    void     _setChildrenSize(uint32_t size);
+    uint32_t _getChildrenSize();
+    //
+
 protected:
     bool onPreDestroy() override;
 
@@ -603,13 +610,9 @@ protected:
     bool onPreDestroyBase();
     void onSiblingIndexChanged(uint32_t siblingIndex) {}
 
-    std::vector<Node *> _children;
-    Node *              _parent{nullptr};
-
     bool _persistNode{false};
 
     std::string         _id{IDGenerator("Node").getNewId()};
-    bool                _active{true};
     bool                _activeInHierarchy{false};
     Scene *             _scene{nullptr};
     NodeEventProcessor *_eventProcessor{nullptr};
@@ -623,25 +626,30 @@ protected:
     Mat4     _rtMat{Mat4::IDENTITY};
     cc::Mat4 _worldMatrix{Mat4::IDENTITY};
 
+    static std::vector<Node *> dirtyNodes;
+    static uint32_t            clearFrame;
+    static uint32_t            clearRound;
+
+    uint32_t _flagChange{0};
+    uint32_t _dirtyFlag{0};
+
+    bool              _eulerDirty{false};
+    NodeUiProperties *_uiProps{nullptr};
+
+public:
+    // For deserialization
+    std::vector<Node *> _children;
+    Node *              _parent{nullptr};
+    bool                _active{true};
     // local transform
     cc::Vec3       _localPosition{Vec3::ZERO};
     cc::Quaternion _localRotation{Quaternion::identity()};
     cc::Vec3       _localScale{Vec3::ONE};
     //
-
-    static std::vector<Node *> dirtyNodes;
-    static uint32_t            clearFrame;
-    static uint32_t            clearRound;
-
-    Vec3 _euler{0, 0, 0};
-
-    uint32_t _flagChange{0};
-    uint32_t _dirtyFlag{0};
+    Vec3     _euler{0, 0, 0};
     uint32_t _layer{0};
-
-    bool              _eulerDirty{false};
-    NodeUiProperties *_uiProps{nullptr};
-
+    //
+private:
     friend class NodeActivator;
     friend class Scene;
 
