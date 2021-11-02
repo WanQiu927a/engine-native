@@ -1052,8 +1052,7 @@ inline bool sevalue_to_native(const se::Value &from, std::any *to, se::Object *c
 ////////////////// TypedArray
 
 template <typename T>
-typename std::enable_if<std::is_arithmetic<T>::value, bool>::type 
-inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
+typename std::enable_if<std::is_arithmetic<T>::value, bool>::type inline sevalue_to_native(const se::Value &from, cc::TypedArrayTemp<T> *to, se::Object * /*ctx*/) {
     to->setJSTypedArray(from.toObject());
     return true;
 }
@@ -1577,14 +1576,13 @@ inline bool nativevalue_to_se(const cc::TypedArrayTemp<T> &typedArray, se::Value
 
 template <typename T, typename allocator>
 inline bool nativevalue_to_se(const std::vector<T, allocator> &from, se::Value &to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
-    se::Object *array = se::Object::createArrayObject(from.size());
-    se::Value   tmp;
+    se::HandleObject array(se::Object::createArrayObject(from.size()));
+    se::Value        tmp;
     for (size_t i = 0; i < from.size(); i++) {
         nativevalue_to_se(from[i], tmp, ctx);
         array->setArrayElement(static_cast<uint32_t>(i), tmp);
     }
-    to.setObject(array);
-    array->decRef();
+    to.setObject(array, true);
     return true;
 }
 
