@@ -1909,13 +1909,12 @@ class Generator(object):
         sorted classes in order of inheritance
         '''
         sorted_list = []
-        for class_name in iter(self.generated_classes.keys()):
+        for class_name in iter(sorted(self.generated_classes.keys())):
             nclass = self.generated_classes[class_name]
             sorted_list += self._sorted_parents(nclass)
         # remove dupes from the list
         no_dupes = []
         [no_dupes.append(i) for i in sorted_list if not no_dupes.count(i)]
-        no_dupes.sort(key= lambda x: x.nested_class_name)
         return no_dupes
 
     def _sorted_parents(self, nclass):
@@ -1923,6 +1922,9 @@ class Generator(object):
         returns the sorted list of parents for a native class
         '''
         sorted_parents = []
+        for scope_name in nclass.nested_classes:
+            if scope_name in self.generated_classes.keys():
+                sorted_parents.append(self.generated_classes[scope_name])
         for p in nclass.parents:
             if p.class_name in self.generated_classes.keys():
                 sorted_parents += self._sorted_parents(p)
