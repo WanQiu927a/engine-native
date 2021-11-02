@@ -590,7 +590,7 @@ protected:
 
     void onSetParent(Node *oldParent, bool keepWorldTransform);
 
-    inline void updateScene() {
+    virtual void updateScene() {
         if (_parent == nullptr) {
             return;
         }
