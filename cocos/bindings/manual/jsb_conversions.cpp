@@ -24,6 +24,7 @@
 ****************************************************************************/
 
 #include "jsb_conversions.h"
+#include <stdio.h>
 
 #include <regex>
 #include <sstream>
@@ -1095,6 +1096,30 @@ bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx
     obj->setProperty("uuid", se::Value(from.uuid));
     obj->setProperty("ext", se::Value(from.ext));
     obj->setProperty("__isNative__", se::Value(from.__isNative__));
+    to.setObject(obj);
+    return true;
+}
+
+template <>
+bool nativevalue_to_se(const cc::Mat3 &from, se::Value &to, se::Object *ctx) {
+    se::HandleObject obj(se::Object::createPlainObject());
+    char keybuf[8] = {0};
+    for(auto i = 0;i < 9 ;i++) {
+        snprintf(keybuf, sizeof(keybuf), "m%02d", i);
+        obj->setProperty(keybuf, se::Value(from.m[i]));
+    }
+    to.setObject(obj);
+    return true;
+}
+
+template <>
+bool nativevalue_to_se(const cc::Mat4 &from, se::Value &to, se::Object *ctx) {
+    se::HandleObject obj(se::Object::createPlainObject());
+    char keybuf[8] = {0};
+    for(auto i = 0;i < 16 ;i++) {
+        snprintf(keybuf, sizeof(keybuf), "m%02d", i);
+        obj->setProperty(keybuf, se::Value(from.m[i]));
+    }
     to.setObject(obj);
     return true;
 }

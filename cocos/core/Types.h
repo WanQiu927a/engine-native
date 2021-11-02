@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -39,6 +40,7 @@
 namespace cc {
 
 struct Error {
+     std::optional<std::string> msg;
 };
 
 using HTMLElement = void *;

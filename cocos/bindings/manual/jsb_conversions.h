@@ -28,10 +28,12 @@
 #include <any>
 #include <cassert>
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <type_traits>
 #include <utility>
 #include <variant>
+#include "bindings/jswrapper/HandleObject.h"
 #include "bindings/jswrapper/SeApi.h"
 #include "bindings/jswrapper/Value.h"
 #include "bindings/jswrapper/v8/Object.h"
@@ -823,7 +825,7 @@ sevalue_to_native(const se::Value &from, T *to, se::Object *ctx) { // NOLINT(rea
     return ret;
 }
 
-//////////////////////////////// forward declaration ////////////////////////////////
+//////////////////////////////// forward declaration : sevalue_to_native ////////////////////////////////
 // std::variant<...>>
 template <typename T>
 bool sevalue_to_native(const se::Value &from, std::optional<T> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
@@ -1271,6 +1273,12 @@ constexpr bool sevalue_to_native(const se::Value &from, std::variant<Args...> *t
     assert(false); //TODO(PatriceJiang): should not pass variant from js -> native
     return false;
 }
+template <>
+inline bool sevalue_to_native(const se::Value &from, std::monostate *to, se::Object *ctx) {
+    // nothing todo
+    return false;
+}
+
 
 ///////////////////////  std::vector<std::variant>
 template <typename... Args>
@@ -1490,8 +1498,6 @@ bool sevalue_to_native(const se::Value &from, cc::geometry::Frustum *to, se::Obj
 ///////////////////////////////////////////////////////////////////
 //////////////////  nativevalue_to_se   ///////////////////////////
 ///////////////////////////////////////////////////////////////////
-// declaration
-
 template <typename T>
 inline bool nativevalue_to_se(T &&from, se::Value &to); // NOLINT(readability-identifier-naming)
 
@@ -1513,6 +1519,7 @@ inline bool nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) { /
         to.setDouble(static_cast<double>(from));
         return true;
     } else {
+        static_assert(!std::is_const<T>::value, "Only non-const value accepted here");
         return nativevalue_to_se<typename std::conditional_t<std::is_const<T>::value, T, typename std::add_const<T>::type>>(from, to, ctx);
     }
 }
@@ -1546,6 +1553,14 @@ nativevalue_to_se(const T &from, se::Value &to, se::Object *ctx) {
 
 #endif // HAS_CONSTEXPR
 
+//////////////////////////////// forward declaration: nativevalue_to_se ////////////////////////////////
+
+template <typename T>
+inline bool nativevalue_to_se(const std::shared_ptr<T> &from, se::Value &to, se::Object *ctx); // NOLINT
+
+template <typename T>
+bool nativevalue_to_se(const std::reference_wrapper<T> ref, se::Value &to, se::Object *ctx); // NOLINT
+
 template <>
 bool nativevalue_to_se(const cc::TypedArray &typedArray, se::Value &to, se::Object * /*ctx*/); // NOLINT
 
@@ -1557,6 +1572,13 @@ bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Obj
 
 template <typename... ARGS>
 bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object *ctx); // NOLINT
+
+template <typename T, typename A>
+inline bool nativevalue_to_se(const std::vector<T, A> &from, se::Value &to, se::Object *ctx); // NOLINT
+
+template <typename K, typename V>
+inline bool nativevalue_to_se(const std::unordered_map<K, V> &from, se::Value &to, se::Object *ctx); // NOLINT
+
 
 /// nativevalue_to_se std::optional
 template <typename T>
@@ -1574,8 +1596,8 @@ inline bool nativevalue_to_se(const cc::TypedArrayTemp<T> &typedArray, se::Value
     return true;
 }
 
-template <typename T, typename allocator>
-inline bool nativevalue_to_se(const std::vector<T, allocator> &from, se::Value &to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
+template <typename T, typename A>
+inline bool nativevalue_to_se(const std::vector<T, A> &from, se::Value &to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
     se::HandleObject array(se::Object::createArrayObject(from.size()));
     se::Value        tmp;
     for (size_t i = 0; i < from.size(); i++) {
@@ -1599,6 +1621,34 @@ inline bool nativevalue_to_se(const std::vector<uint8_t> &from, se::Value &to, s
     se::Object *array = se::Object::createTypedArray(se::Object::TypedArrayType::UINT8, from.data(), from.size());
     to.setObject(array);
     array->decRef();
+    return true;
+}
+
+template <typename A>
+inline bool nativevalue_to_se(const std::vector<bool, A> &from, se::Value &to, se::Object * /*ctx*/) {
+    se::HandleObject array(se::Object::createArrayObject(from.size()));
+    for(auto i = 0;i < from.size(); i++) {
+        array->setArrayElement(i, se::Value(from[i]));
+    }
+    to.setObject(array);
+    return true;
+}
+
+template <typename K, typename V>
+inline bool nativevalue_to_se(const std::unordered_map<K, V> &from, se::Value &to, se::Object *ctx) { // NOLINT
+    se::Object *ret = se::Object::createPlainObject();
+    se::Value   value;
+    bool        ok = true;
+    for (auto &it : from) {
+        ok &= nativevalue_to_se(it.second, value, ctx);
+        if CC_CONSTEXPR (std::is_convertible<K, std::string>::value) {
+            ret->setProperty(it.first, value);
+        } else {
+            ret->setProperty(std::to_string(it.first), value);
+        }
+    }
+    to.setObject(ret);
+    ret->decRef();
     return true;
 }
 
@@ -1711,6 +1761,13 @@ bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx);
 
 template <>
 bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx);
+
+
+template <>
+bool nativevalue_to_se(const cc::Mat3 &from, se::Value &to, se::Object *ctx);
+
+template <>
+bool nativevalue_to_se(const cc::Mat4 &from, se::Value &to, se::Object *ctx);
 
 template <typename R, typename... Args>
 inline bool nativevalue_to_se(std::function<R(Args...)> & /*from*/, se::Value & /*to*/, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
@@ -1914,6 +1971,29 @@ bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Obj
     return ok;
 }
 
+template <>
+bool nativevalue_to_se(const std::monostate &from, se::Value &to, se::Object *ctx) { //NOLINT
+    to.setUndefined();
+    return true;
+}
+
+template <>
+inline bool nativevalue_to_se(const std::any &from, se::Value &to, se::Object *ctx) { //NOLINT
+    assert(false);
+    //TODO(PatriceJiang): // should not convert std::any
+    return true;
+}
+
+template <typename T>
+inline bool nativevalue_to_se(const std::shared_ptr<T> &from, se::Value &to, se::Object *ctx) { //NOLINT
+    if(!from) {
+        to.setNull(); // or undefined ?
+        return true;
+    }
+    return nativevalue_to_se(*from, to, ctx);
+}
+
+
 template <typename... ARGS>
 bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object *ctx) {
     bool        ok = true;
@@ -1925,4 +2005,9 @@ bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Objec
     });
     to.setObject(array);
     return ok;
+}
+
+template <typename T>
+bool nativevalue_to_se(const std::reference_wrapper<T> ref, se::Value &to, se::Object *ctx) { // NOLINT
+    return nativevalue_to_se(ref.get(), to, ctx);
 }
