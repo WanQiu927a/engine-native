@@ -184,7 +184,7 @@ public:
     void off(const std::string &type, void (Target::*memberFn)(Args...), Target *target, bool useCapture = false);
 
     template <typename... Args>
-    void emit(const std::string &type, Args &&... args);
+    void emit(const std::string &type, Args &&...args);
 
     void dispatchEvent(event::Event *event);
     bool hasEventListener(const std::string &type) const;
@@ -607,8 +607,6 @@ protected:
 
     bool _persistNode{false};
 
-    std::string _id{IDGenerator("Node").getNewId()};
-
     Scene *             _scene{nullptr};
     NodeEventProcessor *_eventProcessor{nullptr};
     index_t             _siblingIndex{0};
@@ -633,6 +631,7 @@ protected:
 
 public:
     // For deserialization
+    std::string         _id{IDGenerator("Node").getNewId()};
     std::vector<Node *> _children;
     Node *              _parent{nullptr};
     bool                _active{true};
@@ -658,7 +657,7 @@ bool Node::isNode(T *obj) {
 }
 
 template <typename... Args>
-void Node::emit(const std::string &type, Args &&... args) {
+void Node::emit(const std::string &type, Args &&...args) {
     _eventProcessor->emit(type, std::forward<Args>(args)...);
 }
 

@@ -216,7 +216,7 @@ public:
      */
     void copy(const Material *mat);
 
-protected:
+    // For deserialization, we need to make the following properties public
     /* @type(EffectAsset) */
     EffectAsset *_effectAsset{nullptr};
 
@@ -231,7 +231,9 @@ protected:
 
     /* @serializable */
     std::vector<Record<std::string, MaterialPropertyVariant>> _props;
+    //
 
+protected:
     std::vector<scene::Pass *> _passes;
 
     uint64_t _hash{0};

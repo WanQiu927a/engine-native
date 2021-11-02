@@ -51,36 +51,36 @@ gfx::BufferViewInfo bufferViewInfo;
 
 gfx::DescriptorSetInfo dsInfo;
 
-std::string serializeBlendState(const gfx::BlendState *bs) {
+std::string serializeBlendState(const gfx::BlendState &bs) {
     std::stringstream res;
-    res << ",bs," << bs->isA2C;
-    for (const auto &t : bs->targets) {
+    res << ",bs," << bs.isA2C;
+    for (const auto &t : bs.targets) {
         res << ",bt," << t.blend << "," << static_cast<uint32_t>(t.blendEq) << "," << static_cast<uint32_t>(t.blendAlphaEq) << "," << static_cast<uint32_t>(t.blendColorMask);
         res << "," << static_cast<uint32_t>(t.blendSrc) << "," << static_cast<uint32_t>(t.blendDst) << "," << static_cast<uint32_t>(t.blendSrcAlpha) << "," << static_cast<uint32_t>(t.blendDstAlpha);
     }
     return res.str();
 }
 
-std::string serializeRasterizerState(const gfx::RasterizerState *rs) {
+std::string serializeRasterizerState(const gfx::RasterizerState &rs) {
     std::stringstream res;
-    res << ",rs," << static_cast<uint32_t>(rs->cullMode) << "," << static_cast<uint32_t>(rs->depthBias) << "," << static_cast<uint32_t>(rs->isFrontFaceCCW);
+    res << ",rs," << static_cast<uint32_t>(rs.cullMode) << "," << static_cast<uint32_t>(rs.depthBias) << "," << static_cast<uint32_t>(rs.isFrontFaceCCW);
     return res.str();
 }
 
-std::string serializeDepthStencilState(const gfx::DepthStencilState *dss) {
+std::string serializeDepthStencilState(const gfx::DepthStencilState &dss) {
     std::stringstream res;
-    res << ",dss," << static_cast<uint32_t>(dss->depthTest) << "," << static_cast<uint32_t>(dss->depthWrite) << "," << static_cast<uint32_t>(dss->depthFunc);
-    res << "," << static_cast<uint32_t>(dss->stencilTestFront) << "," << static_cast<uint32_t>(dss->stencilFuncFront) << "," << static_cast<uint32_t>(dss->stencilRefFront) << "," << static_cast<uint32_t>(dss->stencilReadMaskFront);
-    res << "," << static_cast<uint32_t>(dss->stencilFailOpFront) << "," << static_cast<uint32_t>(dss->stencilZFailOpFront) << "," << static_cast<uint32_t>(dss->stencilPassOpFront) << "," << static_cast<uint32_t>(dss->stencilWriteMaskFront);
-    res << "," << static_cast<uint32_t>(dss->stencilTestBack) << "," << static_cast<uint32_t>(dss->stencilFuncBack) << "," << static_cast<uint32_t>(dss->stencilRefBack) << "," << static_cast<uint32_t>(dss->stencilReadMaskBack);
-    res << "," << static_cast<uint32_t>(dss->stencilFailOpBack) << "," << static_cast<uint32_t>(dss->stencilZFailOpBack) << "," << static_cast<uint32_t>(dss->stencilPassOpBack) << "," << dss->stencilWriteMaskBack;
+    res << ",dss," << static_cast<uint32_t>(dss.depthTest) << "," << static_cast<uint32_t>(dss.depthWrite) << "," << static_cast<uint32_t>(dss.depthFunc);
+    res << "," << static_cast<uint32_t>(dss.stencilTestFront) << "," << static_cast<uint32_t>(dss.stencilFuncFront) << "," << static_cast<uint32_t>(dss.stencilRefFront) << "," << static_cast<uint32_t>(dss.stencilReadMaskFront);
+    res << "," << static_cast<uint32_t>(dss.stencilFailOpFront) << "," << static_cast<uint32_t>(dss.stencilZFailOpFront) << "," << static_cast<uint32_t>(dss.stencilPassOpFront) << "," << static_cast<uint32_t>(dss.stencilWriteMaskFront);
+    res << "," << static_cast<uint32_t>(dss.stencilTestBack) << "," << static_cast<uint32_t>(dss.stencilFuncBack) << "," << static_cast<uint32_t>(dss.stencilRefBack) << "," << static_cast<uint32_t>(dss.stencilReadMaskBack);
+    res << "," << static_cast<uint32_t>(dss.stencilFailOpBack) << "," << static_cast<uint32_t>(dss.stencilZFailOpBack) << "," << static_cast<uint32_t>(dss.stencilPassOpBack) << "," << dss.stencilWriteMaskBack;
     return res.str();
 }
 
 } // namespace
 
 /*static*/
-void Pass::fillPipelineInfo(Pass *pass, const PassOverrides &info) {
+void Pass::fillPipelineInfo(Pass *pass, const IPassInfoFull &info) {
     if (info.priority.has_value()) {
         pass->_priority = static_cast<pipeline::RenderPriority>(info.priority.value());
     }
@@ -98,22 +98,22 @@ void Pass::fillPipelineInfo(Pass *pass, const PassOverrides &info) {
         pass->_phase       = pipeline::getPhaseID(pass->_phaseString);
     }
 
-    auto *bs = pass->_blendState;
+    auto &bs = pass->_blendState;
     if (info.blendState.has_value()) {
-        const auto *bsInfo  = info.blendState.value();
-        const auto &targets = bsInfo->targets;
+        const auto &bsInfo  = info.blendState.value();
+        const auto &targets = bsInfo.targets;
         for (size_t i = 0, len = targets.size(); i < len; ++i) {
-            bs->setTarget(i, targets[i]);
+            bs.setTarget(i, targets[i]);
         }
 
         //cjh        if (bsInfo.isA2C !== undefined) {
-        bs->isA2C = bsInfo->isA2C;
+        bs.isA2C = bsInfo.isA2C;
         //        }
         //        if (bsInfo.isIndepend !== undefined) {
-        bs->isIndepend = bsInfo->isIndepend;
+        bs.isIndepend = bsInfo.isIndepend;
         //        }
         //        if (bsInfo.blendColor !== undefined) {
-        bs->blendColor = bsInfo->blendColor;
+        bs.blendColor = bsInfo.blendColor;
         //        }
     }
 
@@ -135,21 +135,15 @@ uint64_t Pass::getPassHash(Pass *pass) {
 }
 
 Pass::Pass() {
-    _device            = gfx::Device::getInstance();
-    _root              = Root::getInstance();
-    _phase             = pipeline::getPhaseID("default");
-    _blendState        = new gfx::BlendState(); //cjh how to delete ?
-    _depthStencilState = new gfx::DepthStencilState();
-    _rs                = new gfx::RasterizerState();
+    _device = gfx::Device::getInstance();
+    _root   = Root::getInstance();
+    _phase  = pipeline::getPhaseID("default");
 }
 
 Pass::Pass(Root *root) {
-    _device            = root->getDevice();
-    _root              = root;
-    _phase             = pipeline::getPhaseID("default");
-    _blendState        = new gfx::BlendState(); //cjh how to delete ?
-    _depthStencilState = new gfx::DepthStencilState();
-    _rs                = new gfx::RasterizerState();
+    _device = root->getDevice();
+    _root   = root;
+    _phase  = pipeline::getPhaseID("default");
 }
 
 Pass::~Pass() {
@@ -278,7 +272,7 @@ void Pass::destroy() {
 
     _descriptorSet->destroy();
     //cjh    _rs->destroy();
-    //    _dss->destroy();
+    //    _dss.destroy();
     //    _bs->destroy();
 }
 
@@ -443,7 +437,7 @@ IPassInfoFull Pass::getPassInfoFull() const {
     return ret;
 }
 
-void Pass::setState(gfx::BlendState *bs, gfx::DepthStencilState *dss, gfx::RasterizerState *rs, gfx::DescriptorSet *ds) {
+void Pass::setState(const gfx::BlendState &bs, const gfx::DepthStencilState &dss, const gfx::RasterizerState &rs, gfx::DescriptorSet *ds) {
     //cjh how to control lifecycle?
     _blendState        = bs;
     _depthStencilState = dss;
@@ -553,7 +547,7 @@ void Pass::syncBatchingScheme() {
     }
 }
 
-void Pass::initPassFromTarget(Pass *target, gfx::DepthStencilState *dss, gfx::BlendState *bs, uint64_t hashFactor) {
+void Pass::initPassFromTarget(Pass *target, const gfx::DepthStencilState &dss, const gfx::BlendState &bs, uint64_t hashFactor) {
     _priority          = target->_priority;
     _stage             = target->_stage;
     _phase             = target->_phase;
@@ -563,7 +557,7 @@ void Pass::initPassFromTarget(Pass *target, gfx::DepthStencilState *dss, gfx::Bl
     _blendState        = bs; //cjh lifecycle?
     _depthStencilState = dss;
     _descriptorSet     = target->_descriptorSet;
-    _rs                = target->getRasterizerState();
+    _rs                = *target->getRasterizerState();
     _passIndex         = target->_passIndex;
     _propertyIndex     = target->_propertyIndex;
     _programName       = target->getProgram();

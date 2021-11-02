@@ -105,7 +105,7 @@ public:
      * @param pass The pass handle point to the pass
      * @param info The pass override info
      */
-    static void fillPipelineInfo(Pass *pass, const PassOverrides &info);
+    static void fillPipelineInfo(Pass *pass, const IPassInfoFull &info);
 
     /**
      * @en Get pass hash value by [[Pass]] hash information.
@@ -275,23 +275,23 @@ public:
     // In ts engine, Pass has rootBufferDirty getter and without setter, but it contains a protected function named _setRootBufferDirty.
     // If we remove _ prefix in C++, bindings-generator doesn't support to bind rootBufferDirty property as getter and ignore to bind setRootBufferDirty as setter at the same time.
     // So let's keep the _ prefix temporarily.
-    inline void                          _setRootBufferDirty(bool val) { _rootBufferDirty = val; }
+    inline void _setRootBufferDirty(bool val) { _rootBufferDirty = val; }
     // states
-    inline pipeline::RenderPriority  getPriority() const { return _priority; }
-    inline gfx::PrimitiveMode        getPrimitive() const { return _primitive; }
-    inline pipeline::RenderPassStage getStage() const { return _stage; }
-    inline uint32_t                  getPhase() const { return _phase; }
-    inline gfx::RasterizerState *    getRasterizerState() const { return _rs; }
-    inline gfx::DepthStencilState *  getDepthStencilState() const { return _depthStencilState; }
-    inline gfx::BlendState *         getBlendState() const { return _blendState; }
-    inline gfx::DynamicStateFlagBit  getDynamicStates() const { return _dynamicStates; }
-    inline BatchingSchemes           getBatchingScheme() const { return _batchingScheme; }
-    inline gfx::DescriptorSet *      getDescriptorSet() const { return _descriptorSet; }
-    inline uint64_t                  getHash() const { return _hash; }
-    inline gfx::PipelineLayout *     getPipelineLayout() const { return _pipelineLayout; }
+    inline pipeline::RenderPriority      getPriority() const { return _priority; }
+    inline gfx::PrimitiveMode            getPrimitive() const { return _primitive; }
+    inline pipeline::RenderPassStage     getStage() const { return _stage; }
+    inline uint32_t                      getPhase() const { return _phase; }
+    inline const gfx::RasterizerState *  getRasterizerState() const { return &_rs; }
+    inline const gfx::DepthStencilState *getDepthStencilState() const { return &_depthStencilState; }
+    inline const gfx::BlendState *       getBlendState() const { return &_blendState; }
+    inline gfx::DynamicStateFlagBit      getDynamicStates() const { return _dynamicStates; }
+    inline BatchingSchemes               getBatchingScheme() const { return _batchingScheme; }
+    inline gfx::DescriptorSet *          getDescriptorSet() const { return _descriptorSet; }
+    inline uint64_t                      getHash() const { return _hash; }
+    inline gfx::PipelineLayout *         getPipelineLayout() const { return _pipelineLayout; }
 
     // Only for UI
-    void initPassFromTarget(Pass *target, gfx::DepthStencilState *dss, gfx::BlendState *bs, uint64_t hashFactor);
+    void initPassFromTarget(Pass *target, const gfx::DepthStencilState &dss, const gfx::BlendState &bs, uint64_t hashFactor);
 
     //  internal use
     /**
@@ -301,7 +301,7 @@ public:
     virtual void endChangeStatesSilently() {}
 
 protected:
-    void         setState(gfx::BlendState *bs, gfx::DepthStencilState *dss, gfx::RasterizerState *rs, gfx::DescriptorSet *ds);
+    void         setState(const gfx::BlendState &bs, const gfx::DepthStencilState &dss, const gfx::RasterizerState &rs, gfx::DescriptorSet *ds);
     void         doInit(const IPassInfoFull &info, bool copyDefines = false);
     virtual void syncBatchingScheme();
 
@@ -323,9 +323,9 @@ protected:
     MacroRecord                        _defines;
     Record<std::string, IPropertyInfo> _properties;
     gfx::Shader *                      _shader{nullptr};
-    gfx::BlendState *                  _blendState{nullptr};
-    gfx::DepthStencilState *           _depthStencilState{nullptr};
-    gfx::RasterizerState *             _rs{nullptr};
+    gfx::BlendState                    _blendState{};
+    gfx::DepthStencilState             _depthStencilState{};
+    gfx::RasterizerState               _rs{};
     pipeline::RenderPriority           _priority{pipeline::RenderPriority::DEFAULT};
     pipeline::RenderPassStage          _stage{pipeline::RenderPassStage::DEFAULT};
     uint32_t                           _phase{0};

@@ -29,6 +29,22 @@
 
 namespace cc {
 
+IPassStates::IPassStates(const IPassInfoFull &o) {
+    *this = o;
+}
+
+IPassStates &IPassStates::operator=(const IPassInfoFull &o) {
+    priority          = o.priority;
+    primitive         = o.primitive;
+    stage             = o.stage;
+    rasterizerState   = o.rasterizerState;
+    depthStencilState = o.depthStencilState;
+    blendState        = o.blendState;
+    dynamicStates     = o.dynamicStates;
+    phase             = o.phase;
+    return *this;
+}
+
 EffectAsset::RegisteredEffectAssetMap EffectAsset::__effects;
 
 /* static */

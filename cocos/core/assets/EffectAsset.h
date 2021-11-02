@@ -51,36 +51,75 @@ struct IPropertyInfo {
     std::optional<std::variant<std::vector<float>, std::string>> value;
 };
 
+struct IPassInfoFull;
 // Pass instance itself are compliant to IPassStates too
 struct IPassStates {
     std::optional<int32_t>                   priority;
     std::optional<gfx::PrimitiveMode>        primitive;
     std::optional<pipeline::RenderPassStage> stage;
-    std::optional<gfx::RasterizerState *>    rasterizerState; //cjh TODO: need to change to shared_ptr?
-    std::optional<gfx::DepthStencilState *>  depthStencilState;
-    std::optional<gfx::BlendState *>         blendState;
+    std::optional<gfx::RasterizerState>      rasterizerState; //cjh TODO: need to change to shared_ptr?
+    std::optional<gfx::DepthStencilState>    depthStencilState;
+    std::optional<gfx::BlendState>           blendState;
     std::optional<gfx::DynamicStateFlags>    dynamicStates;
     std::optional<std::string>               phase;
-};
 
+    IPassStates() = default;
+    IPassStates(const IPassInfoFull &o);
+    IPassStates &operator=(const IPassInfoFull &o);
+};
 using PassOverrides = IPassStates;
 
 using PassPropertyInfoMap = std::unordered_map<std::string, IPropertyInfo>;
 
-struct IPassInfo : public IPassStates {
+//struct IPassInfo : public IPassStates {
+//    std::string                        program; // auto-generated from 'vert' and 'frag'
+//    std::optional<MacroRecord>         embeddedMacros;
+//    index_t                            propertyIndex{-1};
+//    std::optional<std::string>         switch_;
+//    std::optional<PassPropertyInfoMap> properties;
+//};
+
+struct IPassInfoFull final { //cjh } : public IPassInfo {
+    // IPassStates
+    std::optional<int32_t>                   priority;
+    std::optional<gfx::PrimitiveMode>        primitive;
+    std::optional<pipeline::RenderPassStage> stage;
+    std::optional<gfx::RasterizerState>      rasterizerState; //cjh TODO: need to change to shared_ptr?
+    std::optional<gfx::DepthStencilState>    depthStencilState;
+    std::optional<gfx::BlendState>           blendState;
+    std::optional<gfx::DynamicStateFlags>    dynamicStates;
+    std::optional<std::string>               phase;
+    // IPassInfo
     std::string                        program; // auto-generated from 'vert' and 'frag'
     std::optional<MacroRecord>         embeddedMacros;
     index_t                            propertyIndex{-1};
     std::optional<std::string>         switch_;
     std::optional<PassPropertyInfoMap> properties;
-};
 
-struct IPassInfoFull final : public IPassInfo {
+    // IPassInfoFull
     // generated part
     index_t                      passIndex{0};
     MacroRecord                  defines;
     std::optional<PassOverrides> stateOverrides;
+
+    IPassInfoFull() = default;
+    IPassInfoFull(const IPassStates &o) {
+        *this = o;
+    }
+    IPassInfoFull &operator=(const IPassStates &o) {
+        priority          = o.priority;
+        primitive         = o.primitive;
+        stage             = o.stage;
+        rasterizerState   = o.rasterizerState;
+        depthStencilState = o.depthStencilState;
+        blendState        = o.blendState;
+        dynamicStates     = o.dynamicStates;
+        phase             = o.phase;
+        return *this;
+    }
 };
+
+using IPassInfo = IPassInfoFull;
 
 struct ITechniqueInfo {
     std::vector<IPassInfoFull> passes;
@@ -227,7 +266,8 @@ protected:
 
     void precompile();
 
-protected:
+    // We need make it to public for deserialization
+public:
     /**
      * @en The techniques used by the current effect.
      * @zh 当前 effect 的所有可用 technique。
@@ -251,7 +291,8 @@ protected:
     @serializable
     @editable*/
     std::vector<IPreCompileInfo> _combinations;
-
+    //
+protected:
     static RegisteredEffectAssetMap __effects; //cjh TODO: how to clear when game exits.
 
     CC_DISALLOW_COPY_MOVE_ASSIGN(EffectAsset);

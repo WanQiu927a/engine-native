@@ -78,143 +78,143 @@ static MacroRecord jsonToMacroRecord(const rapidjson::Value &embeddedMacrosVal) 
 }
 
 //TODO(xwx): Copied from EffectAssetDeserializer.cpp, need to make it as common functions
-static gfx::RasterizerState *jsonToRasterizerState(const rapidjson::Value &rasterizerStateVal) {
-    gfx::RasterizerState *rasterizerState = new gfx::RasterizerState(); //cjh TODO: how to release, shared_ptr?
+static gfx::RasterizerState jsonToRasterizerState(const rapidjson::Value &rasterizerStateVal) {
+    gfx::RasterizerState rasterizerState;
 
     CC_ASSERT(rasterizerStateVal.IsObject());
 
     if (rasterizerStateVal.HasMember("cullMode")) {
-        rasterizerState->cullMode = static_cast<gfx::CullMode>(rasterizerStateVal["cullMode"].GetInt());
+        rasterizerState.cullMode = static_cast<gfx::CullMode>(rasterizerStateVal["cullMode"].GetInt());
         //        CC_LOG_DEBUG("cullMode: %d", static_cast<int32_t>(rasterizerState->cullMode));
     }
 
     if (rasterizerStateVal.HasMember("isDiscard")) {
-        rasterizerState->isDiscard = rasterizerStateVal["isDiscard"].GetUint();
+        rasterizerState.isDiscard = rasterizerStateVal["isDiscard"].GetUint();
     }
 
     if (rasterizerStateVal.HasMember("polygonMode")) {
-        rasterizerState->polygonMode = static_cast<gfx::PolygonMode>(rasterizerStateVal["polygonMode"].GetInt());
+        rasterizerState.polygonMode = static_cast<gfx::PolygonMode>(rasterizerStateVal["polygonMode"].GetInt());
     }
 
     if (rasterizerStateVal.HasMember("shadeModel")) {
-        rasterizerState->shadeModel = static_cast<gfx::ShadeModel>(rasterizerStateVal["shadeModel"].GetInt());
+        rasterizerState.shadeModel = static_cast<gfx::ShadeModel>(rasterizerStateVal["shadeModel"].GetInt());
     }
 
     if (rasterizerStateVal.HasMember("isFrontFaceCCW")) {
-        rasterizerState->isFrontFaceCCW = rasterizerStateVal["isFrontFaceCCW"].GetUint();
+        rasterizerState.isFrontFaceCCW = rasterizerStateVal["isFrontFaceCCW"].GetUint();
     }
 
     if (rasterizerStateVal.HasMember("depthBiasEnabled")) {
-        rasterizerState->depthBiasEnabled = rasterizerStateVal["depthBiasEnabled"].GetUint();
+        rasterizerState.depthBiasEnabled = rasterizerStateVal["depthBiasEnabled"].GetUint();
     }
 
     if (rasterizerStateVal.HasMember("depthBias")) {
-        rasterizerState->depthBias = rasterizerStateVal["depthBias"].GetFloat();
+        rasterizerState.depthBias = rasterizerStateVal["depthBias"].GetFloat();
     }
 
     if (rasterizerStateVal.HasMember("depthBiasClamp")) {
-        rasterizerState->depthBiasClamp = rasterizerStateVal["depthBiasClamp"].GetFloat();
+        rasterizerState.depthBiasClamp = rasterizerStateVal["depthBiasClamp"].GetFloat();
     }
 
     if (rasterizerStateVal.HasMember("depthBiasSlop")) {
-        rasterizerState->depthBiasSlop = rasterizerStateVal["depthBiasSlop"].GetFloat();
+        rasterizerState.depthBiasSlop = rasterizerStateVal["depthBiasSlop"].GetFloat();
     }
 
     if (rasterizerStateVal.HasMember("isDepthClip")) {
-        rasterizerState->isDepthClip = rasterizerStateVal["isDepthClip"].GetUint();
+        rasterizerState.isDepthClip = rasterizerStateVal["isDepthClip"].GetUint();
     }
 
     if (rasterizerStateVal.HasMember("isMultisample")) {
-        rasterizerState->isMultisample = rasterizerStateVal["isMultisample"].GetUint();
+        rasterizerState.isMultisample = rasterizerStateVal["isMultisample"].GetUint();
     }
 
     if (rasterizerStateVal.HasMember("lineWidth")) {
-        rasterizerState->lineWidth = rasterizerStateVal["lineWidth"].GetFloat();
+        rasterizerState.lineWidth = rasterizerStateVal["lineWidth"].GetFloat();
     }
 
     return rasterizerState;
 }
 
 //TODO(xwx): Copied from EffectAssetDeserializer.cpp, need to make it as common functions
-static gfx::DepthStencilState *jsonToDepthStencilState(const rapidjson::Value &val) {
-    gfx::DepthStencilState *dss = new gfx::DepthStencilState(); //cjh TODO: how to release, shared_ptr?
+static gfx::DepthStencilState jsonToDepthStencilState(const rapidjson::Value &val) {
+    gfx::DepthStencilState dss;
 
     CC_ASSERT(val.IsObject());
 
     if (val.HasMember("depthTest")) {
-        dss->depthTest = val["depthTest"].GetBool() ? 1 : 0;
+        dss.depthTest = val["depthTest"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("depthWrite")) {
-        dss->depthWrite = val["depthWrite"].GetBool() ? 1 : 0;
+        dss.depthWrite = val["depthWrite"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("depthFunc")) {
-        dss->depthFunc = static_cast<gfx::ComparisonFunc>(val["depthFunc"].GetInt());
+        dss.depthFunc = static_cast<gfx::ComparisonFunc>(val["depthFunc"].GetInt());
     }
 
     if (val.HasMember("stencilTestFront")) {
-        dss->stencilTestFront = val["stencilTestFront"].GetBool() ? 1 : 0;
+        dss.stencilTestFront = val["stencilTestFront"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("stencilFuncFront")) {
-        dss->stencilFuncFront = static_cast<gfx::ComparisonFunc>(val["stencilFuncFront"].GetInt());
+        dss.stencilFuncFront = static_cast<gfx::ComparisonFunc>(val["stencilFuncFront"].GetInt());
     }
 
     if (val.HasMember("stencilReadMaskFront")) {
-        dss->stencilReadMaskFront = val["stencilReadMaskFront"].GetUint();
+        dss.stencilReadMaskFront = val["stencilReadMaskFront"].GetUint();
     }
 
     if (val.HasMember("stencilWriteMaskFront")) {
-        dss->stencilWriteMaskFront = val["stencilWriteMaskFront"].GetUint();
+        dss.stencilWriteMaskFront = val["stencilWriteMaskFront"].GetUint();
     }
 
     if (val.HasMember("stencilFailOpFront")) {
-        dss->stencilFailOpFront = static_cast<gfx::StencilOp>(val["stencilFailOpFront"].GetUint());
+        dss.stencilFailOpFront = static_cast<gfx::StencilOp>(val["stencilFailOpFront"].GetUint());
     }
 
     if (val.HasMember("stencilZFailOpFront")) {
-        dss->stencilZFailOpFront = static_cast<gfx::StencilOp>(val["stencilZFailOpFront"].GetUint());
+        dss.stencilZFailOpFront = static_cast<gfx::StencilOp>(val["stencilZFailOpFront"].GetUint());
     }
 
     if (val.HasMember("stencilPassOpFront")) {
-        dss->stencilPassOpFront = static_cast<gfx::StencilOp>(val["stencilPassOpFront"].GetUint());
+        dss.stencilPassOpFront = static_cast<gfx::StencilOp>(val["stencilPassOpFront"].GetUint());
     }
 
     if (val.HasMember("stencilRefFront")) {
-        dss->stencilRefFront = val["stencilRefFront"].GetUint();
+        dss.stencilRefFront = val["stencilRefFront"].GetUint();
     }
 
     if (val.HasMember("stencilTestBack")) {
-        dss->stencilTestBack = val["stencilTestBack"].GetBool() ? 1 : 0;
+        dss.stencilTestBack = val["stencilTestBack"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("stencilFuncBack")) {
-        dss->stencilFuncBack = static_cast<gfx::ComparisonFunc>(val["stencilFuncBack"].GetInt());
+        dss.stencilFuncBack = static_cast<gfx::ComparisonFunc>(val["stencilFuncBack"].GetInt());
     }
 
     if (val.HasMember("stencilReadMaskBack")) {
-        dss->stencilReadMaskBack = val["stencilReadMaskBack"].GetUint();
+        dss.stencilReadMaskBack = val["stencilReadMaskBack"].GetUint();
     }
 
     if (val.HasMember("stencilWriteMaskBack")) {
-        dss->stencilWriteMaskBack = val["stencilWriteMaskBack"].GetUint();
+        dss.stencilWriteMaskBack = val["stencilWriteMaskBack"].GetUint();
     }
 
     if (val.HasMember("stencilFailOpBack")) {
-        dss->stencilFailOpBack = static_cast<gfx::StencilOp>(val["stencilFailOpBack"].GetInt());
+        dss.stencilFailOpBack = static_cast<gfx::StencilOp>(val["stencilFailOpBack"].GetInt());
     }
 
     if (val.HasMember("stencilZFailOpBack")) {
-        dss->stencilZFailOpBack = static_cast<gfx::StencilOp>(val["stencilZFailOpBack"].GetInt());
+        dss.stencilZFailOpBack = static_cast<gfx::StencilOp>(val["stencilZFailOpBack"].GetInt());
     }
 
     if (val.HasMember("stencilPassOpBack")) {
-        dss->stencilPassOpBack = static_cast<gfx::StencilOp>(val["stencilPassOpBack"].GetInt());
+        dss.stencilPassOpBack = static_cast<gfx::StencilOp>(val["stencilPassOpBack"].GetInt());
     }
 
     if (val.HasMember("stencilRefBack")) {
-        dss->stencilWriteMaskBack = val["stencilRefBack"].GetUint();
+        dss.stencilWriteMaskBack = val["stencilRefBack"].GetUint();
     }
 
     return dss;
@@ -262,17 +262,17 @@ static void jsonToBlendTarget(const rapidjson::Value &val, gfx::BlendTarget *out
 }
 
 //TODO(xwx): Copied from EffectAssetDeserializer.cpp, need to make it as common functions
-static gfx::BlendState *jsonToBlendState(const rapidjson::Value &val) {
+static gfx::BlendState jsonToBlendState(const rapidjson::Value &val) {
     CC_ASSERT(val.IsObject());
 
-    gfx::BlendState *bs = new gfx::BlendState(); //cjh TODO: how to release, shared_ptr?
+    gfx::BlendState bs;
 
     if (val.HasMember("isA2C")) {
-        bs->isA2C = val["isA2C"].GetBool() ? 1 : 0;
+        bs.isA2C = val["isA2C"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("isIndepend")) {
-        bs->isIndepend = val["isIndepend"].GetBool() ? 1 : 0;
+        bs.isIndepend = val["isIndepend"].GetBool() ? 1 : 0;
     }
 
     if (val.HasMember("blendColor")) {
@@ -282,10 +282,10 @@ static gfx::BlendState *jsonToBlendState(const rapidjson::Value &val) {
     if (val.HasMember("targets")) {
         if (val["targets"].IsArray()) {
             const auto &targetsVal = val["targets"].GetArray();
-            bs->targets.resize(targetsVal.Size());
+            bs.targets.resize(targetsVal.Size());
             int32_t i = 0;
             for (const auto &targetVal : targetsVal) {
-                jsonToBlendTarget(targetVal, &bs->targets[i]);
+                jsonToBlendTarget(targetVal, &bs.targets[i]);
                 ++i;
             }
         }
@@ -495,8 +495,7 @@ static MaterialProperty jsonToMaterialProperty(const rapidjson::Value &val) {
     MaterialProperty matProp; //MaterialPropert: float, int32_t, Vec2, Vec3, Vec4, Color, Mat3, Mat4, Quaternion, TextureBase * , gfx::Texture *
     if (val.IsNumber()) {
         matProp = val.GetFloat();
-    }
-    else if (val.IsObject()) { // Vec2, Vec3, Vec4, Color, Mat3, Mat4, Quaternion, TextureBase * , gfx::Texture *
+    } else if (val.IsObject()) { // Vec2, Vec3, Vec4, Color, Mat3, Mat4, Quaternion, TextureBase * , gfx::Texture *
         if (val.HasMember("__type__")) {
             std::string type = val["__type__"].GetString();
             // TODO(xwx): use std::move statement below ?

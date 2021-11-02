@@ -119,11 +119,10 @@ public:
 
     //cjh    public declare [editorExtrasTag]: unknown;
 
-    Flags _objFlags{Flags::ZERO};
-
-protected:
+    Flags       _objFlags{Flags::ZERO};
     std::string _name;
 
+protected:
     explicit CCObject(const std::string &name = "");
     virtual ~CCObject() = default;
 
