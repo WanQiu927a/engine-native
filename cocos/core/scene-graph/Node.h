@@ -184,7 +184,7 @@ public:
     void off(const std::string &type, void (Target::*memberFn)(Args...), Target *target, bool useCapture = false);
 
     template <typename... Args>
-    void emit(const std::string &type, Args &&...args);
+    void emit(const std::string &type, Args &&... args);
 
     void dispatchEvent(event::Event *event);
     bool hasEventListener(const std::string &type) const;
@@ -581,7 +581,9 @@ public:
     void     _setChildrenSize(uint32_t size);
     uint32_t _getChildrenSize();
     void     _setChildren(std::vector<Node *> &&children);
-    //
+    // For JS wrapper.
+    inline uint32_t getEventMask() const { return _eventMask; }
+    inline void     setEventMask(uint32_t mask) { _eventMask = mask; }
 
 protected:
     bool onPreDestroy() override;
@@ -656,7 +658,7 @@ bool Node::isNode(T *obj) {
 }
 
 template <typename... Args>
-void Node::emit(const std::string &type, Args &&...args) {
+void Node::emit(const std::string &type, Args &&... args) {
     _eventProcessor->emit(type, std::forward<Args>(args)...);
 }
 
