@@ -681,7 +681,8 @@ template <>
 bool nativevalue_to_se(const cc::TypedArray &from, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
     std::visit([&](auto &typedArray) {
         to.setObject(typedArray.getJSTypedArray());
-    }, from);
+    },
+               from);
     return true;
 }
 
@@ -785,6 +786,10 @@ bool sevalue_to_native(const se::Value &from, cc::Mat4 *to, se::Object * /*unuse
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unused*/) {
+    if (!from.isObject()) {
+        auto ss = se::ScriptEngine::getInstance()->getCurrentStackTrace();
+        CC_LOG_DEBUG("sevalue_to_native, vec3: %s", ss.c_str());
+    }
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec3 failed!");
     if (!from.isObject()) {
     }
@@ -798,7 +803,7 @@ bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unuse
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unused*/) {
-    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec3 failed!");
+    SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Color failed!");
     if (!from.isObject()) {
     }
     se::Object *obj = from.toObject();
@@ -991,6 +996,82 @@ bool sevalue_to_native(const se::Value &from, cc::scene::SkyboxInfo *to, se::Obj
     return true;
 }
 
+// std::variant<int32_t, float, bool, std::string>;
+template <>
+bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ctx) {
+    if (from.isBoolean()) {
+        *to = from.toBoolean();
+    } else if (from.isNumber()) {
+        //cjh TODO: how to check it's a int32_t or float?
+        *to = from.toFloat();
+    } else if (from.isString()) {
+        *to = from.toString();
+    }
+
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/) {
+    auto ss = se::ScriptEngine::getInstance()->getCurrentStackTrace();
+    CC_LOG_DEBUG("MacroRecord: %s", ss.c_str());
+    SE_PRECONDITION2(from.isObject(), false, "sevalue_to_native(std::vector<cc::MacroRecord>), not an object");
+    auto *fromObj = from.toObject();
+    CC_ASSERT(fromObj->isArray());
+    uint32_t len = 0;
+    bool     ok  = fromObj->getArrayLength(&len);
+    if (ok) {
+        to->resize(len);
+        se::Value arrElement;
+        for (uint32_t i = 0; i < len; ++i) {
+            ok = fromObj->getArrayElement(i, &arrElement);
+            if (!ok || !arrElement.isObject()) {
+                continue;
+            }
+            cc::MacroRecord          macroRecord;
+            std::vector<std::string> keys;
+            ok = arrElement.toObject()->getAllKeys(&keys);
+            if (ok) {
+                se::Value seMacroVal;
+                for (const auto &key : keys) {
+                    ok = arrElement.toObject()->getProperty(key, &seMacroVal);
+                    cc::MacroValue macroVal;
+                    sevalue_to_native(seMacroVal, &macroVal, nullptr);
+                    macroRecord.emplace(key, std::move(macroVal));
+                }
+            }
+            (*to)[i] = std::move(macroRecord);
+        }
+    }
+
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, std::string> *to, se::Object *ctx) {
+    if (from.isObject() && from.toObject()->isArray()) {
+        uint32_t           len = 0;
+        bool               ok  = from.toObject()->getArrayLength(&len);
+        std::vector<float> arr;
+        arr.resize(len);
+        for (uint32_t i = 0; i < len; ++i) {
+            se::Value e;
+            ok = from.toObject()->getArrayElement(i, &e);
+            if (ok) {
+                if (e.isNumber()) {
+                    arr[i] = e.toFloat();
+                }
+            }
+        }
+        *to = std::move(arr);
+    } else if (from.isString()) {
+        *to = from.toString();
+    } else {
+        CC_ASSERT(false);
+    }
+    return true;
+}
+
 template <>
 bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
     assert(from.isObject());
@@ -1008,9 +1089,10 @@ bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *
 }
 template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
-    std::visit([&](auto& typedArray) {
+    std::visit([&](auto &typedArray) {
         typedArray.setJSTypedArray(from.toObject());
-    }, *to);
+    },
+               *to);
 
     return true;
 }

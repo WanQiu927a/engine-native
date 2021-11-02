@@ -907,6 +907,24 @@ bool sevalue_to_native(const se::Value &from, std::array<uint8_t, CNT> *to, se::
 }
 
 template <>
+bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ctx);
+
+template <>
+bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/);
+
+template <>
+inline bool sevalue_to_native(const se::Value &from, std::vector<cc::PassOverrides> *to, se::Object * /*ctx*/) {
+    assert(false);
+    return true;
+}
+
+template <>
+inline bool sevalue_to_native(const se::Value &from, std::vector<Record<std::string, cc::MaterialPropertyVariant>> *to, se::Object * /*ctx*/) {
+    assert(false);
+    return true;
+}
+
+template <>
 inline bool sevalue_to_native(const se::Value &from, std::string *to, se::Object * /*ctx*/) {
     *to = from.toString();
     return true;
@@ -1268,6 +1286,10 @@ inline bool sevalue_to_native(const se::Value &from, std::function<R(Args...)> *
 }
 
 //////////////////////// std::variant
+///
+template <>
+bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, std::string> *to, se::Object *ctx);
+
 template <typename... Args>
 constexpr bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx) {
     assert(false); //TODO(PatriceJiang): should not pass variant from js -> native

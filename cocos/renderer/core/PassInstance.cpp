@@ -52,9 +52,9 @@ scene::Pass *PassInstance::getParent() const {
 }
 
 void PassInstance::overridePipelineStates(const IPassInfo &original, const PassOverrides &override) {
-    _blendState->reset();
-    _rs->reset();
-    _depthStencilState->reset();
+    _blendState.reset();
+    _rs.reset();
+    _depthStencilState.reset();
 
     Pass::fillPipelineInfo(this, original);
     Pass::fillPipelineInfo(this, override);
