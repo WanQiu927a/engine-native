@@ -1729,7 +1729,8 @@ class Generator(object):
                     for segment in list_of_fields:
                         field_components = segment.split("/")
                         name_variants = field_components[0].split(":")
-                        field_name = name_variants[0]
+                        shadow_getter_setter =  len(name_variants[0].split("?")) == 1
+                        field_name = name_variants[0].split("?")[0]
                         cap_field_name = capitalize(field_name)
                         
                         if len(field_components) > 3:
@@ -1744,9 +1745,9 @@ class Generator(object):
                             }
                         shadow_methods.append(field_name)
                         shadow_methods.extend(name_variants)
-                        if len(getter_raw) < 2:
+                        if len(getter_raw) == 1 and shadow_getter_setter:
                             shadow_methods.append(getter_raw[0])
-                        if len(setter_raw) < 2:
+                        if len(setter_raw) == 1 and shadow_getter_setter:
                             shadow_methods.append(setter_raw[0])
 
     def is_reserved_function(self, class_name, method_name):

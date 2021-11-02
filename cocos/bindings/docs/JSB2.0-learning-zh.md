@@ -973,7 +973,7 @@ field =
 
 
 # 导出 getter setter
-# 格式: {类名}::[{JS中的属性名(:属性别名, 可选)*}/{C++中的getter方法, 可选}{?}/{C++中的getter方法,可选}{?} ...]
+# 格式: {类名}::[{JS中的属性名(:属性别名, 可选)*}{?}/{C++中的getter方法, 可选}{?}/{C++中的getter方法,可选}{?} ...]
 #  - getter setter 如果不指定, 默认为  `get`/`set` + capitalize(attributeName)
 #  - 被指定为 getter/setter 的方法默认不导出, 在追加 `?` 后正常导出. 
 getter_setter = Asset::[name url:_url/getAssetUrl/setAssetUrl? path//updatePath size/assetSize]
