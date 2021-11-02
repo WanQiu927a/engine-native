@@ -786,10 +786,6 @@ bool sevalue_to_native(const se::Value &from, cc::Mat4 *to, se::Object * /*unuse
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unused*/) {
-    if (!from.isObject()) {
-        auto ss = se::ScriptEngine::getInstance()->getCurrentStackTrace();
-        CC_LOG_DEBUG("sevalue_to_native, vec3: %s", ss.c_str());
-    }
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec3 failed!");
     if (!from.isObject()) {
     }
@@ -1013,8 +1009,6 @@ bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ct
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/) {
-    auto ss = se::ScriptEngine::getInstance()->getCurrentStackTrace();
-    CC_LOG_DEBUG("MacroRecord: %s", ss.c_str());
     SE_PRECONDITION2(from.isObject(), false, "sevalue_to_native(std::vector<cc::MacroRecord>), not an object");
     auto *fromObj = from.toObject();
     CC_ASSERT(fromObj->isArray());
@@ -1185,8 +1179,8 @@ bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx
 template <>
 bool nativevalue_to_se(const cc::Mat3 &from, se::Value &to, se::Object *ctx) {
     se::HandleObject obj(se::Object::createPlainObject());
-    char keybuf[8] = {0};
-    for(auto i = 0;i < 9 ;i++) {
+    char             keybuf[8] = {0};
+    for (auto i = 0; i < 9; i++) {
         snprintf(keybuf, sizeof(keybuf), "m%02d", i);
         obj->setProperty(keybuf, se::Value(from.m[i]));
     }
@@ -1197,8 +1191,8 @@ bool nativevalue_to_se(const cc::Mat3 &from, se::Value &to, se::Object *ctx) {
 template <>
 bool nativevalue_to_se(const cc::Mat4 &from, se::Value &to, se::Object *ctx) {
     se::HandleObject obj(se::Object::createPlainObject());
-    char keybuf[8] = {0};
-    for(auto i = 0;i < 16 ;i++) {
+    char             keybuf[8] = {0};
+    for (auto i = 0; i < 16; i++) {
         snprintf(keybuf, sizeof(keybuf), "m%02d", i);
         obj->setProperty(keybuf, se::Value(from.m[i]));
     }
