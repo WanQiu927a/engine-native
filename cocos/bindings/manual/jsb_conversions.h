@@ -1972,7 +1972,7 @@ bool nativevalue_to_se(const std::variant<ARGS...> &from, se::Value &to, se::Obj
 }
 
 template <>
-bool nativevalue_to_se(const std::monostate &from, se::Value &to, se::Object *ctx) { //NOLINT
+inline bool nativevalue_to_se(const std::monostate &from, se::Value &to, se::Object *ctx) { //NOLINT
     to.setUndefined();
     return true;
 }
