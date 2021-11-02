@@ -214,7 +214,7 @@ public:
         for (auto *child : _children) {
             child->_siblingIndex = i++;
         }
-        emit(NodeEventType::SIBLING_ORDER_CHANGED, NodeEventType::SIBLING_ORDER_CHANGED);
+        emit(NodeEventType::SIBLING_ORDER_CHANGED);
     }
 
     inline void addChild(Node *node) { node->setParent(this); }

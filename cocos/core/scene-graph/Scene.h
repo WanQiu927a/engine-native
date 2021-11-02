@@ -52,6 +52,9 @@ public:
     void onBatchCreated(bool dontChildPrefab) override;
     bool destroy() override;
 
+    // TODO:minggo For JS usage.
+    scene::RenderScene *_renderScene{nullptr};
+
 protected:
     /**
      * @en Per-scene level rendering info
@@ -59,8 +62,6 @@ protected:
      */
     //    @serializable
     SceneGlobals *_globals{nullptr};
-
-    scene::RenderScene *_renderScene{nullptr};
     bool                _inited{false};
 
     /**

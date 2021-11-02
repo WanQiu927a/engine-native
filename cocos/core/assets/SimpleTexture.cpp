@@ -59,8 +59,8 @@ void SimpleTexture::updateImage() {
     updateMipmaps(0, 0);
 }
 
-void SimpleTexture::uploadData(const ArrayBuffer &source, uint32_t level /* = 0 */, uint32_t arrayIndex /* = 0 */) {
-    uploadData(source, level, arrayIndex);
+void SimpleTexture::uploadDataWithArrayBuffer(const ArrayBuffer &source, uint32_t level /* = 0 */, uint32_t arrayIndex /* = 0 */) {
+    uploadData(source.getData(), level, arrayIndex);
 }
 
 void SimpleTexture::uploadData(const uint8_t *source, uint32_t level /* = 0 */, uint32_t arrayIndex /* = 0 */) {

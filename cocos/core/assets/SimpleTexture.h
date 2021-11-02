@@ -95,7 +95,7 @@ public:
      * @param level Mipmap level to upload the image to
      * @param arrayIndex The array index
      */
-    void uploadData(const ArrayBuffer &source, uint32_t level = 0, uint32_t arrayIndex = 0);
+    void uploadDataWithArrayBuffer(const ArrayBuffer &source, uint32_t level = 0, uint32_t arrayIndex = 0);
     void uploadData(const uint8_t *source, uint32_t level = 0, uint32_t arrayIndex = 0);
 
     void assignImage(ImageAsset *image, uint32_t level, uint32_t arrayIndex = 0);
