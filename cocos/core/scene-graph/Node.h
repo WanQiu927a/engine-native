@@ -232,10 +232,6 @@ public:
     void removeAllChildren();
     bool isChildOf(Node *parent);
 
-    inline void setName(const std::string &name) {
-        _name = name;
-    }
-
     void setActive(bool isActive);
 
     void setSiblingIndex(index_t idx);
@@ -246,10 +242,6 @@ public:
 
     inline void setPersistNode(bool val) {
         val ? _objFlags |= Flags::DONT_DESTROY : _objFlags &= ~Flags::DONT_DESTROY;
-    };
-
-    inline const std::string &getName() const {
-        return _name;
     }
 
     inline const std::string &getUuid() const {
@@ -613,8 +605,8 @@ protected:
 
     bool _persistNode{false};
 
-    std::string         _id{IDGenerator("Node").getNewId()};
-    bool                _activeInHierarchy{false};
+    std::string _id{IDGenerator("Node").getNewId()};
+
     Scene *             _scene{nullptr};
     NodeEventProcessor *_eventProcessor{nullptr};
     index_t             _siblingIndex{0};
@@ -642,6 +634,7 @@ public:
     std::vector<Node *> _children;
     Node *              _parent{nullptr};
     bool                _active{true};
+    bool                _activeInHierarchy{false};
     // local transform
     cc::Vec3       _localPosition{Vec3::ZERO};
     cc::Quaternion _localRotation{Quaternion::identity()};

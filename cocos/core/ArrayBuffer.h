@@ -50,17 +50,20 @@ public:
 
     ~ArrayBuffer() {
         if (_jsArrayBuffer) {
+            _jsArrayBuffer->unroot();
             _jsArrayBuffer->decRef();
         }
     }
 
     inline void setJSArrayBuffer(se::Object *arrayBuffer) {
         if (_jsArrayBuffer) {
+            _jsArrayBuffer->unroot();
             _jsArrayBuffer->decRef();
         }
 
         _jsArrayBuffer = arrayBuffer;
         _jsArrayBuffer->incRef();
+        _jsArrayBuffer->root();
         size_t length{0};
         _jsArrayBuffer->getArrayBufferData(static_cast<uint8_t **>(&_data), &length);
         _byteLength = length;
@@ -74,6 +77,7 @@ public:
 
     inline void reset(const uint8_t *data, uint32_t length) {
         if (_jsArrayBuffer != nullptr) {
+            _jsArrayBuffer->unroot();
             _jsArrayBuffer->decRef();
         }
         _jsArrayBuffer = se::Object::createArrayBufferObject(data, length);
