@@ -612,10 +612,6 @@ protected:
     index_t             _siblingIndex{0};
     uint32_t            _eventMask{0};
 
-    cc::Vec3       _worldPosition{Vec3::ZERO};
-    cc::Quaternion _worldRotation{Quaternion::identity()};
-    cc::Vec3       _worldScale{Vec3::ONE};
-
     Mat4     _rtMat{Mat4::IDENTITY};
     cc::Mat4 _worldMatrix{Mat4::IDENTITY};
 
@@ -640,6 +636,10 @@ public:
     cc::Vec3       _localPosition{Vec3::ZERO};
     cc::Quaternion _localRotation{Quaternion::identity()};
     cc::Vec3       _localScale{Vec3::ONE};
+    // world transform
+    cc::Vec3       _worldPosition{Vec3::ZERO};
+    cc::Quaternion _worldRotation{Quaternion::identity()};
+    cc::Vec3       _worldScale{Vec3::ONE};
     //
     Vec3     _euler{0, 0, 0};
     uint32_t _layer{0};
