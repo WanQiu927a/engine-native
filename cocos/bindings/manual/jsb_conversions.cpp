@@ -1124,7 +1124,7 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
         
         hasR = obj->getProperty("r", &tmp0);
         hasG = hasR && obj->getProperty("g", &tmp1);
-        hasB = hasG && obj->getProperty("g", &tmp2);
+        hasB = hasG && obj->getProperty("b", &tmp2);
         hasA = hasB && obj->getProperty("a", &tmp3);
         if(hasA) {
             *to = cc::Color{tmp0.toUint8(), tmp1.toUint8(), tmp2.toUint8(), tmp3.toUint8()};
