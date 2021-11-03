@@ -646,10 +646,10 @@ bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object * /*unuse
     return Vec2_to_seval(from, &to);
 }
 
-template <>
-bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object * /*unused*/) {
-    return Vec3_to_seval(from, &to);
-}
+//template <>
+//bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object * /*unused*/) {
+//    return Vec3_to_seval(from, &to);
+//}
 
 template <>
 bool nativevalue_to_se(const cc::Size &from, se::Value &to, se::Object * /*unused*/) {
@@ -661,10 +661,10 @@ bool nativevalue_to_se(const cc::extension::ManifestAsset &from, se::Value &to, 
     return ManifestAsset_to_seval(from, &to);
 }
 
-template <>
-bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx) {
-    return Quaternion_to_seval(from, &to);
-}
+//template <>
+//bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx) {
+//    return Quaternion_to_seval(from, &to);
+//}
 
 template <>
 bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unused*/) {
@@ -787,8 +787,7 @@ bool sevalue_to_native(const se::Value &from, cc::Mat4 *to, se::Object * /*unuse
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec3 failed!");
-    if (!from.isObject()) {
-    }
+
     se::Object *obj = from.toObject();
     se::Value   tmp;
     set_member_field<float>(obj, to, "x", &cc::Vec3::x, tmp);
@@ -800,8 +799,7 @@ bool sevalue_to_native(const se::Value &from, cc::Vec3 *to, se::Object * /*unuse
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Color failed!");
-    if (!from.isObject()) {
-    }
+
     se::Object *obj = from.toObject();
     se::Value   t;
     set_member_field<uint8_t>(obj, to, "r", &cc::Color::r, t);
@@ -814,8 +812,7 @@ bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unus
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Vec2 *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Vec2 failed!");
-    if (!from.isObject()) {
-    }
+
     se::Object *obj = from.toObject();
     se::Value   tmp;
     set_member_field<float>(obj, to, "x", &cc::Vec2::x, tmp);
@@ -826,8 +823,7 @@ bool sevalue_to_native(const se::Value &from, cc::Vec2 *to, se::Object * /*unuse
 template <>
 bool sevalue_to_native(const se::Value &from, cc::Size *to, se::Object * /*unused*/) {
     SE_PRECONDITION2(from.isObject(), false, "Convert parameter to Size failed!");
-    if (!from.isObject()) {
-    }
+
     se::Object *obj = from.toObject();
     se::Value   tmp;
     set_member_field<float>(obj, to, "width", &cc::Size::width, tmp);
