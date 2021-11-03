@@ -165,6 +165,7 @@ void SimpleTexture::createTexture(gfx::Device *device) {
     _textureWidth  = textureCreateInfo.width;
     _textureHeight = textureCreateInfo.height;
 
+    delete _gfxTexture;
     _gfxTexture = texture;
 }
 
