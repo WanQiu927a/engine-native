@@ -1301,7 +1301,6 @@ inline bool sevalue_to_native(const se::Value &from, std::monostate *to, se::Obj
     return false;
 }
 
-
 ///////////////////////  std::vector<std::variant>
 template <typename... Args>
 constexpr bool sevalue_to_native(const se::Value &from, std::vector<std::variant<Args...>> *to, se::Object *ctx) {
@@ -1601,7 +1600,6 @@ inline bool nativevalue_to_se(const std::vector<T, A> &from, se::Value &to, se::
 template <typename K, typename V>
 inline bool nativevalue_to_se(const std::unordered_map<K, V> &from, se::Value &to, se::Object *ctx); // NOLINT
 
-
 /// nativevalue_to_se std::optional
 template <typename T>
 bool nativevalue_to_se(const std::optional<T> &from, se::Value &to, se::Object *ctx) { // NOLINT
@@ -1649,7 +1647,7 @@ inline bool nativevalue_to_se(const std::vector<uint8_t> &from, se::Value &to, s
 template <typename A>
 inline bool nativevalue_to_se(const std::vector<bool, A> &from, se::Value &to, se::Object * /*ctx*/) {
     se::HandleObject array(se::Object::createArrayObject(from.size()));
-    for(auto i = 0;i < from.size(); i++) {
+    for (auto i = 0; i < from.size(); i++) {
         array->setArrayElement(i, se::Value(from[i]));
     }
     to.setObject(array);
@@ -1784,7 +1782,6 @@ bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx);
 template <>
 bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx);
 
-
 template <>
 bool nativevalue_to_se(const cc::Mat3 &from, se::Value &to, se::Object *ctx);
 
@@ -1844,8 +1841,8 @@ bool nativevalue_to_se(const std::unordered_map<std::string, cc::Value> &from, s
 template <>
 bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object *ctx);
 
-template <>
-bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object *ctx);
+//template <>
+//bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object *ctx);
 
 template <>
 bool nativevalue_to_se(const cc::Vec4 &from, se::Value &to, se::Object *ctx);
@@ -1853,8 +1850,8 @@ bool nativevalue_to_se(const cc::Vec4 &from, se::Value &to, se::Object *ctx);
 template <>
 bool nativevalue_to_se(const cc::Size &from, se::Value &to, se::Object *ctx);
 
-template <>
-bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx);
+//template <>
+//bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx);
 
 template <>
 bool nativevalue_to_se(const cc::extension::ManifestAsset &from, se::Value &to, se::Object *ctx);
@@ -2008,13 +2005,12 @@ inline bool nativevalue_to_se(const std::any &from, se::Value &to, se::Object *c
 
 template <typename T>
 inline bool nativevalue_to_se(const std::shared_ptr<T> &from, se::Value &to, se::Object *ctx) { //NOLINT
-    if(!from) {
+    if (!from) {
         to.setNull(); // or undefined ?
         return true;
     }
     return nativevalue_to_se(*from, to, ctx);
 }
-
 
 template <typename... ARGS>
 bool nativevalue_to_se(const std::tuple<ARGS...> &from, se::Value &to, se::Object *ctx) {
