@@ -29,31 +29,36 @@
 #include "cocos/bindings/manual/jsb_classtype.h"
 #include "cocos/bindings/manual/jsb_global.h"
 #include "cocos/bindings/manual/jsb_module_register.h"
-#include "cocos/core/Director.h"
+#include "cocos/platform/FileUtils.h"
 
 #if (CC_PLATFORM == CC_PLATFORM_MAC_IOS)
     #include "platform/Device.h"
 #endif
 
-Game::Game(int width, int height) : cc::Application(width, height) {}
+#include "SimpleDemo.h"
+#include "base/Scheduler.h"
+#include "core/platform/Macro.h"
+
+SimpleDemo simpleDemo;
+
+Game::Game(int width, int height, uintptr_t windowHandle) : cc::Application(width, height) {
+    _windowHandle = windowHandle;
+}
 
 bool Game::init() {
     cc::Application::init();
 
-    //cjh FIXME: Initialize director
-    auto *director = new cc::Director();
-    director->init();
-    //
-
+#if 0
+    
     se::ScriptEngine *se = se::ScriptEngine::getInstance();
 
     jsb_set_xxtea_key("");
     jsb_init_file_operation_delegate();
 
-#if defined(CC_DEBUG) && (CC_DEBUG > 0)
+    #if defined(CC_DEBUG) && (CC_DEBUG > 0)
     // Enable debugger here
-    jsb_enable_debugger("0.0.0.0", 6086, true);
-#endif
+    jsb_enable_debugger("0.0.0.0", 6086, false);
+    #endif
 
     se->setExceptionCallback([](const char *location, const char *message, const char *stack) {
         // Send exception information to server like Tencent Bugly.
@@ -64,15 +69,30 @@ bool Game::init() {
 
     se->start();
 
+    auto fu = cc::FileUtils::getInstance();;
+    
+    fu->addSearchPath("gen-res");
+    
     se::AutoHandleScope hs;
     jsb_run_script("jsb-adapter/jsb-builtin.js");
     jsb_run_script("main.js");
+
+#endif
 
 #if (CC_PLATFORM == CC_PLATFORM_MAC_IOS)
     cc::Vec2 logicSize  = getViewLogicalSize();
     float    pixelRatio = cc::Device::getDevicePixelRatio();
     cc::EventDispatcher::dispatchResizeEvent(logicSize.x * pixelRatio, logicSize.y * pixelRatio);
 #endif
+
+    simpleDemo.setup(getViewLogicalSize().x, getViewLogicalSize().y, _windowHandle);
+
+    cc::Application::getInstance()->getScheduler()->schedule([](float dt) {
+        simpleDemo.step(dt);
+        //        v8::Isolate::GetCurrent()->RunMicrotasks();
+    },
+                                                             &simpleDemo, 0.F, cc::macro::REPEAT_FOREVER, 0, false, "simpleDemo");
+
     return true;
 }
 
@@ -87,6 +107,8 @@ void Game::onResume() {
 }
 
 void Game::onClose() {
+    simpleDemo.finalize();
+
     cc::Application::onClose();
     cc::EventDispatcher::dispatchCloseEvent();
 }
