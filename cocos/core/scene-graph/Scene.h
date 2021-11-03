@@ -56,6 +56,8 @@ public:
     scene::RenderScene *_renderScene{nullptr};
 
 protected:
+    void updateScene() override { _scene = this; }
+    
     /**
      * @en Per-scene level rendering info
      * @zh 场景级别的渲染信息
