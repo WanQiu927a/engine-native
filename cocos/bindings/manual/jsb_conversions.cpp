@@ -1038,6 +1038,116 @@ bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, 
 }
 
 template <>
+bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Object * ctx) {
+    if(from.isNullOrUndefined()){
+        *to = std::monostate();
+        return true;
+    }
+    
+    //TODO(PatriceJiang): float/int32_t from js number
+    if(from.isNumber()) {
+        double v = from.toDouble();
+        if(std::trunc(v) != v) {
+            *to = static_cast<float>(v);
+        }else {
+            *to = static_cast<int32_t>(v);
+        }
+        return true;
+    }
+    
+    if(from.isObject()) {
+        se::Object *obj = const_cast<se::Object*>(from.toObject());
+        bool hasX;
+        bool hasY;
+        bool hasZ;
+        bool hasW;
+        bool hasEuler;
+        bool hasM01;
+        bool hasM08;
+        bool hasM15;
+        bool hasAssetID;
+        bool hasR;
+        bool hasG;
+        bool hasB;
+        bool hasA;
+        
+        se::Value tmp0;
+        se::Value tmp1;
+        se::Value tmp2;
+        se::Value tmp3;
+        se::Value tmp4;
+        
+        hasX = obj->getProperty("x", &tmp0);
+        hasY = hasX && obj->getProperty("y", &tmp1);
+        hasZ = hasY && obj->getProperty("z", &tmp2);
+        hasW = hasZ && obj->getProperty("w", &tmp3);
+        hasEuler = hasW && obj->getProperty("getEulerAngles", &tmp4);
+        
+        
+        if(hasW) {
+            if(hasEuler) {
+                *to = cc::Quaternion(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat(), tmp3.toFloat());
+            }else {
+                *to = cc::Vec4(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat(), tmp3.toFloat());
+            }
+            return true;
+        }
+        
+        if(hasZ) {
+            *to = cc::Vec3(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat());
+            return true;
+        }
+        
+        
+        if(hasY) {
+            *to = cc::Vec2(tmp0.toFloat(), tmp1.toFloat());
+            return true;
+        }
+        
+        hasM01 = obj->getProperty("m00", &tmp0);
+        hasM08 = hasM01 && obj->getProperty("m08", &tmp1);
+        hasM15 = hasM08 && obj->getProperty("m15", &tmp2);
+        
+        if(hasM15) {
+            cc::Mat4 m4;
+            sevalue_to_native(from, &m4, ctx);
+            *to = m4;
+            return true;
+        }
+        
+        if(hasM08) {
+            cc::Mat3 m3;
+            sevalue_to_native(from, &m3, ctx);
+            *to = m3;
+            return true;
+        }
+        
+        hasR = obj->getProperty("r", &tmp0);
+        hasG = hasR && obj->getProperty("g", &tmp1);
+        hasB = hasG && obj->getProperty("b", &tmp2);
+        hasA = hasB && obj->getProperty("a", &tmp3);
+        if(hasA) {
+            *to = cc::Color{tmp0.toUint8(), tmp1.toUint8(), tmp2.toUint8(), tmp3.toUint8()};
+            return true;
+        }
+        
+        hasAssetID = obj->getProperty("_id", &tmp3);
+        if(hasAssetID) {
+            *to = reinterpret_cast<cc::TextureBase*>(obj->getPrivateData());
+            return true;
+        }
+        
+        // gfx::Texture?
+        *to = reinterpret_cast<cc::gfx::Texture*>(obj->getPrivateData());
+        return true;
+       
+        
+    }
+    
+    return false;
+}
+
+template <>
 bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, std::string> *to, se::Object *ctx) {
     if (from.isObject() && from.toObject()->isArray()) {
         uint32_t           len = 0;
@@ -1081,8 +1191,15 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
     std::visit([&](auto &typedArray) {
         typedArray.setJSTypedArray(from.toObject());
-    },
-               *to);
+    },*to);
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::IBArray *to, se::Object * /*ctx*/) {
+    std::visit([&](auto &typedArray) {
+        typedArray.setJSTypedArray(from.toObject());
+    },*to);
 
     return true;
 }
