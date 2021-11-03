@@ -1784,8 +1784,8 @@ inline bool nativevalue_to_se(const bool &from, se::Value &to, se::Object * /*ct
     return true;
 }
 
-template <>
-bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx);
+// template <>
+// bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx);
 
 template <>
 bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx);
@@ -1846,8 +1846,8 @@ bool nativevalue_to_se(const cc::Value &from, se::Value &to, se::Object *ctx);
 template <>
 bool nativevalue_to_se(const std::unordered_map<std::string, cc::Value> &from, se::Value &to, se::Object *ctx);
 
-template <>
-bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object *ctx);
+// template <>
+// bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object *ctx);
 
 //template <>
 //bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object *ctx);

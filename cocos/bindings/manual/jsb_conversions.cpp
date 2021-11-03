@@ -641,10 +641,10 @@ bool nativevalue_to_se(const cc::Vec4 &from, se::Value &to, se::Object * /*unuse
     return Vec4_to_seval(from, &to);
 }
 
-template <>
-bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object * /*unused*/) {
-    return Vec2_to_seval(from, &to);
-}
+// template <>
+// bool nativevalue_to_se(const cc::Vec2 &from, se::Value &to, se::Object * /*unused*/) {
+//     return Vec2_to_seval(from, &to);
+// }
 
 //template <>
 //bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object * /*unused*/) {
@@ -1268,16 +1268,16 @@ bool nativevalue_to_se(const spine::Vector<spine::String> &v, se::Value &ret, se
     return ok;
 }
 
-template <>
-bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx) {
-    se::HandleObject obj(se::Object::createPlainObject());
-    obj->setProperty("r", se::Value(from.r));
-    obj->setProperty("g", se::Value(from.g));
-    obj->setProperty("b", se::Value(from.b));
-    obj->setProperty("a", se::Value(from.a));
-    to.setObject(obj);
-    return true;
-}
+// template <>
+// bool nativevalue_to_se(const cc::Color &from, se::Value &to, se::Object *ctx) {
+//     se::HandleObject obj(se::Object::createPlainObject());
+//     obj->setProperty("r", se::Value(from.r));
+//     obj->setProperty("g", se::Value(from.g));
+//     obj->setProperty("b", se::Value(from.b));
+//     obj->setProperty("a", se::Value(from.a));
+//     to.setObject(obj);
+//     return true;
+// }
 
 template <>
 bool nativevalue_to_se(const cc::NativeDep &from, se::Value &to, se::Object *ctx) {
