@@ -1047,7 +1047,7 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
     //TODO(PatriceJiang): float/int32_t from js number
     if(from.isNumber()) {
         double v = from.toDouble();
-        if(std::trunc(v) == v) {
+        if(std::trunc(v) != v) {
             *to = static_cast<float>(v);
         }else {
             *to = static_cast<int32_t>(v);
