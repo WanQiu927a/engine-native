@@ -145,9 +145,6 @@ void EventDispatcher::dispatchTouchEvent(const struct TouchEvent &touchEvent) {
 }
 
 void EventDispatcher::dispatchMouseEvent(const struct MouseEvent &mouseEvent) {
-    //TODO: minggo
-    return;
-
     se::AutoHandleScope scope;
     if (!jsMouseEventObj) {
         jsMouseEventObj = se::Object::createPlainObject();
@@ -267,27 +264,27 @@ void EventDispatcher::dispatchResizeEvent(int width, int height) {
 }
 
 void EventDispatcher::dispatchOrientationChangeEvent(int orientation) {
-    //cjh TODO: uncomment    if (!se::ScriptEngine::getInstance()->isValid()) {
-    //        return;
-    //    }
-    //
-    //    se::AutoHandleScope scope;
-    //    assert(inited);
-    //
-    //    if (jsOrientationEventObj == nullptr) {
-    //        jsOrientationEventObj = se::Object::createPlainObject();
-    //        jsOrientationEventObj->root();
-    //    }
-    //
-    //    se::Value func;
-    //    __jsbObj->getProperty("onOrientationChanged", &func);
-    //    if (func.isObject() && func.toObject()->isFunction()) {
-    //        jsOrientationEventObj->setProperty("orientation", se::Value(orientation));
-    //
-    //        se::ValueArray args;
-    //        args.push_back(se::Value(jsOrientationEventObj));
-    //        func.toObject()->call(args, nullptr);
-    //    }
+    if (!se::ScriptEngine::getInstance()->isValid()) {
+        return;
+    }
+
+    se::AutoHandleScope scope;
+    assert(inited);
+
+    if (jsOrientationEventObj == nullptr) {
+        jsOrientationEventObj = se::Object::createPlainObject();
+        jsOrientationEventObj->root();
+    }
+
+    se::Value func;
+    __jsbObj->getProperty("onOrientationChanged", &func);
+    if (func.isObject() && func.toObject()->isFunction()) {
+        jsOrientationEventObj->setProperty("orientation", se::Value(orientation));
+
+        se::ValueArray args;
+        args.push_back(se::Value(jsOrientationEventObj));
+        func.toObject()->call(args, nullptr);
+    }
 }
 
 void EventDispatcher::dispatchEnterBackgroundEvent() {
@@ -311,29 +308,29 @@ void EventDispatcher::dispatchCloseEvent() {
 }
 
 void EventDispatcher::doDispatchEvent(const char *eventName, const char *jsFunctionName, const std::vector<se::Value> &args) {
-    //cjh TODO: uncomment    if (!se::ScriptEngine::getInstance()->isValid()) {
-    //        return;
-    //    }
-    //
-    //    if (eventName) {
-    //        CustomEvent event;
-    //        event.name = eventName;
-    //        EventDispatcher::dispatchCustomEvent(event);
-    //    }
-    //
-    //    // dispatch to Javascript
-    //    if (!se::ScriptEngine::getInstance()->isValid()) {
-    //        return;
-    //    }
-    //
-    //    se::AutoHandleScope scope;
-    //    assert(inited);
-    //
-    //    se::Value func;
-    //    __jsbObj->getProperty(jsFunctionName, &func);
-    //    if (func.isObject() && func.toObject()->isFunction()) {
-    //        func.toObject()->call(args, nullptr);
-    //    }
+    if (!se::ScriptEngine::getInstance()->isValid()) {
+        return;
+    }
+
+    if (eventName) {
+        CustomEvent event;
+        event.name = eventName;
+        EventDispatcher::dispatchCustomEvent(event);
+    }
+
+    // dispatch to Javascript
+    if (!se::ScriptEngine::getInstance()->isValid()) {
+        return;
+    }
+
+    se::AutoHandleScope scope;
+    assert(inited);
+
+    se::Value func;
+    __jsbObj->getProperty(jsFunctionName, &func);
+    if (func.isObject() && func.toObject()->isFunction()) {
+        func.toObject()->call(args, nullptr);
+    }
 }
 
 uint32_t EventDispatcher::addCustomEventListener(const std::string &eventName, const CustomEventListener &listener) {
