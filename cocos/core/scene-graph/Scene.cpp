@@ -71,7 +71,14 @@ void Scene::activate(bool active /* = true */) {
 }
 
 void Scene::onBatchCreated(bool dontSyncChildPrefab) {
-    Super::onBatchCreated(dontSyncChildPrefab);
+    // Moved from Node::onBatchCreated, Node::onBatchCreated only emits event to JS now.
+    if (_parent) {
+        index_t idx = getIdxOfChild(_parent->_children, this);
+        if (idx != CC_INVALID_INDEX) {
+            _siblingIndex = idx;
+        }
+    }
+    //
 
     int32_t len = static_cast<int32_t>(_children.size());
     for (int32_t i = 0; i < len; ++i) {

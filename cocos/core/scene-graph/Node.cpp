@@ -50,11 +50,10 @@ std::vector<std::vector<Node *>> Node::stacks;
 
 namespace {
 std::unordered_map<Node *, int32_t /* place_holder */> allNodes; //cjh how to clear ?
-}
+const std::string                                      EMPTY_NODE_NAME;
+} // namespace
 
-Node::Node() {
-    allNodes.emplace(this, 0);
-    _eventProcessor = new NodeEventProcessor(this);
+Node::Node() : Node(EMPTY_NODE_NAME) {
 }
 
 Node::Node(const std::string &name) {
@@ -75,17 +74,13 @@ Node::~Node() {
     CC_SAFE_DELETE(_eventProcessor);
 }
 
-void Node::onBatchCreated(bool /*dontChildPrefab*/) {
-    if (_parent) {
-        index_t idx = getIdxOfChild(_parent->_children, this);
-        if (idx != -1) {
-            _siblingIndex = idx;
-        }
-    }
+void Node::onBatchCreated(bool dontChildPrefab) {
+    emit(EventTypesToJS::NODE_ON_BATCH_CREATED, dontChildPrefab);
 }
 
 Node *Node::instantiate(Node *cloned, bool isSyncedNode) {
     if (!cloned) {
+        CC_ASSERT(false);
         // TODO: cloned = legacyCC.instantiate._clone(this, this);
         return nullptr;
     }

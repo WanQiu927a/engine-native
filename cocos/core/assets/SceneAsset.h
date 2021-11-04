@@ -33,6 +33,7 @@ class Scene;
 
 class SceneAsset final : public Asset {
 public:
+    using Super            = Asset;
     SceneAsset()           = default;
     ~SceneAsset() override = default;
 
@@ -44,7 +45,8 @@ public:
 
     inline Scene *getScene() const { return _scene; }
 
-private:
+    //cjh FOR deserialization
+public:
     /**
      * @en The scene node
      * @zh 场景节点。
