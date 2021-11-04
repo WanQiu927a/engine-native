@@ -52,8 +52,8 @@ void EffectAsset::registerAsset(EffectAsset *asset) {
     if (asset == nullptr) {
         return;
     }
-
     __effects.emplace(asset->getName(), asset);
+    asset->retain();
 }
 
 /* static */
@@ -61,6 +61,7 @@ void EffectAsset::remove(const std::string &name) {
     auto iter = __effects.find(name);
     if (iter != __effects.end() && iter->second->getName() == name) {
         __effects.erase(iter); //cjh TODO: need to delete asset here ?
+        iter->second->release();
         return;
     }
 
@@ -73,6 +74,7 @@ void EffectAsset::remove(const std::string &name) {
 
     if (iter != __effects.end()) {
         __effects.erase(iter);
+        iter->second->release();
     }
 }
 
@@ -85,6 +87,7 @@ void EffectAsset::remove(EffectAsset *asset) {
     auto iter = __effects.find(asset->getName());
     if (iter != __effects.end() && iter->second == asset) {
         __effects.erase(iter); //cjh TODO: need to delete asset here ?
+        iter->second->release();
     }
 }
 
@@ -110,6 +113,8 @@ void EffectAsset::onLoaded() {
     //cjh TODO:    if (!EDITOR){
     //cjh    legacyCC.game.once(legacyCC.Game.EVENT_ENGINE_INITED, this._precompile, this);
     // }
+    
+    precompile();
 }
 
 bool EffectAsset::destroy() {
@@ -134,6 +139,8 @@ void EffectAsset::precompile() {
     Root *root = Root::getInstance();
     for (index_t i = 0; i < _shaders.size(); ++i) {
         auto shader      = _shaders[i];
+        if(i >= _combinations.size())
+            continue;
         auto combination = _combinations[i];
         if (combination.empty()) continue;
 
