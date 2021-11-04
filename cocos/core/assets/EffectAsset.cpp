@@ -113,8 +113,6 @@ void EffectAsset::onLoaded() {
     //cjh TODO:    if (!EDITOR){
     //cjh    legacyCC.game.once(legacyCC.Game.EVENT_ENGINE_INITED, this._precompile, this);
     // }
-    
-    precompile();
 }
 
 bool EffectAsset::destroy() {
