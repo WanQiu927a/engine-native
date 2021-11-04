@@ -399,7 +399,7 @@ bool Node::onPreDestroyBase() {
 }
 
 Node *Node::getChildByName(const std::string &name) const {
-    if (!name.empty()) {
+    if (name.empty()) {
         CC_LOG_INFO("Invalid name");
         return nullptr;
     }
