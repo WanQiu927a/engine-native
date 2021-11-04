@@ -37,5 +37,6 @@ const std::string EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE{"NODE_REMOVE_PER
 const std::string EventTypesToJS::NODE_DESTROY_COMPONENTS{"NODE_DESTROY_COMPONENTS"};
 const std::string EventTypesToJS::NODE_UI_TRANSFORM_DIRTY{"NODE_UI_TRANSFORM_DIRTY"};
 const std::string EventTypesToJS::NODE_ACTIVE_NODE{"NODE_ACTIVE_NODE"};
+const std::string EventTypesToJS::NODE_ON_BATCH_CREATED{"NODE_ON_BATCH_CREATED"};
 
 } // namespace cc

@@ -24,11 +24,13 @@
 ****************************************************************************/
 
 #include "core/assets/SceneAsset.h"
+#include "core/scene-graph/Scene.h"
 
 namespace cc {
 
 void SceneAsset::initDefault(const std::optional<std::string> &uuid) {
-    //TODO:
+    Super::initDefault(uuid);
+    _scene = new Scene("New Scene"); //cjh HOW TO RELEASE?
 }
 
 } // namespace cc

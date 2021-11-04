@@ -172,6 +172,25 @@ static void registerOnActiveNode(cc::Node *node, se::Object *jsObject) {
         skip);
 }
 
+static void registerOnBatchCreated(cc::Node *node, se::Object *jsObject) {
+    cc::CallbackInfoBase::ID skip;
+    node->on(
+        cc::EventTypesToJS::NODE_ON_BATCH_CREATED,
+        [jsObject](bool dontChildPrefab) {
+            se::AutoHandleScope hs;
+            se::Value           funcVal;
+            jsObject->getProperty("_onBatchCreated", &funcVal);
+            SE_PRECONDITION2_VOID(funcVal.isObject() && funcVal.toObject()->isFunction(), "Not function named _onBatchCreated.");
+
+            se::ValueArray args;
+            se::Value      arg0;
+            nativevalue_to_se(dontChildPrefab, arg0);
+            args.push_back(arg0);
+            funcVal.toObject()->call(args, jsObject);
+        },
+        skip);
+}
+
 static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
 {
     auto *cobj = SE_THIS_OBJECT<cc::Node>(s);
@@ -195,6 +214,7 @@ static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-
     registerOnChildRemoved(cobj, jsObject);
     registerOnChildAdded(cobj, jsObject);
     registerOnActiveNode(cobj, jsObject);
+    registerOnBatchCreated(cobj, jsObject);
 
     NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_REATTACH, _onReAttach);
     NODE_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::NODE_REMOVE_PERSIST_ROOT_NODE, _onRemovePersistRootNode);
@@ -207,7 +227,7 @@ static bool js_scene_Node_registerListeners(se::State &s) // NOLINT(readability-
 }
 SE_BIND_FUNC(js_scene_Node_registerListeners) // NOLINT(readability-identifier-naming)
 
-static bool js_scene_Pass_blocks_getter(se::State& s) {
+static bool js_scene_Pass_blocks_getter(se::State &s) {
     auto *cobj = SE_THIS_OBJECT<cc::scene::Pass>(s);
     SE_PRECONDITION2(cobj, false, "js_scene_Node_registerListeners : Invalid Native Object");
     auto *thiz = s.thisObject();
@@ -218,11 +238,11 @@ static bool js_scene_Pass_blocks_getter(se::State& s) {
         return true;
     }
 
-    const auto& blocks = cobj->getBlocks();
+    const auto &blocks = cobj->getBlocks();
 
     se::HandleObject jsBlocks{se::Object::createArrayObject(blocks.size())};
-    int32_t i = 0;
-    for (const auto& block : blocks) {
+    int32_t          i = 0;
+    for (const auto &block : blocks) {
         se::HandleObject jsBlock{se::Object::createTypedArray(se::Object::TypedArrayType::FLOAT32, block.data, block.size * 4)};
         jsBlocks->setArrayElement(i, se::Value(jsBlock));
         ++i;
@@ -249,6 +269,6 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     __jsb_cc_Node_proto->defineFunction("_registerListeners", _SE(js_scene_Node_registerListeners));
 
     __jsb_cc_scene_Pass_proto->defineProperty("blocks", _SE(js_scene_Pass_blocks_getter), nullptr);
-    
+
     return true;
 }
