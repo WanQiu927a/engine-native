@@ -50,7 +50,8 @@ void Scene::load() {
         //cjh        if (TEST) {
         //            assert(!_activeInHierarchy, 'Should deactivate ActionManager and EventManager by default');
         //        }
-        onBatchCreated(false); //cjh EDITOR && _prefabSyncedInLiveReload);
+        //cjh _onBatchCreated is implemented in TS now, so comment the following line
+        //        onBatchCreated(false); //cjh EDITOR && _prefabSyncedInLiveReload);
         _inited = true;
     }
     _scene = this;

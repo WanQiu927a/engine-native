@@ -75,6 +75,8 @@ Node::~Node() {
 }
 
 void Node::onBatchCreated(bool dontChildPrefab) {
+    // onBatchCreated was implemented in TS, so code should never go here.
+    CC_ASSERT(false);
     emit(EventTypesToJS::NODE_ON_BATCH_CREATED, dontChildPrefab);
 }
 
