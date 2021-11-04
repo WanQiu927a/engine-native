@@ -172,6 +172,7 @@ void SimpleTexture::createTexture(gfx::Device *device) {
 void SimpleTexture::tryDestroyTexture() {
     if (_gfxTexture != nullptr) {
         _gfxTexture->destroy();
+        delete _gfxTexture;
         _gfxTexture = nullptr;
     }
 }
