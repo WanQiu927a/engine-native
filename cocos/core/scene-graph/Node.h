@@ -268,8 +268,8 @@ public:
     void invalidateChildren(TransformBit dirtyBit);
 
     void translate(const Vec3 &, NodeSpace ns = NodeSpace::LOCAL);
-    void rotate(const Quaternion &rot, NodeSpace ns);
-    void lookAt(const Vec3 &pos, const Vec3 &up);
+    void rotate(const Quaternion &rot, NodeSpace ns = NodeSpace::LOCAL);
+    void lookAt(const Vec3 &pos, const Vec3 &up = Vec3::UNIT_Y);
 
     void pauseSystemEvents(bool recursive) {}  //cjh TODO:
     void resumeSystemEvents(bool recursive) {} //cjh TODO:
@@ -318,6 +318,7 @@ public:
      * @param scale Target scale
      */
     inline void setScale(const Vec3 &scale) { setScale(scale.x, scale.y, scale.z); }
+    inline void setScale(float x, float y) { setScale(x, y, _localScale.z); }
     void        setScale(float x, float y, float z);
     /**
      * @en Get scale in local coordinate system, please try to pass `out` vector and reuse it to avoid garbage.

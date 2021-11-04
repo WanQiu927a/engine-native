@@ -399,7 +399,7 @@ bool Node::onPreDestroyBase() {
 }
 
 Node *Node::getChildByName(const std::string &name) const {
-    if (!name.empty()) {
+    if (name.empty()) {
         CC_LOG_INFO("Invalid name");
         return nullptr;
     }
@@ -424,7 +424,7 @@ index_t Node::getIdxOfChild(const std::vector<Node *> &child, Node *target) {
 }
 
 Node *Node::getChildByUuid(const std::string &uuid) const {
-    if (!uuid.empty()) {
+    if (uuid.empty()) {
         CC_LOG_INFO("Invalid uuid");
         return nullptr;
     }
