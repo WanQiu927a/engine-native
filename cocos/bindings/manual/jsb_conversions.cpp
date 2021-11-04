@@ -1147,6 +1147,41 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
     return false;
 }
 
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::IPreCompileInfoValueType *to, se::Object * ctx) {
+    se::Object *obj = from.toObject();
+    SE_PRECONDITION2(obj->isArray(), false, "faild to convert to IPreCompileInfoValueType");
+    
+    uint32_t len;
+    obj->getArrayLength(&len);
+    if(len == 0) {
+        //TODO(PatriceJiang): judge type of empty array?
+        *to = std::vector<bool>{};
+        return false;
+    }
+    
+    se::Value firstEle;
+    obj->getArrayElement(0, &firstEle);
+    if(firstEle.isBoolean()) {
+        std::vector<bool> result;
+        sevalue_to_native(from, &result, ctx);
+        return true;
+    }
+    if(firstEle.isNumber()) {
+        std::vector<float> result;
+        sevalue_to_native(from, &result, ctx);
+        return true;
+    }
+    if(firstEle.isString()) {
+        std::vector<std::string> result;
+        sevalue_to_native(from, &result, ctx);
+        return true;
+    }
+    
+    return false;
+}
+
 template <>
 bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, std::string> *to, se::Object *ctx) {
     if (from.isObject() && from.toObject()->isArray()) {
@@ -1187,6 +1222,62 @@ bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *
     //TODO(PatriceJiang): should not mix smart pointers with raw pointers.
     return true;
 }
+
+
+template <>
+bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object * /*ctx*/) {
+    se::Object *arr = from.toObject();
+    uint32_t size;
+    se::Value tmp;
+    arr->getArrayLength(&size);
+    to->resize(size);
+    for(uint32_t i = 0;i < size; i++) {
+        arr->getArrayElement(i, &tmp);
+        (*to)[i] = tmp.toBoolean();
+    }
+    return true;
+}
+
+template <>
+bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se::Object * /*ctx*/) {
+    assert(from.isObject());
+    se::Object *in = from.toObject();
+
+    if (in->isTypedArray()) {
+        uint8_t *data    = nullptr;
+        size_t   dataLen = 0;
+        in->getTypedArrayData(&data, &dataLen);
+        to->resize(dataLen);
+        to->assign(data, data + dataLen);
+        return true;
+    }
+
+    if (in->isArrayBuffer()) {
+        uint8_t *data    = nullptr;
+        size_t   dataLen = 0;
+        in->getArrayBufferData(&data, &dataLen);
+        to->resize(dataLen);
+        to->assign(data, data + dataLen);
+        return true;
+    }
+
+    if (in->isArray()) {
+        uint32_t len = 0;
+        in->getArrayLength(&len);
+        to->resize(len);
+        se::Value ele;
+        for (uint32_t i = 0; i < len; i++) {
+            in->getArrayElement(i, &ele);
+            (*to)[i] = ele.toUint8();
+        }
+        return true;
+    }
+
+    SE_LOGE("type error, ArrayBuffer/TypedArray/Array expected!");
+    return false;
+}
+
+
 template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
     std::visit([&](auto &typedArray) {

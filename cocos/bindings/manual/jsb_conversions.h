@@ -808,10 +808,18 @@ struct is_optional : std::false_type {}; // NOLINT
 template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {}; // NOLINT
 
+template<typename ...Args>
+struct is_variant : std::false_type {}; // NOLINT
+template<typename ...Args>
+struct is_variant<std::variant<Args...>> : std::true_type {}; // NOLINT
+
+
+
 template <typename T>
 inline typename std::enable_if_t<!std::is_enum<T>::value && !std::is_pointer<T>::value, bool>
 sevalue_to_native(const se::Value & /*from*/, T * /*to*/, se::Object * /*unused*/) { // NOLINT(readability-identifier-naming)
     SE_LOGE("Can not convert type ???\n - [[ %s ]]\n", typeid(T).name());
+    CC_STATIC_ASSERT(!is_variant<T>::value, "should not match std::variant");
     CC_STATIC_ASSERT(std::is_same<T, void>::value, "sevalue_to_native not implemented for T");
     return false;
 }
@@ -826,9 +834,18 @@ sevalue_to_native(const se::Value &from, T *to, se::Object *ctx) { // NOLINT(rea
 }
 
 //////////////////////////////// forward declaration : sevalue_to_native ////////////////////////////////
+
+
 // std::variant<...>>ss
 template <typename... Args>
-constexpr bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
+bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
+
+template <>
+bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ctx);
+template <>
+bool sevalue_to_native(const se::Value &from, cc::IPreCompileInfoValueType *to, se::Object * /*ctx*/);
+
+
 
 template <typename T>
 bool sevalue_to_native(const se::Value &from, std::optional<T> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
@@ -910,13 +927,25 @@ bool sevalue_to_native(const se::Value &from, std::array<uint8_t, CNT> *to, se::
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ctx);
-
-template <>
 bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/);
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Object * /*ctx*/);
+
+template <typename T>
+bool sevalue_to_native(const se::Value &from, std::variant<T, std::vector<T> > *to, se::Object * ctx) {
+    se::Object * array = from.toObject();
+    if(array->isArray()) {
+        std::vector<T> result;
+        sevalue_to_native(from, &result, ctx);
+        *to = std::move(result);
+    } else {
+        T result;
+        sevalue_to_native(from, &result, ctx);
+        *to = result;
+    }
+    return true;
+}
 
 
 template <>
@@ -1223,43 +1252,10 @@ inline bool sevalue_to_native(const se::Value &from, cc::ValueMap *to, se::Objec
 }
 
 template <>
-inline bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se::Object * /*ctx*/) {
-    assert(from.isObject());
-    se::Object *in = from.toObject();
+bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object * /*ctx*/);
 
-    if (in->isTypedArray()) {
-        uint8_t *data    = nullptr;
-        size_t   dataLen = 0;
-        in->getTypedArrayData(&data, &dataLen);
-        to->resize(dataLen);
-        to->assign(data, data + dataLen);
-        return true;
-    }
-
-    if (in->isArrayBuffer()) {
-        uint8_t *data    = nullptr;
-        size_t   dataLen = 0;
-        in->getArrayBufferData(&data, &dataLen);
-        to->resize(dataLen);
-        to->assign(data, data + dataLen);
-        return true;
-    }
-
-    if (in->isArray()) {
-        uint32_t len = 0;
-        in->getArrayLength(&len);
-        to->resize(len);
-        se::Value ele;
-        for (uint32_t i = 0; i < len; i++) {
-            in->getArrayElement(i, &ele);
-            (*to)[i] = ele.toUint8();
-        }
-        return true;
-    }
-
-    SE_LOGE("type error, ArrayBuffer/TypedArray/Array expected!");
-    return false;
-}
+template <>
+bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se::Object * /*ctx*/);
 
 ///////////////////// TypedArray
 
@@ -1298,9 +1294,9 @@ template <>
 bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, std::string> *to, se::Object *ctx);
 
 template <typename... Args>
-constexpr bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx) {
+inline bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx) {
+    static_assert(sizeof...(Args) == 0); //TODO(PatriceJiang): should not pass variant from js -> native
     assert(false);
-    //static_assert(sizeof...(Args) == 0); //TODO(PatriceJiang): should not pass variant from js -> native
     return false;
 }
 template <>
