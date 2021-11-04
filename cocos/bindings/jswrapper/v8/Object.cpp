@@ -574,8 +574,14 @@ bool Object::call(const ValueArray &args, Object *thisObject, Value *rval /* = n
     }
 
     v8::Local<v8::Context>    context = se::ScriptEngine::getInstance()->_getContext();
+    v8::TryCatch  tryCatch(__isolate);
     v8::MaybeLocal<v8::Value> result  = _obj.handle(__isolate)->CallAsFunction(context, thiz, static_cast<int>(argc), argv.data());
 
+    if(tryCatch.HasCaught()) {
+        v8::String::Utf8Value msg(__isolate, tryCatch.Exception());
+        SE_REPORT_ERROR("Invoking function (%s) failed!", *msg);
+    }
+    
     if (!result.IsEmpty()) {
         if (rval != nullptr) {
             internal::jsToSeValue(__isolate, result.ToLocalChecked(), rval);
