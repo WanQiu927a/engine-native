@@ -1084,6 +1084,10 @@ bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unus
 
 template <>
 inline bool sevalue_to_native(const se::Value &from, std::vector<se::Value> *to, se::Object * /*unused*/) {
+    if(from.isNullOrUndefined()) {
+        to->clear();
+        return true;
+    }
     assert(from.isObject() && from.toObject()->isArray());
     auto *array = from.toObject();
     to->clear();
@@ -1196,6 +1200,12 @@ sevalue_to_native(const se::Value &from, T ***to, se::Object * /*ctx*/) { // NOL
 
 template <typename T, typename allocator>
 bool sevalue_to_native(const se::Value &from, std::vector<T, allocator> *to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
+    
+    if(from.isNullOrUndefined()){
+        to->clear();
+        return true;
+    }
+    
     assert(from.toObject());
     se::Object *array = from.toObject();
 

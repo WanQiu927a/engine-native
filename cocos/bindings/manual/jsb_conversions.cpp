@@ -1005,6 +1005,11 @@ bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ct
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/) {
+    if(from.isNullOrUndefined()) {
+        to->clear();
+        return true;
+    }
+    
     SE_PRECONDITION2(from.isObject(), false, "sevalue_to_native(std::vector<cc::MacroRecord>), not an object");
     auto *fromObj = from.toObject();
     CC_ASSERT(fromObj->isArray());
@@ -1226,6 +1231,11 @@ bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object * /*ctx*/) {
+    if(from.isNullOrUndefined()) {
+        to->clear();
+        return true;
+    }
+    
     se::Object *arr = from.toObject();
     uint32_t size;
     se::Value tmp;
@@ -1240,6 +1250,11 @@ bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object 
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se::Object * /*ctx*/) {
+    if(from.isNullOrUndefined()) {
+        to->clear();
+        return true;
+    }
+    
     assert(from.isObject());
     se::Object *in = from.toObject();
 
