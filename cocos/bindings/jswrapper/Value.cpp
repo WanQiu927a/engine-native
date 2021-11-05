@@ -442,17 +442,6 @@ float Value::toFloat() const {
 }
 
 double Value::toDouble() const {
-<<<<<<< HEAD
-    assert(_type == Type::Number || _type == Type::Boolean);
-    // assert(_type != Type::BigInt);
-    if (_type == Type::Boolean) {
-        if (_u._boolean) {
-            return 1.0;
-        }
-        return 0.0;
-    }
-    return _u._number;
-=======
     assert(_type == Type::Number || _type == Type::Boolean || _type == Type::BigInt);
     if(LIKELY(_type == Type::Number)) {
         return _u._number;
@@ -462,7 +451,6 @@ double Value::toDouble() const {
         return static_cast<double>(_u._bigint);
     }
     return _u._boolean ? 1.0 : 0.0;
->>>>>>> ddcbf5614 (fix double conversion)
 }
 
 bool Value::toBoolean() const {
