@@ -58,7 +58,7 @@ void AmbientInfo::activate(Ambient *resource) {
 //
 void Ambient::initialize(AmbientInfo *info) {
     setSkyColor(info->getSkyColor());
-    _groundAlbedo.set(info->getGroundAlbedo());
+    setGroundAlbedo(info->getGroundAlbedo());
     _skyIllum = info->getSkyIllum();
 }
 
