@@ -659,12 +659,57 @@ static bool register_se_setExceptionCallback(se::Object *obj) { // NOLINT(readab
     return true;
 }
 
+static bool js_engine_Color_get_val(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::Color>(s);
+    SE_PRECONDITION2(cobj, false, "js_engine_Color_get_val : Invalid Native Object");
+
+    CC_UNUSED bool ok = true;
+    se::Value      jsret;
+    uint32_t       r   = static_cast<uint32_t>(cobj->r);
+    uint32_t       g   = static_cast<uint32_t>(cobj->g);
+    uint32_t       b   = static_cast<uint32_t>(cobj->b);
+    uint32_t       a   = static_cast<uint32_t>(cobj->a);
+    uint32_t       val = (a << 24) + (b << 16) + (g << 8) + r;
+    ok &= nativevalue_to_se(val, jsret, s.thisObject() /*ctx*/);
+    s.rval() = jsret;
+    return true;
+}
+SE_BIND_PROP_GET(js_engine_Color_get_val)
+
+static bool js_engine_Color_set_val(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    const auto &args = s.args();
+    auto *      cobj = SE_THIS_OBJECT<cc::Color>(s);
+    SE_PRECONDITION2(cobj, false, "js_engine_Color_set_val : Invalid Native Object");
+
+    CC_UNUSED bool ok = true;
+    uint32_t       val{0};
+    ok &= sevalue_to_native(args[0], &val, s.thisObject());
+    cobj->r = val & 0x000000FF;
+    cobj->g = (val & 0x0000FF00) >> 8;
+    cobj->b = (val & 0x00FF0000) >> 16;
+    cobj->a = (val & 0xFF000000) >> 24;
+    SE_PRECONDITION2(ok, false, "js_engine_Color_set_val : Error processing new value");
+    return true;
+}
+SE_BIND_PROP_SET(js_engine_Color_set_val)
+
+static bool register_engine_Color_manual(se::Object * /*obj*/) { // NOLINT(readability-identifier-naming)
+    __jsb_cc_Color_proto->defineProperty("_val", _SE(js_engine_Color_get_val), _SE(js_engine_Color_set_val));
+
+    se::ScriptEngine::getInstance()->clearException();
+
+    return true;
+}
+
 bool register_all_cocos_manual(se::Object *obj) {
     register_plist_parser(obj);
     register_sys_localStorage(obj);
     register_device(obj);
     register_canvas_context2d(obj);
     register_filetuils_ext(obj);
+    register_engine_Color_manual(obj);
     register_se_setExceptionCallback(obj);
     return true;
 }
