@@ -206,7 +206,7 @@ protected:
 
     gfx::Format getGFXPixelFormat(PixelFormat format) const;
 
-protected:
+public:
     /*@serializable*/
     PixelFormat _format{PixelFormat::RGBA8888};
 
@@ -233,6 +233,8 @@ protected:
 
     uint32_t _width{1};
     uint32_t _height{1};
+    
+protected:
 
     std::string      _id;
     gfx::SamplerInfo _samplerInfo;
