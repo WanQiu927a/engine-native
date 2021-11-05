@@ -252,7 +252,7 @@ void Pass::update() {
     }
 
     if (_rootBufferDirty && _rootBuffer) {
-        _rootBuffer->update(_rootBlock->getData(), _rootBuffer->getSize());
+        _rootBuffer->update(_rootBlock->getData(), _rootBlock->byteLength());
         _rootBufferDirty = false;
     }
     _descriptorSet->update();

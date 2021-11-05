@@ -227,8 +227,8 @@ bool dependencyCheck(const std::vector<std::string> &dependencies, const MacroRe
 
 std::vector<gfx::Attribute> getActiveAttributes(const IProgramInfo &tmpl, const ITemplateInfo &tmplInfo, const MacroRecord &defines) {
     std::vector<gfx::Attribute> out{};
-    auto                        attributes    = tmpl.attributes;
-    auto                        gfxAttributes = tmplInfo.gfxAttributes;
+    const auto &                attributes    = tmpl.attributes;
+    const auto &                gfxAttributes = tmplInfo.gfxAttributes;
     for (auto i = 0; i < attributes.size(); i++) {
         if (!dependencyCheck(attributes[i].defines, defines)) {
             continue;
