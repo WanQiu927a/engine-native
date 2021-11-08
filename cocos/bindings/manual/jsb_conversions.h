@@ -1301,13 +1301,6 @@ inline bool sevalue_to_native(const se::Value &from, std::monostate *to, se::Obj
 template <>
 bool sevalue_to_native(const se::Value &from, std::variant<std::monostate, cc::MaterialProperty, cc::MaterialPropertyList> *to, se::Object *ctx);
 
-///////////////////////  std::vector<std::variant>
-template <typename... Args>
-constexpr bool sevalue_to_native(const se::Value &from, std::vector<std::variant<Args...>> *to, se::Object *ctx) {
-    assert(false); //TODO(PatriceJiang): should not pass variant from js -> native
-    return false;
-}
-
 #if HAS_CONSTEXPR
 template <typename T, bool is_reference>
 inline bool sevalue_to_native(const se::Value &from, HolderType<T, is_reference> *holder, se::Object *ctx) { // NOLINT(readability-identifier-naming)

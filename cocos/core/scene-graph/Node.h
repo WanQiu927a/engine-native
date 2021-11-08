@@ -284,6 +284,7 @@ public:
      * @param position Target position
      */
     inline void setPosition(const Vec3 &pos) { setPosition(pos.x, pos.y, pos.z); }
+    inline void setPosition(float x, float y) { setPosition(x, y, _localPosition.z); }
     void        setPosition(float x, float y, float z);
     /**
      * @en Get position in local coordinate system, please try to pass `out` vector and reuse it to avoid garbage.

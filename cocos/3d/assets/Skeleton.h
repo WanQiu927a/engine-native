@@ -35,7 +35,9 @@ namespace cc {
  */
 class Skeleton final : public Asset {
 public:
-    using Super = Asset;
+    using Super          = Asset;
+    Skeleton()           = default;
+    ~Skeleton() override = default;
     /**
      * @en The path of all bones, the length always equals the length of [[bindposes]]
      * @zh 所有关节的路径。该数组的长度始终与 [[bindposes]] 的长度相同。
@@ -71,6 +73,7 @@ public:
      * @zh 获取骨骼资源的哈希值
      */
     uint64_t getHash();
+    void     setHash(uint64_t hash) { _hash = hash; }
 
     bool destroy() override;
     bool validate() const override;

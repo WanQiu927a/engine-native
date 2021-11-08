@@ -33,7 +33,7 @@ namespace cc {
 DataView::DataView(ArrayBuffer::Ptr buffer) : DataView(buffer, 0) {}
 
 DataView::DataView(ArrayBuffer::Ptr buffer, uint32_t byteOffset)
-: DataView(buffer, byteOffset, buffer ? buffer->byteLength() : 0) {}
+: DataView(buffer, byteOffset, buffer ? (buffer->byteLength() - byteOffset) : 0) {}
 
 DataView::DataView(ArrayBuffer::Ptr buffer, uint32_t byteOffset, uint32_t byteLength) {
     assign(buffer, byteOffset, byteLength);

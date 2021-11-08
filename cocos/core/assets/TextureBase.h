@@ -233,9 +233,8 @@ public:
 
     uint32_t _width{1};
     uint32_t _height{1};
-    
-protected:
 
+protected:
     std::string      _id;
     gfx::SamplerInfo _samplerInfo;
     uint64_t         _samplerHash{0};

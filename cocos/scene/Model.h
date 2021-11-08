@@ -132,15 +132,17 @@ public:
     inline void         setDynamicBatching(bool val) { _isDynamicBatching = val; }
     inline bool         isDynamicBatching() const { return _isDynamicBatching; }
 
+    void         initLocalDescriptors(index_t subModelIndex);
+    virtual void updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet);
+
 protected:
     static void uploadMat4AsVec4x3(const Mat4 &mat, Float32Array &v1, Float32Array &v2, Float32Array &v3);
 
-    void         updateAttributesAndBinding(index_t subModelIndex);
-    int32_t      getInstancedAttributeIndex(const std::string &name) const;
-    void         updateInstanceAttribute(const std::vector<gfx::Attribute> &, Pass *pass) const;
-    void         initLocalDescriptors(index_t subModelIndex);
-    virtual void updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet);
-    SubModel *   createSubModel() const;
+    void    updateAttributesAndBinding(index_t subModelIndex);
+    int32_t getInstancedAttributeIndex(const std::string &name) const;
+    void    updateInstanceAttribute(const std::vector<gfx::Attribute> &, Pass *pass) const;
+
+    SubModel *createSubModel() const;
 
     Type            _type{Type::DEFAULT};
     bool            _transformUpdated{false};
