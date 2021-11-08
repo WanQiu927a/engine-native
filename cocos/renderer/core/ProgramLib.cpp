@@ -279,8 +279,6 @@ void IProgramInfo::copyFrom(const IShaderInfo &o) {
     attributes      = o.attributes;
 }
 
-std::vector<ProgramLib*> ProgramLib::instances;
-
 //
 /*static*/
 ProgramLib *ProgramLib::getInstance() {
