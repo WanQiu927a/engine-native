@@ -187,6 +187,9 @@ public:
          */
     bool defineProperty(const char *name, v8::AccessorNameGetterCallback getter, v8::AccessorNameSetterCallback setter);
 
+    
+    bool defineOwnProperty(const char *name,const se::Value &value, bool writable = true, bool enumerable= true, bool configurable= true);
+    
     /**
          *  @brief Defines a function with a native callback for an object.
          *  @param[in] funcName A utf-8 string containing the function name.

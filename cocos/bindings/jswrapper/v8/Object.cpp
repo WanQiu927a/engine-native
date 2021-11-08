@@ -339,9 +339,9 @@ bool Object::init(Class *cls, v8::Local<v8::Object> obj) {
     }
 
     #if CC_DEBUG
-    this->_objectId = ++nativeObjectId;
-        //    this->setProperty("__object_id__", se::Value(this->_objectId));
-        //    this->setProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"));
+    //    this->_objectId = ++nativeObjectId;
+    //    defineOwnProperty("__object_id__", se::Value(this->_objectId), false, false, false);
+    //    defineOwnProperty("__native_class_name__", se::Value(cls ? cls->getName() : "[noname]"), false, false, false);
     #endif
 
     return true;
@@ -437,6 +437,34 @@ bool Object::defineProperty(const char *name, v8::AccessorNameGetterCallback get
     return ret.IsJust() && ret.FromJust();
 }
 
+
+bool Object::defineOwnProperty(const char *name,const se::Value &value, bool writable, bool enumerable, bool configurable)
+{
+    v8::MaybeLocal<v8::String> nameValue = v8::String::NewFromUtf8(__isolate, name, v8::NewStringType::kNormal);
+    if (nameValue.IsEmpty()) {
+        return false;
+    }
+
+    int flag{v8::PropertyAttribute::None};
+    if(!writable) {
+        flag |= v8::PropertyAttribute::ReadOnly;
+    }
+    if(!enumerable) {
+        flag |= v8::PropertyAttribute::DontEnum;
+    }
+    if(!configurable){
+        flag |= v8::PropertyAttribute::DontDelete;
+    }
+    
+    v8::Local<v8::Value> v8Value;
+    internal::seToJsValue(__isolate, value, &v8Value);
+    
+    v8::Local<v8::String> nameValChecked = nameValue.ToLocalChecked();
+    v8::Local<v8::Name>   jsName         = v8::Local<v8::Name>::Cast(nameValChecked);
+    v8::Maybe<bool>       ret            = _obj.handle(__isolate)->DefineOwnProperty(__isolate->GetCurrentContext(), jsName, v8Value, static_cast<v8::PropertyAttribute>(flag));
+    return ret.IsJust() && ret.FromJust();
+}
+
 bool Object::isFunction() const {
     return const_cast<Object *>(this)->_obj.handle(__isolate)->IsCallable();
 }
@@ -517,7 +545,7 @@ void Object::setPrivateData(void *data) {
     internal::setPrivate(__isolate, _obj, data, &_internalData);
     NativePtrToObjectMap::emplace(data, this);
     _privateData = data;
-    setProperty("__native_ptr__", se::Value(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(data))));
+    defineOwnProperty("__native_ptr__", se::Value(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(data))), false, false, false);
 }
 
 void *Object::getPrivateData() const {
@@ -533,7 +561,7 @@ void Object::clearPrivateData(bool clearMapping) {
             NativePtrToObjectMap::erase(_privateData);
         }
         internal::clearPrivate(__isolate, _obj);
-        setProperty("__native_ptr__", se::Value(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(nullptr))));
+        defineOwnProperty("__native_ptr__", se::Value(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(nullptr))),false, false, false);
         _privateData = nullptr;
     }
 }
@@ -811,7 +839,7 @@ std::string Object::toStringExt() const {
     std::vector<std::string> keys;
     getAllKeys(&keys);
     std::stringstream ss;
-    ss << "{ ";
+    ss << "{";
     for (auto &k : keys) {
         ss << k << ", ";
     }
