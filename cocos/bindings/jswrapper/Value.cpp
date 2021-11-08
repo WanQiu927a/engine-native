@@ -454,7 +454,7 @@ float Value::toFloat() const {
 }
 
 double Value::toDouble() const {
-    assert(_type == Type::Number || _type == Type::Boolean);
+    assert(_type == Type::Number || _type == Type::Boolean || (_type == Type::String && isInteger(*_u._string)));
     if (LIKELY(_type == Type::Number)) {
         return _u._number;
     }
