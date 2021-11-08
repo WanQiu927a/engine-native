@@ -55,7 +55,7 @@ void DataView::assign(ArrayBuffer::Ptr buffer, uint32_t byteOffset, uint32_t byt
     _byteEndPos = byteLength + byteOffset;
     CC_ASSERT(_byteEndPos <= buffer->_byteLength);
 
-    _data = buffer->_data + byteOffset;
+    _data = buffer->_data;
 }
 
 uint8_t DataView::getUint8(index_t offset) const {

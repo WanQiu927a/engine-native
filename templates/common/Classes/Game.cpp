@@ -40,6 +40,8 @@ Game::Game(int width, int height) : cc::Application(width, height) {}
 bool Game::init() {
     cc::Application::init();
 
+    //TODO: Is here the correct place to invoke setDescriptorSetLayout?
+    cc::pipeline::GlobalDSManager::setDescriptorSetLayout();
     //cjh FIXME: Initialize director
     auto *director = new cc::Director();
     director->init();

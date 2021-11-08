@@ -216,7 +216,7 @@ void Mesh::initialize() {
     if (_initialized) {
         return;
     }
-    if(!_data.buffer()) {
+    if (!_data.buffer()) {
         return;
     }
 
@@ -331,7 +331,7 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
     const auto &      bindposes = skeleton->getBindposes();
     valid.reserve(bindposes.size());
     for (size_t i = 0; i < bindposes.size(); i++) {
-        bounds.emplace_back(geometry::AABB{
+        bounds.emplace_back(new geometry::AABB{
             std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(),
             -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()});
         valid.emplace_back(false);
@@ -365,8 +365,8 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
                 Vec3::transformMat4(v31, bindposes[joint], &v32);
                 valid[joint] = true;
                 auto &b      = bounds[joint];
-                Vec3::min(b.center, v32, &b.center);
-                Vec3::max(b.halfExtents, v32, &b.halfExtents);
+                Vec3::min(b->center, v32, &b->center);
+                Vec3::max(b->halfExtents, v32, &b->halfExtents);
             }
         }
     }
@@ -375,7 +375,7 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
         if (!valid[i]) {
             bounds[i] = {};
         } else {
-            geometry::AABB::fromPoints(b.center, b.halfExtents, &b);
+            geometry::AABB::fromPoints(b->center, b->halfExtents, b);
         }
     }
     return bounds;
@@ -874,7 +874,6 @@ void Mesh::accessAttribute(index_t primitiveIndex, const char *attributeName, co
         auto        iter         = std::find_if(vertexBundle.attributes.begin(), vertexBundle.attributes.end(), [&](const auto &a) -> bool { return a.name == attributeName; });
         if (iter == vertexBundle.attributes.end()) {
             continue;
-            ;
         }
         accessor(vertexBundle, iter - vertexBundle.attributes.begin());
         break;

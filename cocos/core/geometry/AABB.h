@@ -38,8 +38,6 @@ class Sphere;
 class Frustum;
 class Plane;
 
-struct AABBLayout {
-};
 class AABB final : public ShapeBase {
 public:
     /**
