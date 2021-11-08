@@ -46,6 +46,10 @@ Color::Color(const uint8_t *src) {
     set(src);
 }
 
+Color::Color(uint32_t val) {
+    set(val);
+}
+
 Color::Color(const Color &p1, const Color &p2) {
     set(p1, p2);
 }
@@ -66,6 +70,13 @@ void Color::set(const uint8_t *array) {
     g = array[1];
     b = array[2];
     a = array[3];
+}
+
+void Color::set(uint32_t val) {
+    r = val & 0x000000FF;
+    g = (val & 0x0000FF00) >> 8;
+    b = (val & 0x00FF0000) >> 16;
+    a = (val & 0xFF000000) >> 24;
 }
 
 void Color::set(const Color &c) {

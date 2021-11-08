@@ -60,6 +60,8 @@ public:
      */
     explicit Color(const uint8_t *src);
 
+    explicit Color(uint32_t val);
+
     /**
      * Constructs a color that describes the direction between the specified points.
      *
@@ -92,6 +94,8 @@ public:
      * @param array An array containing the elements of the color in the order r, g, b, a.
      */
     void set(const uint8_t *array);
+
+    void set(uint32_t val);
 
     /**
      * Sets the elements of this color to those in the specified color.

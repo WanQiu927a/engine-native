@@ -1071,16 +1071,19 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
         bool        hasM08;
         bool        hasM15;
         bool        hasAssetID;
-        bool        hasR;
-        bool        hasG;
-        bool        hasB;
-        bool        hasA;
+        bool        hasColorVal;
 
         se::Value tmp0;
         se::Value tmp1;
         se::Value tmp2;
         se::Value tmp3;
         se::Value tmp4;
+
+        hasColorVal = obj->getProperty("_val", &tmp0);
+        if (hasColorVal) {
+            *to = cc::Color{tmp0.toUint32()};
+            return true;
+        }
 
         hasX     = obj->getProperty("x", &tmp0);
         hasY     = hasX && obj->getProperty("y", &tmp1);
@@ -1122,15 +1125,6 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
             cc::Mat3 m3;
             sevalue_to_native(from, &m3, ctx);
             *to = m3;
-            return true;
-        }
-
-        hasR = obj->getProperty("r", &tmp0);
-        hasG = hasR && obj->getProperty("g", &tmp1);
-        hasB = hasG && obj->getProperty("b", &tmp2);
-        hasA = hasB && obj->getProperty("a", &tmp3);
-        if (hasA) {
-            *to = cc::Color{tmp0.toUint8(), tmp1.toUint8(), tmp2.toUint8(), tmp3.toUint8()};
             return true;
         }
 
