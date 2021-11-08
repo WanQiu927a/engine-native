@@ -253,6 +253,12 @@ static bool js_scene_Pass_blocks_getter(se::State &s) {
 }
 SE_BIND_PROP_GET(js_scene_Pass_blocks_getter)
 
+static bool js_scene_RenderScene_root_getter(se::State &s) {
+    nativevalue_to_se(cc::Root::getInstance(), s.rval());
+    return true;
+}
+SE_BIND_PROP_GET(js_scene_RenderScene_root_getter)
+
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
     // Get the ns
@@ -269,6 +275,8 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     __jsb_cc_Node_proto->defineFunction("_registerListeners", _SE(js_scene_Node_registerListeners));
 
     __jsb_cc_scene_Pass_proto->defineProperty("blocks", _SE(js_scene_Pass_blocks_getter), nullptr);
+
+    __jsb_cc_scene_RenderScene_proto->defineProperty("root", _SE(js_scene_RenderScene_root_getter), nullptr);
 
     return true;
 }

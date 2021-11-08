@@ -30,6 +30,18 @@
 
 namespace se {
 
+namespace {
+
+bool isInteger(const std::string &str) {
+    for (const char &c : str) {
+        if (std::isdigit(c) == 0)
+            return false;
+    }
+    return true;
+}
+
+} // namespace
+
 ValueArray EmptyValueArray; // NOLINT(readability-identifier-naming)
 
 Value Value::Null      = Value(Type::Null);
@@ -415,7 +427,7 @@ float Value::toFloat() const {
 }
 
 double Value::toDouble() const {
-    assert(_type == Type::Number || _type == Type::Boolean);
+    assert(_type == Type::Number || _type == Type::Boolean || (_type == Type::String && isInteger(*_u._string)));
     // assert(_type != Type::BigInt);
     if (_type == Type::Boolean) {
         if (_u._boolean) {
@@ -423,6 +435,12 @@ double Value::toDouble() const {
         }
         return 0.0;
     }
+
+    // TODO: Only supports convert integer string to integer now.
+    if (_type == Type::String && isInteger(*_u._string)) {
+        return atoi(_u._string->c_str());
+    }
+
     return _u._number;
 }
 
