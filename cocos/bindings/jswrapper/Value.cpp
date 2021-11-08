@@ -463,7 +463,7 @@ double Value::toDouble() const {
         return static_cast<double>(_u._bigint);
     }
 
-    // TODO: Only supports convert integer string to integer now.
+    // TODO: Only supports to convert integer string to integer now.
     if (_type == Type::String && isInteger(*_u._string)) {
         return atoi(_u._string->c_str());
     }
