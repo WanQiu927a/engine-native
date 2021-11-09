@@ -39,11 +39,11 @@ class Image;
  * @zh 内存图像源。
  */
 struct IMemoryImageSource {
-    ArrayBuffer::Ptr             data;
-    bool                         compressed{false};
-    uint32_t                     width{0};
-    uint32_t                     height{0};
-    PixelFormat                  format{PixelFormat::RGBA8888};
+    ArrayBuffer::Ptr data;
+    bool             compressed{false};
+    uint32_t         width{0};
+    uint32_t         height{0};
+    PixelFormat      format{PixelFormat::RGBA8888};
 };
 
 /**
@@ -57,8 +57,9 @@ public:
     ImageAsset() = default;
     ~ImageAsset() override;
 
-    std::any getNativeAsset() const override { return std::any(_nativeData); }
-    void     setNativeAsset(const std::any &obj) override;
+    //minggo: do not need it in c++.
+    //    std::any getNativeAsset() const override { return std::any(_nativeData); }
+    void setNativeAsset(const std::any &obj) override;
 
     /**
      * @en Image data.
@@ -97,9 +98,20 @@ public:
      */
     std::string getUrl() const;
 
+    // Functions for TS.
+    inline void setWidth(uint32_t width) { _width = width; }
+    inline void setHeight(uint32_t height) { _height = height; }
+    inline void setFormat(PixelFormat format) { _format = format; }
+    inline void setData(uint8_t *data) { _data = data; }
+
 private:
-    Image *                           _nativeData{nullptr};
-    std::optional<IMemoryImageSource> _imageSource; //cjh TODO: how about using std::variant<Image*, IMemoryImageSource> ?
+    uint32_t         _width{0};
+    uint32_t         _height{0};
+    PixelFormat      _format{PixelFormat::RGBA8888};
+    uint8_t *        _data{nullptr};
+    bool             _needFreeData{false}; // Should free data if the data is assigned in C++.
+    ArrayBuffer::Ptr _arrayBuffer; //minggo: hold the data from ImageSource.
+    std::string      _url;
 
     CC_DISALLOW_COPY_MOVE_ASSIGN(ImageAsset);
 };

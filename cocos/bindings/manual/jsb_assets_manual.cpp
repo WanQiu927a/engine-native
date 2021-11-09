@@ -51,6 +51,37 @@ static bool js_assets_Asset_getNativeDep(se::State &s) // NOLINT(readability-ide
 }
 SE_BIND_PROP_GET(js_assets_Asset_getNativeDep) // NOLINT(readability-identifier-naming)
 
+static bool js_assets_ImageAsset_getData(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::ImageAsset>(s);
+    SE_PRECONDITION2(cobj, false, "js_assets_ImageAsset_getData : Invalid Native Object");
+    
+    s.rval().setUint64(reinterpret_cast<intptr_t>(cobj->getData()));
+    return false;
+}
+SE_BIND_PROP_GET(js_assets_ImageAsset_getData) // NOLINT(readability-identifier-naming)
+
+static bool js_assets_ImageAsset_setData(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::ImageAsset>(s);
+    SE_PRECONDITION2(cobj, false, "js_assets_Asset_setData : Invalid Native Object");
+    const auto &   args = s.args();
+    size_t         argc = args.size();
+    if (argc == 1) {
+        uint8_t *data{nullptr};
+        if (args[0].isObject()) {
+            args[0].toObject()->getTypedArrayData(&data, nullptr);
+        } else {
+            data = reinterpret_cast<uint8_t *>(args[0].asPtr());
+        }
+        cobj->setData(data);
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_assets_ImageAsset_setData) // NOLINT(readability-identifier-naming)
+
 bool register_all_assets_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
     // Get the ns
@@ -62,6 +93,8 @@ bool register_all_assets_manual(se::Object *obj) // NOLINT(readability-identifie
     }
 
     __jsb_cc_Asset_proto->defineProperty("_nativeDep", _SE(js_assets_Asset_getNativeDep), nullptr);
+    __jsb_cc_ImageAsset_proto->defineFunction("setData", _SE(js_assets_ImageAsset_setData));
+
 
     return true;
 }
