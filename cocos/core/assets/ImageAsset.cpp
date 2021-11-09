@@ -32,18 +32,27 @@
 namespace cc {
 
 ImageAsset::~ImageAsset() {
-    if (_nativeData != nullptr) {
-        _nativeData->release();
+    if (_needFreeData && _data) {
+        free(_data);
     }
 }
 
 void ImageAsset::setNativeAsset(const std::any &obj) {
     if (obj.has_value()) {
-        if (const auto *pData = std::any_cast<Image *>(&obj); pData != nullptr) {
-            _nativeData = *pData;
-            _nativeData->retain();
-        } else if (const auto *pData = std::any_cast<IMemoryImageSource>(&obj); pData != nullptr) {
-            _imageSource = *pData;
+        if (auto *image = const_cast<Image*>(std::any_cast<Image*>(obj)); image != nullptr) {
+            image->takeData(&_data);
+            _needFreeData = true;
+
+            _width  = image->getWidth();
+            _height = image->getHeight();
+            _format = static_cast<PixelFormat>(image->getRenderFormat());
+            _url    = image->getFilePath();
+        } else if (const auto *imageSource = std::any_cast<IMemoryImageSource>(&obj); imageSource != nullptr) {
+            _arrayBuffer = imageSource->data;
+            _data        = const_cast<uint8_t *>(_arrayBuffer->getData());
+            _width       = imageSource->width;
+            _height      = imageSource->height;
+            _format      = imageSource->format;
         } else {
             CC_LOG_WARNING("ImageAsset::setNativeAsset, unknown type!");
         }
@@ -51,65 +60,27 @@ void ImageAsset::setNativeAsset(const std::any &obj) {
 }
 
 const uint8_t *ImageAsset::getData() const {
-    if (_nativeData != nullptr) {
-        return _nativeData->getData();
-    }
-
-    if (_imageSource.has_value()) {
-        return _imageSource.value().data->getData();
-    }
-    return nullptr;
+    return _data;
 }
 
 uint32_t ImageAsset::getWidth() const {
-    if (_nativeData != nullptr) {
-        return _nativeData->getWidth();
-    }
-
-    if (_imageSource.has_value()) {
-        return _imageSource.value().width;
-    }
-    return 0;
+    return _width;
 }
 
 uint32_t ImageAsset::getHeight() const {
-    if (_nativeData != nullptr) {
-        return _nativeData->getHeight();
-    }
-
-    if (_imageSource.has_value()) {
-        return _imageSource.value().height;
-    }
-    return 0;
+    return _height;
 }
 
 PixelFormat ImageAsset::getFormat() const {
-    if (_nativeData != nullptr) {
-        return static_cast<PixelFormat>(_nativeData->getRenderFormat());
-    }
-
-    if (_imageSource.has_value()) {
-        return _imageSource.value().format;
-    }
-    return PixelFormat::RGBA8888; //cjh TODO: use RGBA8888 as default value?
+    return _format;
 }
 
 bool ImageAsset::isCompressed() const {
-    if (_nativeData != nullptr) {
-        return _nativeData->isCompressed();
-    }
-
-    if (_imageSource.has_value()) {
-        return _imageSource.value().compressed;
-    }
-    return false;
+    return (_format >= PixelFormat::RGB_ETC1 && _format <= PixelFormat::RGBA_ASTC_12x12) || (_format >= PixelFormat::RGB_A_PVRTC_2BPPV1 && _format <= PixelFormat::RGBA_ETC1);
 }
 
 std::string ImageAsset::getUrl() const {
-    if (_nativeData != nullptr) {
-        return _nativeData->getFilePath();
-    }
-    return "";
+    return _url;
 }
 
 } // namespace cc
