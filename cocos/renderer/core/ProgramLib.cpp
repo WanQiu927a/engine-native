@@ -278,6 +278,7 @@ void IProgramInfo::copyFrom(const IShaderInfo &o) {
     samplerTextures = o.samplerTextures;
     attributes      = o.attributes;
 }
+
 //
 /*static*/
 ProgramLib *ProgramLib::getInstance() {
