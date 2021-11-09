@@ -262,11 +262,11 @@ void Node::walk(const std::function<void(Node *)> &preFunc) {
 }
 
 void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<void(Node *)> &postFunc) {
-    index_t             index{1};
-    index_t             i{0};
-    std::vector<Node *> children;
-    Node *              curr{nullptr};
-    auto                stacksCount = static_cast<index_t>(Node::stacks.size());
+    index_t                    index{1};
+    index_t                    i{0};
+    const std::vector<Node *> *children = nullptr;
+    Node *                     curr{nullptr};
+    auto                       stacksCount = static_cast<index_t>(Node::stacks.size());
     if (stackId >= stacksCount) {
         stacks.resize(stackId + 1);
     }
@@ -304,9 +304,9 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
         } else {
             if (static_cast<index_t>(curr->_children.size()) > 0) {
                 parent       = curr;
-                children     = curr->_children;
+                children     = &curr->_children;
                 i            = 0;
-                stack[index] = children[i];
+                stack[index] = (*children)[i];
                 stack.resize(++index);
             } else {
                 stack[index] = curr;
@@ -315,27 +315,27 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
             }
             continue;
         }
-        auto childCount = static_cast<index_t>(children.size());
-        if (childCount > 0) {
+
+        if (children != nullptr && !children->empty()) {
             i++;
-            if (i < childCount && children[i] != nullptr) {
-                stack[index] = children[i];
+            if (i < children->size() && children->at(i) != nullptr) {
+                stack[index] = children->at(i);
                 stack.resize(++index);
             } else if (parent) {
                 stack[index] = parent;
                 stack.resize(++index);
                 afterChildren = true;
                 if (parent->_parent != nullptr) {
-                    children    = parent->_parent->_children;
-                    index_t idx = getIdxOfChild(_children, parent);
-                    if (idx != -1) {
+                    children    = &parent->_parent->_children;
+                    index_t idx = getIdxOfChild(*children, parent);
+                    if (idx != CC_INVALID_INDEX) {
                         i = idx;
                     }
                     parent = parent->_parent;
                 } else {
                     // At root
-                    parent = nullptr;
-                    children.clear();
+                    parent   = nullptr;
+                    children = nullptr;
                 }
                 if (i < 0) {
                     break;
