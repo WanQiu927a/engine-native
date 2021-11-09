@@ -198,7 +198,7 @@ std::optional<IJointTextureHandle> JointTexturePool::getDefaultPoseTexture(Skele
         Mat4 mat;
         if (j < boneSpaceBounds.size()) {
             auto bound = boneSpaceBounds[j];
-            bound.transform(mat, &ab1); // TODO(xwx): mat not define
+            bound->transform(mat, &ab1); // TODO(xwx): mat not define
             ab1.getBoundary(&v33, &v34);
             Vec3::min(v3Min, v33, &v3Min);
             Vec3::max(v3Max, v34, &v3Max);

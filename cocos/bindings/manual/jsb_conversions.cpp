@@ -1005,11 +1005,11 @@ bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ct
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, se::Object * /*ctx*/) {
-    if(from.isNullOrUndefined()) {
+    if (from.isNullOrUndefined()) {
         to->clear();
         return true;
     }
-    
+
     SE_PRECONDITION2(from.isObject(), false, "sevalue_to_native(std::vector<cc::MacroRecord>), not an object");
     auto *fromObj = from.toObject();
     CC_ASSERT(fromObj->isArray());
@@ -1043,147 +1043,136 @@ bool sevalue_to_native(const se::Value &from, std::vector<cc::MacroRecord> *to, 
 }
 
 template <>
-bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Object * ctx) {
-    if(from.isNullOrUndefined()){
+bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Object *ctx) {
+    if (from.isNullOrUndefined()) {
         *to = std::monostate();
         return true;
     }
-    
+
     //TODO(PatriceJiang): float/int32_t from js number
-    if(from.isNumber()) {
+    if (from.isNumber()) {
         double v = from.toDouble();
-        if(std::trunc(v) != v) {
+        if (std::trunc(v) != v) {
             *to = static_cast<float>(v);
-        }else {
+        } else {
             *to = static_cast<int32_t>(v);
         }
         return true;
     }
-    
-    if(from.isObject()) {
-        se::Object *obj = const_cast<se::Object*>(from.toObject());
-        bool hasX;
-        bool hasY;
-        bool hasZ;
-        bool hasW;
-        bool hasEuler;
-        bool hasM01;
-        bool hasM08;
-        bool hasM15;
-        bool hasAssetID;
-        bool hasR;
-        bool hasG;
-        bool hasB;
-        bool hasA;
-        
+
+    if (from.isObject()) {
+        se::Object *obj = const_cast<se::Object *>(from.toObject());
+        bool        hasX;
+        bool        hasY;
+        bool        hasZ;
+        bool        hasW;
+        bool        hasEuler;
+        bool        hasM01;
+        bool        hasM08;
+        bool        hasM15;
+        bool        hasAssetID;
+        bool        hasColorVal;
+
         se::Value tmp0;
         se::Value tmp1;
         se::Value tmp2;
         se::Value tmp3;
         se::Value tmp4;
-        
-        hasX = obj->getProperty("x", &tmp0);
-        hasY = hasX && obj->getProperty("y", &tmp1);
-        hasZ = hasY && obj->getProperty("z", &tmp2);
-        hasW = hasZ && obj->getProperty("w", &tmp3);
+
+        hasColorVal = obj->getProperty("_val", &tmp0);
+        if (hasColorVal) {
+            *to = cc::Color{tmp0.toUint32()};
+            return true;
+        }
+
+        hasX     = obj->getProperty("x", &tmp0);
+        hasY     = hasX && obj->getProperty("y", &tmp1);
+        hasZ     = hasY && obj->getProperty("z", &tmp2);
+        hasW     = hasZ && obj->getProperty("w", &tmp3);
         hasEuler = hasW && obj->getProperty("getEulerAngles", &tmp4);
-        
-        
-        if(hasW) {
-            if(hasEuler) {
+
+        if (hasW) {
+            if (hasEuler) {
                 *to = cc::Quaternion(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat(), tmp3.toFloat());
-            }else {
+            } else {
                 *to = cc::Vec4(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat(), tmp3.toFloat());
             }
             return true;
         }
-        
-        if(hasZ) {
+
+        if (hasZ) {
             *to = cc::Vec3(tmp0.toFloat(), tmp1.toFloat(), tmp2.toFloat());
             return true;
         }
-        
-        
-        if(hasY) {
+
+        if (hasY) {
             *to = cc::Vec2(tmp0.toFloat(), tmp1.toFloat());
             return true;
         }
-        
+
         hasM01 = obj->getProperty("m00", &tmp0);
         hasM08 = hasM01 && obj->getProperty("m08", &tmp1);
         hasM15 = hasM08 && obj->getProperty("m15", &tmp2);
-        
-        if(hasM15) {
+
+        if (hasM15) {
             cc::Mat4 m4;
             sevalue_to_native(from, &m4, ctx);
             *to = m4;
             return true;
         }
-        
-        if(hasM08) {
+
+        if (hasM08) {
             cc::Mat3 m3;
             sevalue_to_native(from, &m3, ctx);
             *to = m3;
             return true;
         }
-        
-        hasR = obj->getProperty("r", &tmp0);
-        hasG = hasR && obj->getProperty("g", &tmp1);
-        hasB = hasG && obj->getProperty("b", &tmp2);
-        hasA = hasB && obj->getProperty("a", &tmp3);
-        if(hasA) {
-            *to = cc::Color{tmp0.toUint8(), tmp1.toUint8(), tmp2.toUint8(), tmp3.toUint8()};
-            return true;
-        }
-        
+
         hasAssetID = obj->getProperty("_id", &tmp3);
-        if(hasAssetID) {
-            *to = reinterpret_cast<cc::TextureBase*>(obj->getPrivateData());
+        if (hasAssetID) {
+            *to = reinterpret_cast<cc::TextureBase *>(obj->getPrivateData());
             return true;
         }
-        
+
         // gfx::Texture?
-        *to = reinterpret_cast<cc::gfx::Texture*>(obj->getPrivateData());
+        *to = reinterpret_cast<cc::gfx::Texture *>(obj->getPrivateData());
         return true;
-       
-        
     }
-    
+
     return false;
 }
 
-
 template <>
-bool sevalue_to_native(const se::Value &from, cc::IPreCompileInfoValueType *to, se::Object * ctx) {
+bool sevalue_to_native(const se::Value &from, cc::IPreCompileInfoValueType *to, se::Object *ctx) {
     se::Object *obj = from.toObject();
     SE_PRECONDITION2(obj->isArray(), false, "faild to convert to IPreCompileInfoValueType");
-    
+
     uint32_t len;
     obj->getArrayLength(&len);
-    if(len == 0) {
+    if (len == 0) {
         //TODO(PatriceJiang): judge type of empty array?
         *to = std::vector<bool>{};
         return false;
     }
-    
+
     se::Value firstEle;
     obj->getArrayElement(0, &firstEle);
-    if(firstEle.isBoolean()) {
+    if (firstEle.isBoolean()) {
         std::vector<bool> result;
         sevalue_to_native(from, &result, ctx);
         return true;
     }
-    if(firstEle.isNumber()) {
+    if (firstEle.isNumber()) {
         std::vector<float> result;
         sevalue_to_native(from, &result, ctx);
         return true;
     }
-    if(firstEle.isString()) {
+    if (firstEle.isString()) {
         std::vector<std::string> result;
         sevalue_to_native(from, &result, ctx);
         return true;
     }
-    
+
     return false;
 }
 
@@ -1213,6 +1202,28 @@ bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, s
 }
 
 template <>
+bool sevalue_to_native(const se::Value &from, std::variant<std::monostate, cc::MaterialProperty, cc::MaterialPropertyList> *to, se::Object *ctx) {
+    SE_PRECONDITION2(from.isObject(), false, "not an object");
+    auto *obj = from.toObject();
+    bool  ok  = false;
+    if (obj->isArray()) {
+        cc::MaterialPropertyList propertyList{};
+        ok = sevalue_to_native(from, &propertyList, ctx);
+        if (ok) {
+            *to = std::move(propertyList);
+        }
+    } else {
+        cc::MaterialProperty property;
+        ok = sevalue_to_native(from, &property, ctx);
+        if (ok) {
+            *to = std::move(property);
+        }
+    }
+
+    return true;
+}
+
+template <>
 bool sevalue_to_native(const se::Value &from, cc::ArrayBuffer *to, se::Object * /*ctx*/) {
     assert(from.isObject());
     to->setJSArrayBuffer(from.toObject());
@@ -1228,20 +1239,19 @@ bool sevalue_to_native(const se::Value &from, std::shared_ptr<cc::ArrayBuffer> *
     return true;
 }
 
-
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object * /*ctx*/) {
-    if(from.isNullOrUndefined()) {
+    if (from.isNullOrUndefined()) {
         to->clear();
         return true;
     }
-    
+
     se::Object *arr = from.toObject();
-    uint32_t size;
-    se::Value tmp;
+    uint32_t    size;
+    se::Value   tmp;
     arr->getArrayLength(&size);
     to->resize(size);
-    for(uint32_t i = 0;i < size; i++) {
+    for (uint32_t i = 0; i < size; i++) {
         arr->getArrayElement(i, &tmp);
         (*to)[i] = tmp.toBoolean();
     }
@@ -1250,11 +1260,11 @@ bool sevalue_to_native(const se::Value &from, std::vector<bool> *to, se::Object 
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se::Object * /*ctx*/) {
-    if(from.isNullOrUndefined()) {
+    if (from.isNullOrUndefined()) {
         to->clear();
         return true;
     }
-    
+
     assert(from.isObject());
     se::Object *in = from.toObject();
 
@@ -1292,12 +1302,12 @@ bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se
     return false;
 }
 
-
 template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
     std::visit([&](auto &typedArray) {
         typedArray.setJSTypedArray(from.toObject());
-    },*to);
+    },
+               *to);
     return true;
 }
 
@@ -1305,7 +1315,8 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::IBArray *to, se::Object * /*ctx*/) {
     std::visit([&](auto &typedArray) {
         typedArray.setJSTypedArray(from.toObject());
-    },*to);
+    },
+               *to);
 
     return true;
 }

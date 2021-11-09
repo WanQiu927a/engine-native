@@ -43,6 +43,7 @@ public:
 
     inline scene::RenderScene *getRenderScene() const { return _renderScene; }
     inline SceneGlobals *      getSceneGlobals() const { return _globals; }
+    inline void                setSceneGlobals(SceneGlobals *globals) { _globals = globals; }
     inline bool                isAutoReleaseAssets() const { return _autoReleaseAssets; }
     inline void                setAutoReleaseAssets(bool val) { _autoReleaseAssets = val; }
 
@@ -57,14 +58,14 @@ public:
 
 protected:
     void updateScene() override { _scene = this; }
-    
+
     /**
      * @en Per-scene level rendering info
      * @zh 场景级别的渲染信息
      */
     //    @serializable
     SceneGlobals *_globals{nullptr};
-    bool                _inited{false};
+    bool          _inited{false};
 
     /**
      * @en Indicates whether all (directly or indirectly) static referenced assets of this scene are releasable by default after scene unloading.

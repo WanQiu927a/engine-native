@@ -106,7 +106,7 @@ void FogInfo::activate(Fog *resource) {
 
 //
 void Fog::initialize(const FogInfo &fogInfo) {
-    _fogColor.set(fogInfo.getFogColor());
+    setFogColor(fogInfo.getFogColor());
     _enabled    = fogInfo.isEnabled();
     _type       = _enabled ? fogInfo.getType() : FogType::NONE;
     _fogDensity = fogInfo.getFogDensity();

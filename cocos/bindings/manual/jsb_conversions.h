@@ -808,12 +808,10 @@ struct is_optional : std::false_type {}; // NOLINT
 template <typename T>
 struct is_optional<std::optional<T>> : std::true_type {}; // NOLINT
 
-template<typename ...Args>
+template <typename... Args>
 struct is_variant : std::false_type {}; // NOLINT
-template<typename ...Args>
+template <typename... Args>
 struct is_variant<std::variant<Args...>> : std::true_type {}; // NOLINT
-
-
 
 template <typename T>
 inline typename std::enable_if_t<!std::is_enum<T>::value && !std::is_pointer<T>::value, bool>
@@ -835,7 +833,6 @@ sevalue_to_native(const se::Value &from, T *to, se::Object *ctx) { // NOLINT(rea
 
 //////////////////////////////// forward declaration : sevalue_to_native ////////////////////////////////
 
-
 // std::variant<...>>ss
 template <typename... Args>
 bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
@@ -844,8 +841,6 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::MacroValue *to, se::Object *ctx);
 template <>
 bool sevalue_to_native(const se::Value &from, cc::IPreCompileInfoValueType *to, se::Object * /*ctx*/);
-
-
 
 template <typename T>
 bool sevalue_to_native(const se::Value &from, std::optional<T> *to, se::Object *ctx); // NOLINT(readability-identifier-naming)
@@ -933,9 +928,9 @@ template <>
 bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Object * /*ctx*/);
 
 template <typename T>
-bool sevalue_to_native(const se::Value &from, std::variant<T, std::vector<T> > *to, se::Object * ctx) {
-    se::Object * array = from.toObject();
-    if(array->isArray()) {
+bool sevalue_to_native(const se::Value &from, std::variant<T, std::vector<T>> *to, se::Object *ctx) {
+    se::Object *array = from.toObject();
+    if (array->isArray()) {
         std::vector<T> result;
         sevalue_to_native(from, &result, ctx);
         *to = std::move(result);
@@ -944,19 +939,6 @@ bool sevalue_to_native(const se::Value &from, std::variant<T, std::vector<T> > *
         sevalue_to_native(from, &result, ctx);
         *to = result;
     }
-    return true;
-}
-
-
-template <>
-inline bool sevalue_to_native(const se::Value &from, std::vector<cc::PassOverrides> *to, se::Object * /*ctx*/) {
-    assert(false);
-    return true;
-}
-
-template <>
-inline bool sevalue_to_native(const se::Value &from, std::vector<Record<std::string, cc::MaterialPropertyVariant>> *to, se::Object * /*ctx*/) {
-    assert(false);
     return true;
 }
 
@@ -1084,7 +1066,7 @@ bool sevalue_to_native(const se::Value &from, cc::Color *to, se::Object * /*unus
 
 template <>
 inline bool sevalue_to_native(const se::Value &from, std::vector<se::Value> *to, se::Object * /*unused*/) {
-    if(from.isNullOrUndefined()) {
+    if (from.isNullOrUndefined()) {
         to->clear();
         return true;
     }
@@ -1200,12 +1182,12 @@ sevalue_to_native(const se::Value &from, T ***to, se::Object * /*ctx*/) { // NOL
 
 template <typename T, typename allocator>
 bool sevalue_to_native(const se::Value &from, std::vector<T, allocator> *to, se::Object *ctx) { // NOLINT(readability-identifier-naming)
-    
-    if(from.isNullOrUndefined()){
+
+    if (from.isNullOrUndefined()) {
         to->clear();
         return true;
     }
-    
+
     assert(from.toObject());
     se::Object *array = from.toObject();
 
@@ -1309,18 +1291,15 @@ inline bool sevalue_to_native(const se::Value &from, std::variant<Args...> *to, 
     assert(false);
     return false;
 }
+
 template <>
 inline bool sevalue_to_native(const se::Value &from, std::monostate *to, se::Object *ctx) {
     // nothing todo
     return false;
 }
 
-///////////////////////  std::vector<std::variant>
-template <typename... Args>
-constexpr bool sevalue_to_native(const se::Value &from, std::vector<std::variant<Args...>> *to, se::Object *ctx) {
-    assert(false); //TODO(PatriceJiang): should not pass variant from js -> native
-    return false;
-}
+template <>
+bool sevalue_to_native(const se::Value &from, std::variant<std::monostate, cc::MaterialProperty, cc::MaterialPropertyList> *to, se::Object *ctx);
 
 #if HAS_CONSTEXPR
 template <typename T, bool is_reference>

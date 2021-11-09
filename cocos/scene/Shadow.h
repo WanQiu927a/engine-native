@@ -136,7 +136,7 @@ class Shadow;
 
 class ShadowsInfo final {
 public:
-    ShadowsInfo() = default;
+    ShadowsInfo()  = default;
     ~ShadowsInfo() = default;
     /**
      * @en Whether activate planar shadow
@@ -283,22 +283,22 @@ public:
     void activate(Shadow *resource);
 
 public:
-    Color      _shadowColor{0, 0, 0, 76};
-    bool       _enabled{false};
-    Vec3       _normal{0.F, 1.F, 0.F};
     float      _distance{0.F};
-    bool       _autoAdapt{true};
     float      _bias{0.00001F};
     float      _normalBias{0.F};
     float      _near{1.0F};
     float      _far{30.F};
     float      _orthoSize{5.F};
-    uint32_t   _maxReceived{4};
     float      _saturation{0.75};
-    Vec2       _size{512.F, 512.F};
+    uint32_t   _maxReceived{4};
     PCFType    _pcf{PCFType::HARD};
     ShadowType _type{ShadowType::PLANAR};
     Shadow *   _resource{nullptr};
+    Color      _shadowColor{0, 0, 0, 76};
+    Vec3       _normal{0.F, 1.F, 0.F};
+    Vec2       _size{512.F, 512.F};
+    bool       _autoAdapt{true};
+    bool       _enabled{false};
 };
 
 class Shadow final {

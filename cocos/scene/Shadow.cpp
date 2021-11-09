@@ -170,14 +170,14 @@ void ShadowsInfo::activate(Shadow *resource) {
 const float Shadow::COEFFICIENT_OF_EXPANSION{2.0F * std::sqrt(3.0F)};
 
 void Shadow::initialize(const ShadowsInfo &shadowsInfo) {
-    _near        = shadowsInfo.getNear();
-    _far         = shadowsInfo.getFar();
-    _orthoSize   = shadowsInfo.getOrthoSize();
-    _size        = shadowsInfo.getSize();
-    _pcf         = shadowsInfo.getPcf();
-    _normal      = shadowsInfo.getNormal();
-    _distance    = shadowsInfo.getDistance();
-    _shadowColor = shadowsInfo.getShadowColor();
+    _near      = shadowsInfo.getNear();
+    _far       = shadowsInfo.getFar();
+    _orthoSize = shadowsInfo.getOrthoSize();
+    _size      = shadowsInfo.getSize();
+    _pcf       = shadowsInfo.getPcf();
+    _normal    = shadowsInfo.getNormal();
+    _distance  = shadowsInfo.getDistance();
+    setShadowColor(shadowsInfo.getShadowColor());
     _bias        = shadowsInfo.getBias();
     _normalBias  = shadowsInfo.getNormalBias();
     _maxReceived = shadowsInfo.getMaxReceived();
