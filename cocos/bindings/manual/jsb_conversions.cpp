@@ -646,10 +646,10 @@ bool nativevalue_to_se(const cc::Vec4 &from, se::Value &to, se::Object * /*unuse
 //     return Vec2_to_seval(from, &to);
 // }
 
-//template <>
-//bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object * /*unused*/) {
-//    return Vec3_to_seval(from, &to);
-//}
+template <>
+bool nativevalue_to_se(const cc::Vec3 &from, se::Value &to, se::Object * /*unused*/) {
+    return Vec3_to_seval(from, &to);
+}
 
 template <>
 bool nativevalue_to_se(const cc::Size &from, se::Value &to, se::Object * /*unused*/) {
@@ -661,10 +661,10 @@ bool nativevalue_to_se(const cc::extension::ManifestAsset &from, se::Value &to, 
     return ManifestAsset_to_seval(from, &to);
 }
 
-//template <>
-//bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx) {
-//    return Quaternion_to_seval(from, &to);
-//}
+template <>
+bool nativevalue_to_se(const cc::Quaternion &from, se::Value &to, se::Object *ctx) {
+    return Quaternion_to_seval(from, &to);
+}
 
 template <>
 bool nativevalue_to_se(const cc::Rect &from, se::Value &to, se::Object * /*unused*/) {

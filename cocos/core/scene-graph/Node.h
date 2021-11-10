@@ -486,6 +486,8 @@ public:
         emit(NodeEventType::LAYER_CHANGED, _layer);
     }
     inline uint32_t getLayer() const { return _layer; }
+    //minggo: This function is invoked by JS just to sync value in deserialization.
+    inline void setLayerForJS(uint32_t layer) { _layer = layer; }
 
     inline NodeUiProperties *getUIProps() const { return _uiProps; }
 
