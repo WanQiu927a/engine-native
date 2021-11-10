@@ -259,6 +259,58 @@ static bool js_scene_RenderScene_root_getter(se::State &s) {
 }
 SE_BIND_PROP_GET(js_scene_RenderScene_root_getter)
 
+static bool js_Model_registerListeners(se::State &s) // NOLINT(readability-identifier-naming)
+{
+    auto *cobj = SE_THIS_OBJECT<cc::scene::Model>(s);
+    SE_PRECONDITION2(cobj, false, "js_Model_registerListeners : Invalid Native Object");
+    auto *thiz = s.thisObject();
+
+#define MODEL_DISPATCH_EVENT_TO_JS(eventType, jsFuncName)                                        \
+    cobj->getEventProcessor().on(eventType, [=](uint32_t stamp) {                                \
+        se::AutoHandleScope hs;                                                                  \
+        se::Value           funcVal;                                                             \
+        bool                ok = thiz->getProperty(#jsFuncName, &funcVal) && funcVal.isObject(); \
+        SE_PRECONDITION2_VOID(ok, "js_Model_registerListeners : Could not find callback");       \
+        se::ValueArray args;                                                                     \
+        args.emplace_back(se::Value(stamp));                                                     \
+        funcVal.toObject()->call(args, thiz);                                                    \
+    })
+
+    MODEL_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::MODEL_UPDATE_TRANSFORM, updateTransform);
+    MODEL_DISPATCH_EVENT_TO_JS(cc::EventTypesToJS::MODEL_UPDATE_UBO, updateUBOs);
+
+#undef MODEL_DISPATCH_EVENT_TO_JS
+
+    cobj->getEventProcessor().on(cc::EventTypesToJS::MODEL_UPDATE_LOCAL_DESCRIPTORS, [=](index_t subModelIndex, cc::gfx::DescriptorSet *descriptorSet) {
+        se::AutoHandleScope hs;
+        se::Value           funcVal;
+        bool                ok = thiz->getProperty("_updateLocalDescriptors", &funcVal) && funcVal.isObject() && funcVal.toObject()->isFunction();
+        SE_PRECONDITION2_VOID(ok, "Not function named _updateLocalDescriptors.");
+
+        se::ValueArray args;
+        args.resize(2);
+        nativevalue_to_se(subModelIndex, args[0]);
+        nativevalue_to_se(descriptorSet, args[1]);
+        funcVal.toObject()->call(args, thiz);
+    });
+
+    cobj->getEventProcessor().on(cc::EventTypesToJS::MODEL_UPDATE_INSTANCED_ATTRIBUTES, [=](const std::vector<cc::gfx::Attribute> &attributes, cc::scene::Pass *pass) {
+        se::AutoHandleScope hs;
+        se::Value           funcVal;
+        bool                ok = thiz->getProperty("_updateInstancedAttributes", &funcVal) && funcVal.isObject() && funcVal.toObject()->isFunction();
+        SE_PRECONDITION2_VOID(ok, "Not function named _updateInstancedAttributes.");
+
+        se::ValueArray args;
+        args.resize(2);
+        nativevalue_to_se(attributes, args[0]);
+        nativevalue_to_se(pass, args[1]);
+        funcVal.toObject()->call(args, thiz);
+    });
+
+    return true;
+}
+SE_BIND_FUNC(js_Model_registerListeners) // NOLINT(readability-identifier-naming)
+
 bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier-naming)
 {
     // Get the ns
@@ -277,6 +329,8 @@ bool register_all_scene_manual(se::Object *obj) // NOLINT(readability-identifier
     __jsb_cc_scene_Pass_proto->defineProperty("blocks", _SE(js_scene_Pass_blocks_getter), nullptr);
 
     __jsb_cc_scene_RenderScene_proto->defineProperty("root", _SE(js_scene_RenderScene_root_getter), nullptr);
+
+    __jsb_cc_scene_Model_proto->defineFunction("_registerListeners", _SE(js_Model_registerListeners));
 
     return true;
 }

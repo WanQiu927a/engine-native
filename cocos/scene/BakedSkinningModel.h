@@ -57,7 +57,7 @@ public:
     void                     updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet) override;
     void                     updateTransform(uint32_t stamp) override;
     void                     updateUBOs(uint32_t stamp) override;
-    void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass);
+    void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass) override;
     void                     updateInstancedJointTextureInfo();
     // void                     uploadAnimation(AnimationClip *anim); // TODO(xwx): AnimationClip not define
     inline void updateModelBounds(geometry::AABB *modelBounds) {

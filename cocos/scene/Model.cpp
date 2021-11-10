@@ -27,6 +27,7 @@
 #include "core/Director.h"
 #include "core/TypedArray.h"
 #include "core/assets/Material.h"
+#include "core/event/EventTypesToJS.h"
 #include "gfx-base/GFXTexture.h"
 #include "renderer/pipeline/Define.h"
 #include "renderer/pipeline/InstancedBuffer.h"
@@ -167,7 +168,14 @@ void Model::uploadMat4AsVec4x3(const Mat4 &mat, Float32Array &v1, Float32Array &
     v3[3] = mat.m[14];
 }
 
-void Model::updateTransform(uint32_t /*stamp*/) {
+void Model::updateTransform(uint32_t stamp) {
+    if (_type != Type::DEFAULT) {
+        if (!_isCalledFromJS) {
+            _eventProcessor.emit(EventTypesToJS::MODEL_UPDATE_TRANSFORM, stamp);
+            return;
+        }
+    }
+
     Node *node = _transform;
     if (node->getChangedFlags() || node->getDirtyFlag()) {
         node->updateWorldTransform();
@@ -190,6 +198,13 @@ void Model::updateWorldBound() {
 }
 
 void Model::updateUBOs(uint32_t stamp) {
+    if (_type != Type::DEFAULT) {
+        if (!_isCalledFromJS) {
+            _eventProcessor.emit(EventTypesToJS::MODEL_UPDATE_UBO, stamp);
+            return;
+        }
+    }
+
     for (SubModel *subModel : _subModels) {
         subModel->update();
     }
@@ -306,7 +321,7 @@ void Model::updateAttributesAndBinding(index_t subModelIndex) {
 }
 
 index_t Model::getInstancedAttributeIndex(const std::string &name) const {
-    auto attributes = _instanceAttributeBlock.attributes;
+    const auto &attributes = _instanceAttributeBlock.attributes;
     for (index_t i = 0; i < attributes.size(); ++i) {
         if (attributes[i].name == name) {
             return i;
@@ -316,6 +331,13 @@ index_t Model::getInstancedAttributeIndex(const std::string &name) const {
 }
 
 void Model::updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass) {
+    if (_type != Type::DEFAULT) {
+        if (!_isCalledFromJS) {
+            _eventProcessor.emit(EventTypesToJS::MODEL_UPDATE_INSTANCED_ATTRIBUTES, attributes, pass);
+            return;
+        }
+    }
+
     if (!pass->getDevice()->hasFeature(gfx::Feature::INSTANCED_ARRAYS)) return;
     // free old data
 
@@ -324,7 +346,7 @@ void Model::updateInstancedAttributes(const std::vector<gfx::Attribute> &attribu
         if (!attribute.isInstanced) continue;
         size += gfx::GFX_FORMAT_INFOS[static_cast<uint32_t>(attribute.format)].size;
     }
-    auto attrs   = _instanceAttributeBlock;
+    auto &attrs  = _instanceAttributeBlock;
     attrs.buffer = Uint8Array(size);
     attrs.views.clear();
     attrs.attributes.clear();
@@ -363,10 +385,21 @@ void Model::initLocalDescriptors(index_t /*subModelIndex*/) {
     }
 }
 
-void Model::updateLocalDescriptors(index_t /*subModelIndex*/, gfx::DescriptorSet *descriptorSet) {
+void Model::updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet) {
+    if (_type != Type::DEFAULT) {
+        if (!_isCalledFromJS) {
+            _eventProcessor.emit(EventTypesToJS::MODEL_UPDATE_LOCAL_DESCRIPTORS, subModelIndex, descriptorSet);
+            return;
+        }
+    }
+
     if (_localBuffer) {
         descriptorSet->bindBuffer(pipeline::UBOLocal::BINDING, _localBuffer);
     }
+}
+
+void Model::_setInstancedAttributesViewData(index_t viewIdx, index_t arrIdx, float value) {
+    std::get<Float32Array>(_instanceAttributeBlock.views[viewIdx])[arrIdx] = value;
 }
 
 } // namespace scene

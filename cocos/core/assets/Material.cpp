@@ -128,6 +128,7 @@ void Material::resetUniforms(bool clearPasses /* = true */) {
 }
 
 void Material::setProperty(const std::string &name, const MaterialPropertyVariant &val, index_t passIdx /* = CC_INVALID_INDEX */) {
+    CC_LOG_DEBUG("setProperty: name : %s", name.c_str());
     bool success = false;
     if (passIdx == CC_INVALID_INDEX) { // try set property for all applicable passes
         size_t len = _passes.size();
