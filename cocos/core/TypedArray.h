@@ -29,8 +29,8 @@
 #include <type_traits>
 #include <variant>
 #include "base/TypeDef.h"
-#include "core/ArrayBuffer.h"
 #include "bindings/jswrapper/Object.h"
+#include "core/ArrayBuffer.h"
 
 namespace cc {
 
@@ -201,8 +201,8 @@ using Uint16Array           = TypedArrayTemp<uint16_t>;
 using Uint32Array           = TypedArrayTemp<uint32_t>;
 using Float32Array          = TypedArrayTemp<float>;
 using Float64Array          = TypedArrayTemp<double>;
-using TypedArray            = std::variant<Int8Array, Int16Array, Int32Array, Uint8Array, Uint16Array, Uint32Array, Float32Array, Float64Array>;
-using TypedArrayElementType = std::variant<int8_t, int16_t, int32_t, uint8_t, uint16_t, uint32_t, float, double>;
+using TypedArray            = std::variant<std::monostate, Int8Array, Int16Array, Int32Array, Uint8Array, Uint16Array, Uint32Array, Float32Array, Float64Array>;
+using TypedArrayElementType = std::variant<std::monostate, int8_t, int16_t, int32_t, uint8_t, uint16_t, uint32_t, float, double>;
 
 uint32_t getTypedArrayLength(const TypedArray &arr);
 uint32_t getTypedArrayBytesPerElement(const TypedArray &arr);
@@ -227,23 +227,7 @@ T getTypedArrayValue(const TypedArray &arr, index_t idx) {
     return 0;
 }
 
-template <typename T>
-void setTypedArrayValue(TypedArray &arr, index_t idx, T value) {
-#define TYPEDARRAY_SET_VALUE(type)                         \
-    if (auto *p = std::get_if<type>(&arr); p != nullptr) { \
-        (*p)[idx] = value;                                 \
-    }
-
-    TYPEDARRAY_SET_VALUE(Float32Array)
-    TYPEDARRAY_SET_VALUE(Uint32Array)
-    TYPEDARRAY_SET_VALUE(Uint16Array)
-    TYPEDARRAY_SET_VALUE(Uint8Array)
-    TYPEDARRAY_SET_VALUE(Int32Array)
-    TYPEDARRAY_SET_VALUE(Int16Array)
-    TYPEDARRAY_SET_VALUE(Int8Array)
-    TYPEDARRAY_SET_VALUE(Float64Array)
-#undef TYPEDARRAY_SET_VALUE
-}
+void setTypedArrayValue(TypedArray &arr, index_t idx, const TypedArrayElementType &value);
 
 template <typename T>
 T &getTypedArrayValueRef(const TypedArray &arr, index_t idx) {

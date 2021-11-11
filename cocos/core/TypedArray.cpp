@@ -65,4 +65,22 @@ uint32_t getTypedArrayBytesPerElement(const TypedArray &arr) {
     return 0;
 }
 
+void setTypedArrayValue(TypedArray &arr, index_t idx, const TypedArrayElementType &value) {
+#define TYPEDARRAY_SET_VALUE(type, elemType)               \
+    if (auto *p = std::get_if<type>(&arr); p != nullptr) { \
+        (*p)[idx] = std::get<elemType>(value);             \
+        return;                                            \
+    }
+
+    TYPEDARRAY_SET_VALUE(Float32Array, float)
+    TYPEDARRAY_SET_VALUE(Uint32Array, uint32_t)
+    TYPEDARRAY_SET_VALUE(Uint16Array, uint16_t)
+    TYPEDARRAY_SET_VALUE(Uint8Array, uint8_t)
+    TYPEDARRAY_SET_VALUE(Int32Array, int32_t)
+    TYPEDARRAY_SET_VALUE(Int16Array, int16_t)
+    TYPEDARRAY_SET_VALUE(Int8Array, int8_t)
+    TYPEDARRAY_SET_VALUE(Float64Array, double)
+#undef TYPEDARRAY_SET_VALUE
+}
+
 } // namespace cc

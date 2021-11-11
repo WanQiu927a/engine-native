@@ -48,6 +48,11 @@
 #include "scene/Skybox.h"
 #include "v8/Object.h"
 
+template <class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
 // seval to native
 
 template <typename A, typename T, typename F>
@@ -679,9 +684,10 @@ bool nativevalue_to_se(const cc::ArrayBuffer &arrayBuffer, se::Value &to, se::Ob
 
 template <>
 bool nativevalue_to_se(const cc::TypedArray &from, se::Value &to, se::Object * /*ctx*/) { // NOLINT(readability-identifier-naming)
-    std::visit([&](auto &typedArray) {
-        to.setObject(typedArray.getJSTypedArray());
-    },
+    std::visit(overloaded{[&](auto &typedArray) {
+                              to.setObject(typedArray.getJSTypedArray());
+                          },
+                          [](std::monostate) {}},
                from);
     return true;
 }
@@ -1134,6 +1140,19 @@ bool sevalue_to_native(const se::Value &from, cc::MaterialProperty *to, se::Obje
             return true;
         }
 
+        // TODO: optimize the the performance?
+        if (obj->_getClass() != nullptr) {
+            if (0 == strcmp(obj->_getClass()->getName(), "Texture2D")) {
+                *to = reinterpret_cast<cc::Texture2D *>(obj->getPrivateData());
+                return true;
+            }
+
+            if (0 == strcmp(obj->_getClass()->getName(), "TextureCube")) {
+                *to = reinterpret_cast<cc::TextureCube *>(obj->getPrivateData());
+                return true;
+            }
+        }
+
         // gfx::Texture?
         *to = reinterpret_cast<cc::gfx::Texture *>(obj->getPrivateData());
         return true;
@@ -1203,10 +1222,8 @@ bool sevalue_to_native(const se::Value &from, std::variant<std::vector<float>, s
 
 template <>
 bool sevalue_to_native(const se::Value &from, std::variant<std::monostate, cc::MaterialProperty, cc::MaterialPropertyList> *to, se::Object *ctx) {
-    SE_PRECONDITION2(from.isObject(), false, "not an object");
-    auto *obj = from.toObject();
-    bool  ok  = false;
-    if (obj->isArray()) {
+    bool ok = false;
+    if (from.isObject() && from.toObject()->isArray()) {
         cc::MaterialPropertyList propertyList{};
         ok = sevalue_to_native(from, &propertyList, ctx);
         if (ok) {
@@ -1304,9 +1321,10 @@ bool sevalue_to_native(const se::Value &from, std::vector<unsigned char> *to, se
 
 template <>
 bool sevalue_to_native(const se::Value &from, cc::TypedArray *to, se::Object * /*ctx*/) {
-    std::visit([&](auto &typedArray) {
-        typedArray.setJSTypedArray(from.toObject());
-    },
+    std::visit(overloaded{[&](auto &typedArray) {
+                              typedArray.setJSTypedArray(from.toObject());
+                          },
+                          [](std::monostate) {}},
                *to);
     return true;
 }

@@ -31,6 +31,7 @@
 #include "core/assets/RenderingSubMesh.h"
 #include "core/assets/Texture2D.h"
 #include "core/builtin/BuiltinResMgr.h"
+#include "core/event/CallbacksInvoker.h"
 #include "core/geometry/AABB.h"
 #include "core/scene-graph/Layers.h"
 #include "renderer/gfx-base/GFXBuffer.h"
@@ -79,10 +80,10 @@ public:
     void                             setSubModelMesh(index_t idx, RenderingSubMesh *subMesh) const;
     virtual void                     setSubModelMaterial(index_t idx, Material *mat);
     void                             onGlobalPipelineStateChanged() const;
-    void                             onMacroPatchesStateChanged() const;
+    void                             onMacroPatchesStateChanged();
     void                             updateLightingmap(Texture2D *texture, const Vec4 &uvParam);
-    virtual std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) const;
-    void                             updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass);
+    virtual std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex);
+    virtual void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass);
 
     virtual void updateTransform(uint32_t stamp);
     virtual void updateUBOs(uint32_t stamp);
@@ -127,6 +128,7 @@ public:
     inline uint32_t                           getVisFlags() const { return _visFlags; }
     inline geometry::AABB *                   getWorldBounds() const { return _worldBounds; }
     inline Type                               getType() const { return _type; };
+    inline void                               setType(Type type) { _type = type; }
 
     inline RenderScene *getScene() const { return _scene; }
     inline void         setDynamicBatching(bool val) { _isDynamicBatching = val; }
@@ -134,13 +136,18 @@ public:
 
     void         initLocalDescriptors(index_t subModelIndex);
     virtual void updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet);
+    int32_t      getInstancedAttributeIndex(const std::string &name) const;
+
+    // For JS
+    inline void              setCalledFromJS(bool v) { _isCalledFromJS = v; }
+    inline CallbacksInvoker &getEventProcessor() { return _eventProcessor; }
+    void                     _setInstancedAttributesViewData(index_t viewIdx, index_t arrIdx, float value);
+    //
 
 protected:
     static void uploadMat4AsVec4x3(const Mat4 &mat, Float32Array &v1, Float32Array &v2, Float32Array &v3);
 
-    void    updateAttributesAndBinding(index_t subModelIndex);
-    int32_t getInstancedAttributeIndex(const std::string &name) const;
-    void    updateInstanceAttribute(const std::vector<gfx::Attribute> &, Pass *pass) const;
+    void updateAttributesAndBinding(index_t subModelIndex);
 
     SubModel *createSubModel() const;
 
@@ -173,6 +180,11 @@ protected:
     Vec4       _lightmapUVParam;
 
     RenderScene *_scene{nullptr};
+
+    // For JS
+    CallbacksInvoker _eventProcessor;
+    bool             _isCalledFromJS{false};
+    //
 
 private:
     CC_DISALLOW_COPY_MOVE_ASSIGN(Model);

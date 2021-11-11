@@ -135,8 +135,8 @@ void RenderingSubMesh::genFlatBuffers() {
         const uint32_t             vbCount      = prim.indexView.has_value() ? prim.indexView.value().count : vertexBundle.view.count;
         const uint32_t             vbStride     = vertexBundle.view.stride;
         const uint32_t             vbSize       = vbStride * vbCount;
-        Uint8Array view(_mesh->getData().buffer(), vertexBundle.view.offset, vertexBundle.view.length);
-        Uint8Array sharedView(prim.indexView.has_value() ? vbSize : vertexBundle.view.length);
+        Uint8Array                 view(_mesh->getData().buffer(), vertexBundle.view.offset, vertexBundle.view.length);
+        Uint8Array                 sharedView(prim.indexView.has_value() ? vbSize : vertexBundle.view.length);
 
         if (!prim.indexView.has_value()) {
             sharedView.set(_mesh->getData().subarray(vertexBundle.view.offset, vertexBundle.view.offset + vertexBundle.view.length));
@@ -232,6 +232,7 @@ const gfx::BufferList &RenderingSubMesh::getJointMappedBuffers() {
             jointOffset += gfx::GFX_FORMAT_INFOS[static_cast<int32_t>(attr.format)].size;
         }
         if (jointFormat != gfx::Format::UNKNOWN) {
+            assert(false);
             //cjh TODO:            const data = new Uint8Array(mesh.data.buffer, bundle.view.offset, bundle.view.length);
             //            const dataView = new DataView(data.slice().buffer);
             //            const idxMap = structInfo.jointMaps[prim.jointMapIndex];

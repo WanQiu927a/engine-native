@@ -37,7 +37,7 @@ public:
     MorphModel()           = default;
     ~MorphModel() override = default;
 
-    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) const override;
+    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) override;
     void                     initSubModel(index_t idx, RenderingSubMesh *subMeshData, Material *mat) override;
     void                     destroy() override;
     void                     setSubModelMaterial(index_t idx, Material *mat) override;

@@ -324,16 +324,16 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
     if (auto iter = _boneSpaceBounds.find(skeleton->getHash()); iter != _boneSpaceBounds.end()) {
         return iter->second;
     }
-
+    Vec3            v32;
     BoneSpaceBounds bounds;
     _boneSpaceBounds.emplace(skeleton->getHash(), bounds);
     std::vector<bool> valid;
     const auto &      bindposes = skeleton->getBindposes();
     valid.reserve(bindposes.size());
     for (size_t i = 0; i < bindposes.size(); i++) {
-        bounds.emplace_back(new geometry::AABB{
-            std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(),
-            -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()});
+        bounds.emplace_back(new geometry::AABB{//cjh TODO: Memory leak
+                                               std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(),
+                                               -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity()});
         valid.emplace_back(false);
     }
     const auto &primitives = _struct.primitives;
@@ -357,11 +357,10 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
             for (uint32_t j = 0; j < 4; ++j) {
                 const uint32_t idx   = 4 * i + j;
                 const int32_t  joint = getTypedArrayValue<int32_t>(joints, idx);
-                if (getTypedArrayValue<int32_t>(weights, idx) == 0 || joint >= bindposes.size()) {
+                if (std::fabs(getTypedArrayValue<float>(weights, idx)) < FLT_EPSILON || joint >= bindposes.size()) {
                     continue;
                 }
 
-                Vec3 v32;
                 Vec3::transformMat4(v31, bindposes[joint], &v32);
                 valid[joint] = true;
                 auto &b      = bounds[joint];
@@ -765,8 +764,7 @@ TypedArray Mesh::readAttribute(index_t primitiveIndex, const char *attributeName
         for (uint32_t iVertex = 0; iVertex < vertexCount; ++iVertex) {
             for (uint32_t iComponent = 0; iComponent < componentCount; ++iComponent) {
                 TypedArrayElementType element = reader(inputStride * iVertex + getTypedArrayBytesPerElement(result) * iComponent);
-                uint32_t              value   = getTypedArrayElementValue<uint32_t>(element);
-                setTypedArrayValue(result, componentCount * iVertex + iComponent, value);
+                setTypedArrayValue(result, componentCount * iVertex + iComponent, element);
             }
         }
     });
@@ -857,8 +855,7 @@ bool Mesh::copyIndices(index_t primitiveIndex, TypedArray &outputArray) {
     auto              reader = getReader(view, indexFormat);
     for (uint32_t i = 0; i < indexCount; ++i) {
         TypedArrayElementType element = reader(primitive.indexView.value().offset + gfx::GFX_FORMAT_INFOS[static_cast<uint32_t>(indexFormat)].size * i);
-        uint32_t              value   = getTypedArrayElementValue<uint32_t>(element);
-        setTypedArrayValue<uint32_t>(outputArray, i, value);
+        setTypedArrayValue(outputArray, i, element);
     }
     return true;
 }

@@ -53,11 +53,11 @@ public:
 
     void                     destroy() override;
     void                     bindSkeleton(Skeleton *skeleton, Node *skinningRoot, Mesh *mesh);
-    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) const override;
+    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) override;
     void                     updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet) override;
     void                     updateTransform(uint32_t stamp) override;
     void                     updateUBOs(uint32_t stamp) override;
-    void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass);
+    void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass) override;
     void                     updateInstancedJointTextureInfo();
     // void                     uploadAnimation(AnimationClip *anim); // TODO(xwx): AnimationClip not define
     inline void updateModelBounds(geometry::AABB *modelBounds) {

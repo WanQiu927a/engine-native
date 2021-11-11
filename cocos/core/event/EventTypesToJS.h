@@ -42,6 +42,12 @@ public:
     static const std::string NODE_UI_TRANSFORM_DIRTY;
     static const std::string NODE_ACTIVE_NODE;
     static const std::string NODE_ON_BATCH_CREATED;
+
+    static const std::string MODEL_UPDATE_TRANSFORM;
+    static const std::string MODEL_UPDATE_UBO;
+    static const std::string MODEL_UPDATE_LOCAL_DESCRIPTORS;
+    static const std::string MODEL_UPDATE_INSTANCED_ATTRIBUTES;
+    static const std::string MODEL_GET_MACRO_PATCHES;
 };
 
 } // namespace cc

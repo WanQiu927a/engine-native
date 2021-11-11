@@ -217,7 +217,7 @@ bool dependencyCheck(const std::vector<std::string> &dependencies, const MacroRe
             if (defines.find(d.substr(1)) != defines.end()) {
                 return false;
             }
-        } else if (defines.count(d) == 0 ? true : recordAsBool(defines.at(d))) {
+        } else if (defines.count(d) == 0 ? true : !recordAsBool(defines.at(d))) {
             // TODO(PatriceJiang): !defines[d] : checked: undefine, false, 0
             return false;
         }
