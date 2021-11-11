@@ -80,9 +80,9 @@ public:
     void                             setSubModelMesh(index_t idx, RenderingSubMesh *subMesh) const;
     virtual void                     setSubModelMaterial(index_t idx, Material *mat);
     void                             onGlobalPipelineStateChanged() const;
-    void                             onMacroPatchesStateChanged() const;
+    void                             onMacroPatchesStateChanged();
     void                             updateLightingmap(Texture2D *texture, const Vec4 &uvParam);
-    virtual std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) const;
+    virtual std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex);
     virtual void                     updateInstancedAttributes(const std::vector<gfx::Attribute> &attributes, Pass *pass);
 
     virtual void updateTransform(uint32_t stamp);

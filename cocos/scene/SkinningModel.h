@@ -73,7 +73,7 @@ public:
     void                     destroy() override;
     void                     bindSkeleton(Skeleton *skeleton, Node *skinningRoot, Mesh *mesh);
     void                     initSubModel(index_t idx, RenderingSubMesh *subMeshData, Material *mat) override;
-    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) const override;
+    std::vector<IMacroPatch> getMacroPatches(index_t subModelIndex) override;
 
 private:
     static void                                                    uploadJointData(uint32_t base, const Mat4 &mat, float *dst);

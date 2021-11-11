@@ -307,6 +307,22 @@ static bool js_Model_registerListeners(se::State &s) // NOLINT(readability-ident
         funcVal.toObject()->call(args, thiz);
     });
 
+    cobj->getEventProcessor().on(cc::EventTypesToJS::MODEL_GET_MACRO_PATCHES, [=](index_t subModelIndex, std::vector<cc::scene::IMacroPatch> *pPatches) {
+        se::AutoHandleScope hs;
+        se::Value           funcVal;
+        bool                ok = thiz->getProperty("getMacroPatches", &funcVal) && funcVal.isObject() && funcVal.toObject()->isFunction();
+        SE_PRECONDITION2_VOID(ok, "Not function named getMacroPatches.");
+
+        se::ValueArray args;
+        se::Value      rval;
+        args.resize(1);
+        nativevalue_to_se(subModelIndex, args[0]);
+        ok = funcVal.toObject()->call(args, thiz, &rval);
+        if (ok) {
+            sevalue_to_native(rval, pPatches);
+        }
+    });
+
     return true;
 }
 SE_BIND_FUNC(js_Model_registerListeners) // NOLINT(readability-identifier-naming)

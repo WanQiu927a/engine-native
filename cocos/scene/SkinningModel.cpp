@@ -158,7 +158,7 @@ void SkinningModel::initSubModel(index_t idx, RenderingSubMesh *subMeshData, Mat
     iaInfo.vertexBuffers = original;
 }
 
-std::vector<IMacroPatch> SkinningModel::getMacroPatches(index_t subModelIndex) const {
+std::vector<IMacroPatch> SkinningModel::getMacroPatches(index_t subModelIndex) {
     auto superMacroPatches = Super::getMacroPatches(subModelIndex);
     if (!superMacroPatches.empty()) {
         myPatches.reserve(myPatches.size() + superMacroPatches.size());

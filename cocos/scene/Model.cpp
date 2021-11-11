@@ -279,7 +279,7 @@ void Model::onGlobalPipelineStateChanged() const {
     }
 }
 
-void Model::onMacroPatchesStateChanged() const {
+void Model::onMacroPatchesStateChanged() {
     for (index_t i = 0; i < _subModels.size(); ++i) {
         _subModels[i]->onMacroPatchesStateChanged(getMacroPatches(i));
     }
@@ -307,7 +307,15 @@ void Model::updateLightingmap(Texture2D *texture, const Vec4 &uvParam) {
     }
 }
 
-std::vector<IMacroPatch> Model::getMacroPatches(index_t /*subModelIndex*/) const {
+std::vector<IMacroPatch> Model::getMacroPatches(index_t subModelIndex) {
+    if (_type != Type::DEFAULT) {
+        if (!_isCalledFromJS) {
+            std::vector<IMacroPatch> result;
+            _eventProcessor.emit(EventTypesToJS::MODEL_GET_MACRO_PATCHES, subModelIndex, &result);
+            return result;
+        }
+    }
+
     return _receiveShadow ? SHADOW_MAP_PATCHES : std::vector<IMacroPatch>();
 }
 

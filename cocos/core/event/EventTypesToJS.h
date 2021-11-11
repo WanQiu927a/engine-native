@@ -47,6 +47,7 @@ public:
     static const std::string MODEL_UPDATE_UBO;
     static const std::string MODEL_UPDATE_LOCAL_DESCRIPTORS;
     static const std::string MODEL_UPDATE_INSTANCED_ATTRIBUTES;
+    static const std::string MODEL_GET_MACRO_PATCHES;
 };
 
 } // namespace cc
