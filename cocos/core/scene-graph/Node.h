@@ -286,6 +286,7 @@ public:
     inline void setPosition(const Vec3 &pos) { setPosition(pos.x, pos.y, pos.z); }
     inline void setPosition(float x, float y) { setPosition(x, y, _localPosition.z); }
     void        setPosition(float x, float y, float z);
+    inline void setPositionForJS(float x, float y, float z) { _localPosition.set(x, y, z); }
     /**
      * @en Get position in local coordinate system, please try to pass `out` vector and reuse it to avoid garbage.
      * @zh 获取本地坐标，注意，尽可能传递复用的 [[Vec3]] 以避免产生垃圾。
@@ -301,10 +302,12 @@ public:
      */
     inline void setRotation(const Quaternion &rotation) { setRotation(rotation.x, rotation.y, rotation.z, rotation.w); }
     void        setRotation(float x, float y, float z, float w);
+    inline void setRotationForJS(float x, float y, float z, float w) { _localRotation.set(x, y, z, w); }
     inline void setEulerAngles(const Vec3 &val) { setRotationFromEuler(val.x, val.y, val.z); }
     inline void setRotationFromEuler(float x, float y) { setRotationFromEuler(x, y, _euler.z); }
     inline void setRotationFromEuler(const Vec3 &val) { setRotationFromEuler(val.x, val.y, val.z); }
     void        setRotationFromEuler(float x, float y, float z);
+    inline void setRotationFromEulerForJS(float x, float y, float z) { _euler.set(x, y, z); }
     /**
      * @en Get rotation as quaternion in local coordinate system, please try to pass `out` quaternion and reuse it to avoid garbage.
      * @zh 获取本地旋转，注意，尽可能传递复用的 [[Quat]] 以避免产生垃圾。
@@ -321,6 +324,7 @@ public:
     inline void setScale(const Vec3 &scale) { setScale(scale.x, scale.y, scale.z); }
     inline void setScale(float x, float y) { setScale(x, y, _localScale.z); }
     void        setScale(float x, float y, float z);
+    inline void setScaleForJS(float x, float y, float z) { _localScale.set(x, y, z); }
     /**
      * @en Get scale in local coordinate system, please try to pass `out` vector and reuse it to avoid garbage.
      * @zh 获取本地缩放，注意，尽可能传递复用的 [[Vec3]] 以避免产生垃圾。
