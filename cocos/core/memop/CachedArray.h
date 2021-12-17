@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <functional>
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
+#include <functional>
 #include <vector>
 
 namespace cc {
@@ -148,10 +148,10 @@ public:
      * @param array The given array to be appended
      */
     void concat(const std::vector<T *> &array) {
-        size_t freeSize             = _array.capacity() - _length;
-        size_t elementsToBeConcated = std::min(freeSize, array.size());
-        _array.insert(_array.begin() + _length, array.begin(), array.begin() + elementsToBeConcated);
-        _length += elementsToBeConcated;
+        size_t freeSize         = _array.capacity() - _length;
+        size_t elementsToConcat = std::min(freeSize, array.size());
+        _array.insert(_array.begin() + _length, array.begin(), array.begin() + elementsToConcat);
+        _length += elementsToConcat;
     }
 
     /**
@@ -182,7 +182,6 @@ public:
         return -1;
     }
 
-public:
     std::vector<T *> _array;
     uint32_t         _length{0};
 

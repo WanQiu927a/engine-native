@@ -34,11 +34,11 @@ namespace cc {
 namespace {
 
 Invoker invokeStart = createInvokeImpl(
-    [](Component *c, const cc::optional<float> &dt) {
+    [](Component *c, const cc::optional<float> & /*dt*/) {
         c->start();
         c->_objFlags |= CCObject::Flags::IS_START_CALLED;
     },
-    [](MutableForwardIterator<Component *> &iterator, const cc::optional<float> &dt) {
+    [](MutableForwardIterator<Component *> &iterator, const cc::optional<float> & /*dt*/) {
         auto &array = iterator.array;
         for (iterator.i = 0; iterator.i < static_cast<int32_t>(array.size()); ++iterator.i) {
             Component *comp = array[iterator.i];
@@ -76,16 +76,16 @@ Invoker invokeLateUpdate = createInvokeImpl(
 
 } // namespace
 
-Invoker createInvokeImpl(const SingleInvokeCallback &singleInvoke, const FastPathCallback &fastPath, cc::optional<CCObject::Flags> ensureFlag) {
+Invoker createInvokeImpl(const SingleInvokeCallback & /*singleInvoke*/, const FastPathCallback &fastPath, cc::optional<CCObject::Flags> /*ensureFlag*/) {
     return [=](MutableForwardIterator<Component *> iterator, const cc::optional<float> &dt) {
-        //TODO: cjh We don't wanna use c++ exception here, so just invoke fastPath.
+        //TODO(cjh): We don't wanna use c++ exception here, so just invoke fastPath.
         fastPath(iterator, dt);
     };
 }
 
 // LifeCycleInvoker
-LifeCycleInvoker::LifeCycleInvoker(const Invoker &invokeFunc)
-: _invoke(invokeFunc), _zero(_zeroCompArr), _neg(_negCompArr), _pos(_posCompArr) {
+LifeCycleInvoker::LifeCycleInvoker(Invoker invokeFunc)
+: _invoke(std::move(invokeFunc)), _zero(_zeroCompArr), _neg(_negCompArr), _pos(_posCompArr) {
 }
 
 void LifeCycleInvoker::stableRemoveInactive(MutableForwardIterator<Component *> &iterator, const cc::optional<CCObject::Flags> &flagToClear) {
@@ -108,7 +108,7 @@ int32_t LifeCycleInvoker::sortedIndex(std::vector<Component *> &components, Comp
     const int32_t      order = comp->getExecutionOrder();
     const std::string &id    = comp->getUuid();
     int32_t            l     = 0;
-    for (int32_t h = components.size() - 1, m = static_cast<uint32_t>(h) >> 1; l <= h; m = static_cast<uint32_t>(l + h) >> 1) {
+    for (int32_t h = components.size() - 1, m = static_cast<uint32_t>(h) >> 1; l <= h; m = static_cast<uint32_t>(l + h) >> 1) { //NOLINT(bugprone-narrowing-conversions) NOTE: >>> in ts, so use static_cast<uint32_t>
         auto *        test      = components[m];
         const int32_t testOrder = test->getExecutionOrder();
         if (testOrder > order) {

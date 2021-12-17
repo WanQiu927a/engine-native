@@ -38,13 +38,9 @@ Scene::Scene(const std::string &name)
     //    _globals           = new SceneGlobals();
 }
 
-Scene::Scene()
-: Scene("") {
-}
+Scene::Scene() : Scene("") {}
 
-Scene::~Scene() {
-    //    CC_SAFE_DELETE(_globals);
-}
+Scene::~Scene() = default;
 
 void Scene::load() {
     if (!_inited) {
@@ -82,7 +78,7 @@ void Scene::onBatchCreated(bool dontSyncChildPrefab) {
     }
     //
 
-    int32_t len = static_cast<int32_t>(_children.size());
+    auto len = static_cast<int32_t>(_children.size());
     for (int32_t i = 0; i < len; ++i) {
         _children[i]->setSiblingIndex(i);
         _children[i]->onBatchCreated(dontSyncChildPrefab);

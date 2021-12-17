@@ -36,7 +36,8 @@ Node *find(const std::string &path, Node *referenceNode /* = nullptr*/) {
             //                warnID(5601);
             //            }
             return nullptr;
-        } else if (/*DEV && */ !scene->isValid()) {
+        }
+        if (/*DEV && */ !scene->isValid()) {
             //            warnID(5602);
             return nullptr;
         }

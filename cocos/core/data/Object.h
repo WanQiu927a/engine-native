@@ -123,7 +123,7 @@ public:
     std::string _name;
 
 protected:
-    explicit CCObject(const std::string &name = "");
+    explicit CCObject(std::string name = "");
     ~CCObject() override = default;
 
 public:

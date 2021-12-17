@@ -30,7 +30,7 @@ namespace cc {
 
 namespace {
 
-//TODO: Copied from EffectAssetDeserializer.cpp, need to make it as common functions
+//TODO(): Copied from EffectAssetDeserializer.cpp, need to make it as common functions
 template <typename T>
 using DeserializeArrayElementCallback = std::function<void(const rapidjson::Value &, T &)>;
 
@@ -166,8 +166,8 @@ void deserializeMorph(const rapidjson::Value &morph, cc::optional<Morph> &cMorph
     cMorph            = Morph{};
     auto &cMorphValue = cMorph.value();
     if (morph.HasMember("subMeshMorphs")) {
-        //TODO:minggo
-//        deserializeArray<SubMeshMorph>(morph["subMeshMorphs"], cMorphValue.subMeshMorphs, deserializeSubMeshMorph);
+        //TODO(minggo)
+        //        deserializeArray<SubMeshMorph>(morph["subMeshMorphs"], cMorphValue.subMeshMorphs, deserializeSubMeshMorph);
     }
 
     if (morph.HasMember("weights")) {

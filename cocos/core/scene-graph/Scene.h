@@ -50,7 +50,7 @@ public:
     void load();
     void activate(bool active = true);
 
-    void onBatchCreated(bool dontChildPrefab) override;
+    void onBatchCreated(bool dontSyncChildPrefab) override;
     bool destroy() override;
 
 protected:

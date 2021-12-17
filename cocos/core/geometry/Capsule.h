@@ -89,7 +89,7 @@ public:
     Capsule(Capsule &&other)      = default;
     Capsule &operator=(const Capsule &other) = default;
     Capsule &operator=(Capsule &&other) = default;
-    ~Capsule()                          = default;
+    ~Capsule() override                 = default;
 
     /**
      * @en

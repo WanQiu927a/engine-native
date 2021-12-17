@@ -26,8 +26,8 @@
 #pragma once
 #include <functional>
 #include <vector>
-#include "cocos/base/Optional.h"
 #include "base/TypeDef.h"
+#include "cocos/base/Optional.h"
 #include "core/components/Component.h"
 #include "core/scene-graph/Node.h"
 #include "core/utils/MutableForwardIterator.h"
@@ -52,7 +52,7 @@ public:
 
     static int32_t sortedIndex(std::vector<Component *> &components, Component *comp);
 
-    explicit LifeCycleInvoker(const Invoker &invokeFunc);
+    explicit LifeCycleInvoker(Invoker invokeFunc);
     ~LifeCycleInvoker();
 
     virtual void add(Component *comp)    = 0;

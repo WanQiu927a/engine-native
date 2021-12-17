@@ -34,7 +34,7 @@ namespace cc {
 
 namespace {
 
-//TODO: Copied from EffectAssetDeserializer.cpp, need to make it as common functions
+//TODO(): Copied from EffectAssetDeserializer.cpp, need to make it as common functions
 template <typename T>
 using DeserializeArrayElementCallback = std::function<void(const rapidjson::Value &, T &)>;
 
@@ -206,7 +206,7 @@ void TerrainAssetDeserializer::deserialize(const rapidjson::Value &serializedDat
     for (const auto &val : serializedData.GetArray()) {
         CC_ASSERT(val.IsObject());
         if (val.HasMember("__type__")) {
-            auto *typeStr = val["__type__"].GetString();
+            const auto *typeStr = val["__type__"].GetString();
             if (0 == strcmp(typeStr, "cc.TerrainAsset")) {
                 deserializeTerrainAsset(val, cTerrainAsset);
             } else if (0 == strcmp(typeStr, "cc.TerrainLayerInfo")) {

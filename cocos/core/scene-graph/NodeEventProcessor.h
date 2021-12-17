@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "cocos/base/Any.h"
 #include <functional>
 #include <string>
+#include "cocos/base/Any.h"
 #include "core/event/CallbacksInvoker.h"
 #include "core/event/Event.h"
 #include "core/platform/event-manager/EventListeners.h"
@@ -131,7 +131,7 @@ public:
      * @param args - The  arguments to be passed to the callback
      */
     template <typename... Args>
-    void emit(const CallbacksInvoker::KeyType &type, Args &&... args);
+    void emit(const CallbacksInvoker::KeyType &type, Args &&...args);
 
     void targetOff(const CallbacksInvoker::KeyType &target);
 
@@ -191,7 +191,7 @@ private:
 };
 
 template <typename... Args>
-void NodeEventProcessor::emit(const CallbacksInvoker::KeyType &type, Args &&... args) {
+void NodeEventProcessor::emit(const CallbacksInvoker::KeyType &type, Args &&...args) {
     if (_bubblingTargets != nullptr) {
         _bubblingTargets->emit(type, std::forward<Args>(args)...);
     }
@@ -344,7 +344,7 @@ void NodeEventProcessor::once(const CallbacksInvoker::KeyType &type, void (Targe
 
     listeners->on(type, memberFn, target, true);
     listeners->on(
-        type, [=](Args...) { off(type, memberFn, target); }, true);
+        type, [=](Args... /*unused*/) { off(type, memberFn, target); }, true);
 }
 
 template <typename Target, typename... Args>
@@ -365,7 +365,7 @@ void NodeEventProcessor::once(const CallbacksInvoker::KeyType &type, std::functi
     listeners->on(type, std::forward<std::function<void(Args...)>>(callback), target, cbID, true);
     CallbackInfoBase::ID cacheID = cbID;
     listeners->on(
-        type, [=](Args...) { off(type, cacheID); }, target, true);
+        type, [=](Args... /*unused*/) { off(type, cacheID); }, target, true);
 }
 
 template <typename Target, typename LambdaType>

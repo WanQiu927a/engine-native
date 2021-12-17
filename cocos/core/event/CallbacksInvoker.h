@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "base/Log.h"
+#include "base/Macros.h"
 #include "base/Utils.h"
 #include "core/data/Object.h"
 #include "core/memop/Pool.h"
@@ -264,7 +265,6 @@ public:
     template <typename... Args>
     void emit(const KeyType &key, Args &&...args);
 
-public:
     template <typename T>
     struct FunctionTraits
     : public FunctionTraits<decltype(&T::operator())> {
@@ -367,7 +367,7 @@ void CallbacksInvoker::off(const KeyType &key, void (Target::*memberFn)(Args...)
         size_t      i     = 0;
         for (const auto &info : infos) {
             if (info != nullptr && reinterpret_cast<CallbackFn>(info->getMemberFn()) == memberFn && info->_target == target) {
-                list.cancel(static_cast<uint32_t>(i));
+                list.cancel(static_cast<int32_t>(i));
                 break;
             }
             ++i;
@@ -387,14 +387,14 @@ void CallbacksInvoker::emit(const KeyType &key, Args &&...args) {
         list._isInvoking  = true;
 
         auto &infos = list._callbackInfos;
-        for (size_t i = 0, len = infos.size(); i < len; ++i) {
-            auto &baseInfo = infos[i];
+        for (auto &i : infos) {
+            auto &baseInfo = i;
             if (baseInfo == nullptr) {
                 continue;
             }
 
 #if CC_DEBUG
-            CCASSERT(baseInfo->_argTypes.size() == argTypes.size(), "The argument count in 'emit' is difference from which in 'on'");
+            CC_ASSERT(baseInfo->_argTypes.size() == argTypes.size());
             for (size_t i = 0, len = argTypes.size(); i < len; ++i) {
                 if (baseInfo->_argTypes[i] != argTypes[i]) {
                     CC_LOG_ERROR("Wrong argument type! baseInfo->_argTypes[%d]=%s, argTypes[%d]=%s", i, baseInfo->_argTypes[i].c_str(), i, argTypes[i].c_str());
@@ -403,11 +403,11 @@ void CallbacksInvoker::emit(const KeyType &key, Args &&...args) {
             }
 #endif
             using CallbackInfoType = CallbackInfo<Args...>;
-            auto info              = std::static_pointer_cast<CallbackInfoType>(infos[i]);
+            auto info              = std::static_pointer_cast<CallbackInfoType>(i);
             if (info != nullptr) {
                 if (info->_memberFn != nullptr && info->_target != nullptr) {
-                    auto      memberFn = info->_memberFn;
-                    CCObject *target   = reinterpret_cast<CCObject *>(info->_target);
+                    auto  memberFn = info->_memberFn;
+                    auto *target   = reinterpret_cast<CCObject *>(info->_target);
 
                     // Pre off once callbacks to avoid influence on logic in callback
                     if (info->_once) {
@@ -436,7 +436,7 @@ void CallbacksInvoker::emit(const KeyType &key, Args &&...args) {
                     }
                 }
             } else {
-                CCASSERT(false, "CallbacksInvoker::emit: callbackInfo is nullptr");
+                CC_ASSERT(false);
             }
         }
 

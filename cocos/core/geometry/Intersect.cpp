@@ -224,9 +224,9 @@ void fillResult(float *minDis, ERaycastMode m, float d, float i0, float i1, floa
                     r->emplace_back(IRaySubMeshResult{d, static_cast<uint32_t>(i0 / 3), static_cast<uint32_t>(i1 / 3), static_cast<uint32_t>(i2 / 3)});
                 } else {
                     (*r)[0].distance     = d;
-                    (*r)[0].vertexIndex0 = i0 / 3;
-                    (*r)[0].vertexIndex1 = i1 / 3;
-                    (*r)[0].vertexIndex2 = i2 / 3;
+                    (*r)[0].vertexIndex0 = static_cast<uint32_t>(i0 / 3);
+                    (*r)[0].vertexIndex1 = static_cast<uint32_t>(i1 / 3);
+                    (*r)[0].vertexIndex2 = static_cast<uint32_t>(i2 / 3);
                 }
             }
         }
@@ -250,7 +250,7 @@ float narrowphase(float *minDis, const std::vector<float> &vb, const std::vector
             tri.c     = {vb[i2], vb[i2 + 1], vb[i2 + 2]};
             auto dist = rayTriangle(ray, tri, opt.doubleSided);
             if (dist == 0.0F || dist > opt.distance) continue;
-            fillResult(minDis, opt.mode, dist, i0, i1, i2, &opt.result);
+            fillResult(minDis, opt.mode, dist, static_cast<float>(i0), static_cast<float>(i1), static_cast<float>(i2), &opt.result);
             if (opt.mode == ERaycastMode::ANY) return dist;
         }
     } else if (pm == gfx::PrimitiveMode::TRIANGLE_STRIP) {
@@ -266,7 +266,7 @@ float narrowphase(float *minDis, const std::vector<float> &vb, const std::vector
             rev       = ~rev;
             auto dist = rayTriangle(ray, tri, opt.doubleSided);
             if (dist == 0.0F || dist > opt.distance) continue;
-            fillResult(minDis, opt.mode, dist, i0, i1, i2, &opt.result);
+            fillResult(minDis, opt.mode, dist, static_cast<float>(i0), static_cast<float>(i1), static_cast<float>(i2), &opt.result);
             if (opt.mode == ERaycastMode::ANY) return dist;
         }
     } else if (pm == gfx::PrimitiveMode::TRIANGLE_FAN) {
@@ -280,7 +280,7 @@ float narrowphase(float *minDis, const std::vector<float> &vb, const std::vector
             tri.c     = {vb[i2], vb[i2 + 1], vb[i2 + 2]};
             auto dist = rayTriangle(ray, tri, opt.doubleSided);
             if (dist == 0.0 || dist > opt.distance) continue;
-            fillResult(minDis, opt.mode, dist, i0, i1, i2, &opt.result);
+            fillResult(minDis, opt.mode, dist, static_cast<float>(i0), static_cast<float>(i1), static_cast<float>(i2), &opt.result);
             if (opt.mode == ERaycastMode::ANY) return dist;
         }
     }
@@ -292,7 +292,7 @@ float narrowphase(float *minDis, const std::vector<float> &vb, const std::vector
 float raySubMesh(const Ray & /*ray*/, const RenderingSubMesh & /*submesh*/, IRaySubMeshOptions * /*options*/) {
     Triangle           tri;
     IRaySubMeshOptions deOpt  = {.mode = ERaycastMode::ANY, .distance = FLT_MAX, .doubleSided = false};
-    auto               minDis = 0;
+    float              minDis = 0.F;
 
     minDis = 0;
 
