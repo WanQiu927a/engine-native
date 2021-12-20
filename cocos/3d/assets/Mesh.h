@@ -385,7 +385,7 @@ private:
     static TypedArray createTypedArrayWithGFXFormat(gfx::Format format, uint32_t count);
 
 public:
-    cc::SharedPtr<MorphRendering> morphRendering;
+    SharedPtr<MorphRendering> morphRendering;
 
 private:
     //cjh howto ? @serializable

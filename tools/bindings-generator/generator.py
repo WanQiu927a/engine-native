@@ -806,9 +806,9 @@ class NativeField(object):
     @staticmethod
     def can_parse(ntype, generator, cursor):
         native_type = NativeType.from_type(ntype, generator)
-        if ntype.kind == cindex.TypeKind.UNEXPOSED and native_type.name != "std::string":
-            logger.error(' %s is ntype.kind %s' %
-                         (native_type.name, ntype.kind))
+        if ntype.kind == cindex.TypeKind.UNEXPOSED and ntype.get_declaration().type.kind == cindex.TypeKind.UNEXPOSED and native_type.name != "std::string":
+            logger.error(' %s is ntype.kind %s or %s' %
+                         (native_type.name, ntype.kind, ntype.get_declaration().type.kind))
             return False
         return True
 
@@ -2007,6 +2007,7 @@ class Generator(object):
             logger.info(">>> parse_header: " + header)
             if not os.path.exists(header):
                 logger.error("[error] header %s not found" % header)
+            # logger.info(">>>  arguments %s" % self.clang_args)
             tu = self.index.parse(header, self.clang_args)
             if len(tu.diagnostics) > 0:
                 self._pretty_print(tu.diagnostics)

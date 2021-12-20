@@ -40,12 +40,12 @@ using ITextureCubeCreateInfo = ITexture2DCreateInfo;
  * @zh 立方体贴图的 Mipmap 接口。
  */
 struct ITextureCubeMipmap {
-    cc::SharedPtr<ImageAsset> front;
-    cc::SharedPtr<ImageAsset> back;
-    cc::SharedPtr<ImageAsset> left;
-    cc::SharedPtr<ImageAsset> right;
-    cc::SharedPtr<ImageAsset> top;
-    cc::SharedPtr<ImageAsset> bottom;
+    SharedPtr<ImageAsset> front;
+    SharedPtr<ImageAsset> back;
+    SharedPtr<ImageAsset> left;
+    SharedPtr<ImageAsset> right;
+    SharedPtr<ImageAsset> top;
+    SharedPtr<ImageAsset> bottom;
 };
 
 struct ITextureCubeSerializeMipmapData {
@@ -166,7 +166,7 @@ public:
     bool destroy() override;
 
     cc::any serialize(const cc::any &ctxForExporting) override;
-    void     deserialize(const cc::any &serializedData, const cc::any &handle) override;
+    void    deserialize(const cc::any &serializedData, const cc::any &handle) override;
 
     gfx::TextureInfo getGfxTextureCreateInfo(gfx::TextureUsageBit usage, gfx::Format format, uint32_t levelCount, gfx::TextureFlagBit flags) override;
 
