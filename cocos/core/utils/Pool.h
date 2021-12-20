@@ -122,11 +122,10 @@ public:
      * @param {Object} cleanupFunc.obj
      * @param {Number} size - initializes the length of the array
      */
-    Pool(int32_t size)
+    explicit Pool(int32_t size)
     : Pool{nullptr, size} {}
 
-    ~Pool() {
-    }
+    ~Pool() = default;
 
     /**
      * @en
@@ -134,7 +133,7 @@ public:
      * @zh
      * 获取对象池中的对象，如果对象池没有可用对象，则返回空。
      */
-    T _get() {
+    T _get() { //NOLINT(readability-identifier-naming)
         if (_count > 0) {
             --_count;
             T cache       = _pool[_count];

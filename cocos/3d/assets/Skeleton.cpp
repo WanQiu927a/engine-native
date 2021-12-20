@@ -54,7 +54,7 @@ uint64_t Skeleton::getHash() {
                  << ibm.m[12] << " " << ibm.m[13] << " " << ibm.m[14] << " " << ibm.m[15] << "\n";
         }
         std::string str{sstr.str()};
-        _hash = murmurhash2::MurmurHash2(str.c_str(), str.length(), 666);
+        _hash = murmurhash2::MurmurHash2(str.c_str(), static_cast<int32_t>(str.size()), 666);
     }
     return _hash;
 }

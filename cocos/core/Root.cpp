@@ -45,7 +45,7 @@ Root::Root(gfx::Device *device)
 : _device(device) {
     instance        = this;
     _eventProcessor = new CallbacksInvoker();
-    //TODO: minggo
+    // TODO(minggo):
     //    this._dataPoolMgr = legacyCC.internal.DataPoolManager && new legacyCC.internal.DataPoolManager(device) as DataPoolManager;
     _cameraPool = new memop::Pool<scene::Camera>([this]() { return new scene::Camera(_device); },
                                                  4);
@@ -76,7 +76,7 @@ void Root::initialize() {
 
     _curWindow = _mainWindow;
 
-    //TODO: minggo
+    // TODO(minggo):
     //    return Promise.resolve(builtinResMgr.initBuiltinRes(this._device)).then(() => {
     //        legacyCC.view.on('design-resolution-changed', () => {
     //            const width = legacyCC.game.canvas.width;
@@ -90,10 +90,10 @@ void Root::destroy() {
     destroyScenes();
 
     CC_SAFE_DESTROY(_pipeline);
-    //TODO: minggo
+    // TODO(minggo):
     //    CC_SAFE_DESTROY(_batcher2D);
 
-    //TODO: minggo
+    // TODO(minggo):
     //    this.dataPoolManager.clear();
 }
 
@@ -126,7 +126,7 @@ bool Root::setRenderPipeline(pipeline::RenderPipeline *rppl /* = nullptr*/) {
         return false;
     }
 
-    // TODO: minggo
+    // TODO(minggo):
     auto *scene = Director::getInstance()->getScene();
     if (scene) {
         scene->getSceneGlobals()->activate();
@@ -135,7 +135,7 @@ bool Root::setRenderPipeline(pipeline::RenderPipeline *rppl /* = nullptr*/) {
     onGlobalPipelineStateChanged();
 
     _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_INIT, this);
-    //TODO: minggo
+    // TODO(minggo):
     //    if (!_batcher) {
     //        _batcher = new Batcher2D(this);
     //        if (!this._batcher.initialize()) {
@@ -181,7 +181,7 @@ void Root::frameMove(float deltaTime, int32_t totalFrames) {
 
     _eventProcessor->emit(EventTypesToJS::ROOT_BATCH2D_UPDATE, this); //cjh added for sync logic in ts.
 
-    //TODO: minggo
+    // TODO(minggo):
     //    if (_batcher) {
     //        _batcher.update();
     //    }

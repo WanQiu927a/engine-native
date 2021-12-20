@@ -48,7 +48,7 @@ void Light::initializeLight() {
 void Light::setColor(const Color &val) {
     _color = val;
     if (_light != nullptr) {
-        _light->setColor(Vec3(val.r / 255.F, val.g / 255.F, val.b / 255.F));
+        _light->setColor(Vec3(static_cast<float>(val.r) / 255.F, static_cast<float>(val.g) / 255.F, static_cast<float>(val.b) / 255.F));
     }
 }
 void Light::destroyLight() {

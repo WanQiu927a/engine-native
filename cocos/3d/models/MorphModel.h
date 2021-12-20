@@ -51,7 +51,7 @@ protected:
     void updateLocalDescriptors(index_t subModelIndex, gfx::DescriptorSet *descriptorSet) override;
 
 private:
-    inline Material *launderMaterial(Material *material) { return material; }
+    inline Material *launderMaterial(Material *material) { return material; } //NOLINT(readability-convert-member-functions-to-static)
 
     cc::SharedPtr<MorphRenderingInstance> _morphRenderingInstance;
 };

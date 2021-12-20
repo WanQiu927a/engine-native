@@ -45,7 +45,7 @@ namespace cc {
 template <typename T>
 class MutableForwardIterator {
 public:
-    MutableForwardIterator(std::vector<T> &array)
+    explicit MutableForwardIterator(std::vector<T> &array)
     : array(array) {}
 
     int32_t getLength() const {

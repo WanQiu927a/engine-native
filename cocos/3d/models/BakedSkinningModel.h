@@ -78,10 +78,10 @@ public:
     void syncAnimInfoForJS(gfx::Buffer *buffer, const Float32Array &data, Uint8Array &dirty);
     void syncDataForJS(const std::vector<cc::optional<geometry::AABB>> &boundsInfo,
                        const cc::optional<geometry::AABB> &             modelBound,
-                       float                                             jointTextureInfo_0,
-                       float                                             jointTextureInfo_1,
-                       float                                             jointTextureInfo_2,
-                       float                                             jointTextureInfo_3,
+                       float                                             jointTextureInfo0,
+                       float                                             jointTextureInfo1,
+                       float                                             jointTextureInfo2,
+                       float                                             jointTextureInfo3,
                        gfx::Texture *                                    tex,
                        const Float32Array &                              animInfoData);
 

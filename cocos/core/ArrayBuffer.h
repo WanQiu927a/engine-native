@@ -49,7 +49,7 @@ public:
 
     ArrayBuffer() = default;
 
-    ~ArrayBuffer() {
+    ~ArrayBuffer() override {
         if (_jsArrayBuffer) {
             _jsArrayBuffer->unroot();
             _jsArrayBuffer->decRef();
