@@ -57,7 +57,7 @@ public:
     }
 
     inline void cancelInactive() {
-        stableRemoveInactive(_zero, CC_NULLOPT);
+        stableRemoveInactive(_zero, cc::nullopt);
     }
 
     inline void cancelInactive(CCObject::Flags flagToClear) {
@@ -65,7 +65,7 @@ public:
     }
 
     inline void invoke() {
-        _invoke(_zero, CC_NULLOPT);
+        _invoke(_zero, cc::nullopt);
         _zero.array.clear();
     }
 };
@@ -96,7 +96,7 @@ Invoker invokePreload = createInvokeImpl(
             array[iterator.i]->__preload();
         }
     },
-    CC_NULLOPT);
+    cc::nullopt);
 
 Invoker invokeOnLoad = createInvokeImpl(
     [](Component *c, const cc::optional<float> & /*dt*/) {

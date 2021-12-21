@@ -119,9 +119,9 @@ DataWritterCallback getWriter(DataView &dataView, gfx::Format format) {
     switch (info.type) {
         case gfx::FormatType::UNORM: {
             switch (stride) {
-                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint8(offset, CC_GET<uint8_t>(value)); };
-                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint16(offset, CC_GET<uint16_t>(value)); };
-                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint32(offset, CC_GET<uint32_t>(value)); };
+                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint8(offset, cc::get<uint8_t>(value)); };
+                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint16(offset, cc::get<uint16_t>(value)); };
+                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint32(offset, cc::get<uint32_t>(value)); };
                 default:
                     break;
             }
@@ -129,9 +129,9 @@ DataWritterCallback getWriter(DataView &dataView, gfx::Format format) {
         }
         case gfx::FormatType::SNORM: {
             switch (stride) {
-                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt8(offset, CC_GET<int8_t>(value)); };
-                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt16(offset, CC_GET<int8_t>(value)); };
-                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt32(offset, CC_GET<int8_t>(value)); };
+                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt8(offset, cc::get<int8_t>(value)); };
+                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt16(offset, cc::get<int8_t>(value)); };
+                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt32(offset, cc::get<int8_t>(value)); };
                 default:
                     break;
             }
@@ -139,9 +139,9 @@ DataWritterCallback getWriter(DataView &dataView, gfx::Format format) {
         }
         case gfx::FormatType::INT: {
             switch (stride) {
-                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt8(offset, CC_GET<int8_t>(value)); };
-                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt16(offset, CC_GET<int16_t>(value)); };
-                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt32(offset, CC_GET<int32_t>(value)); };
+                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt8(offset, cc::get<int8_t>(value)); };
+                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt16(offset, cc::get<int16_t>(value)); };
+                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setInt32(offset, cc::get<int32_t>(value)); };
                 default:
                     break;
             }
@@ -149,16 +149,16 @@ DataWritterCallback getWriter(DataView &dataView, gfx::Format format) {
         }
         case gfx::FormatType::UINT: {
             switch (stride) {
-                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint8(offset, CC_GET<uint8_t>(value)); };
-                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint16(offset, CC_GET<uint16_t>(value)); };
-                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint32(offset, CC_GET<uint32_t>(value)); };
+                case 1: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint8(offset, cc::get<uint8_t>(value)); };
+                case 2: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint16(offset, cc::get<uint16_t>(value)); };
+                case 4: return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setUint32(offset, cc::get<uint32_t>(value)); };
                 default:
                     break;
             }
             break;
         }
         case gfx::FormatType::FLOAT: {
-            return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setFloat32(offset, CC_GET<float>(value)); };
+            return [&](uint32_t offset, const TypedArrayElementType &value) { dataView.setFloat32(offset, cc::get<float>(value)); };
         }
         default:
             break;
@@ -174,7 +174,7 @@ cc::any Mesh::getNativeAsset() const {
 }
 
 void Mesh::setNativeAsset(const cc::any &obj) {
-    if (auto p = CC_ANY_CAST<ArrayBuffer *>(obj); p != nullptr) {
+    if (auto *p = cc::any_cast<ArrayBuffer *>(obj); p != nullptr) {
         _data = Uint8Array(p);
     }
 }
@@ -193,7 +193,7 @@ const Vec3 &Mesh::getMaxPosition() const {
 
 uint64_t Mesh::getHash() {
     if (_hash == 0) {
-        _hash = murmurhash2::MurmurHash2(_data.buffer()->getData(), _data.length(), 666);
+        _hash = murmurhash2::MurmurHash2(_data.buffer()->getData(), static_cast<int>(_data.length()), 666);
     }
 
     return _hash;
@@ -355,7 +355,7 @@ Mesh::BoneSpaceBounds Mesh::getBoneSpaceBounds(Skeleton *skeleton) {
 
             for (uint32_t j = 0; j < 4; ++j) {
                 const uint32_t idx   = 4 * i + j;
-                const int32_t  joint = getTypedArrayValue<int32_t>(joints, idx);
+                const auto     joint = getTypedArrayValue<int32_t>(joints, idx);
 
                 if (std::fabs(getTypedArrayValue<float>(weights, idx)) < FLT_EPSILON || joint >= bindposes.size()) {
                     continue;
@@ -387,7 +387,7 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
         }
     }
 
-    Vec3           vec3_temp;
+    Vec3           vec3Temp;
     Quaternion     rotate;
     geometry::AABB boundingBox;
     if (worldMatrix != nullptr) {
@@ -408,7 +408,7 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
                 Vec3::subtract(boundingBox.center, boundingBox.halfExtents, &structInfo.minPosition.value());
             }
             for (auto &vtxBdl : structInfo.vertexBundles) {
-                for (size_t j = 0; j < vtxBdl.attributes.size(); j++) {
+                for (int j = 0; j < vtxBdl.attributes.size(); j++) {
                     if (vtxBdl.attributes[j].name == gfx::ATTR_NAME_POSITION || vtxBdl.attributes[j].name == gfx::ATTR_NAME_NORMAL) {
                         const gfx::Format format = vtxBdl.attributes[j].format;
 
@@ -432,21 +432,21 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
                             const uint32_t xOffset = vtxIdx * vertexStride;
                             const uint32_t yOffset = xOffset + attrComponentByteLength;
                             const uint32_t zOffset = yOffset + attrComponentByteLength;
-                            vec3_temp.set(
+                            vec3Temp.set(
                                 getTypedArrayElementValue<float>(reader(xOffset)),
                                 getTypedArrayElementValue<float>(reader(yOffset)),
                                 getTypedArrayElementValue<float>(reader(zOffset)));
                             const auto &attrName = vtxBdl.attributes[j].name;
 
                             if (attrName == gfx::ATTR_NAME_POSITION) {
-                                vec3_temp.transformMat4(vec3_temp, *worldMatrix);
+                                vec3Temp.transformMat4(vec3Temp, *worldMatrix);
                             } else if (attrName == gfx::ATTR_NAME_NORMAL) {
-                                vec3_temp.transformQuat(rotate);
+                                vec3Temp.transformQuat(rotate);
                             }
 
-                            writer(xOffset, vec3_temp.x);
-                            writer(yOffset, vec3_temp.y);
-                            writer(zOffset, vec3_temp.z);
+                            writer(xOffset, vec3Temp.x);
+                            writer(yOffset, vec3Temp.y);
+                            writer(zOffset, vec3Temp.z);
                         }
                     }
                 }
@@ -516,16 +516,16 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
                     vbView.set(dstAttrView, srcVBOffset);
                     if ((attr.name == gfx::ATTR_NAME_POSITION || attr.name == gfx::ATTR_NAME_NORMAL) && worldMatrix != nullptr) {
                         Float32Array f32Temp(vbView.buffer(), srcVBOffset, 3);
-                        vec3_temp.set(f32Temp[0], f32Temp[1], f32Temp[2]);
+                        vec3Temp.set(f32Temp[0], f32Temp[1], f32Temp[2]);
                         if (attr.name == gfx::ATTR_NAME_POSITION) {
-                            vec3_temp.transformMat4(vec3_temp, *worldMatrix);
+                            vec3Temp.transformMat4(vec3Temp, *worldMatrix);
                         } else if (attr.name == gfx::ATTR_NAME_NORMAL) {
-                            vec3_temp.transformQuat(rotate);
+                            vec3Temp.transformQuat(rotate);
                         }
 
-                        f32Temp[0] = vec3_temp.x;
-                        f32Temp[1] = vec3_temp.y;
-                        f32Temp[2] = vec3_temp.z;
+                        f32Temp[0] = vec3Temp.x;
+                        f32Temp[1] = vec3Temp.y;
+                        f32Temp[2] = vec3Temp.z;
                     }
                     srcVBOffset += bundle.view.stride;
                     dstVBOffset += dstBundle.view.stride;
@@ -604,23 +604,23 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
             if (idxStride == prim.indexView.value().stride) {
                 switch (idxStride) {
                     case 2:
-                        CC_GET<Uint16Array>(ibView).set(CC_GET<Uint16Array>(srcIBView));
+                        cc::get<Uint16Array>(ibView).set(cc::get<Uint16Array>(srcIBView));
                         break;
                     case 1:
-                        CC_GET<Uint8Array>(ibView).set(CC_GET<Uint8Array>(srcIBView));
+                        cc::get<Uint8Array>(ibView).set(cc::get<Uint8Array>(srcIBView));
                         break;
                     default:
-                        CC_GET<Uint32Array>(ibView).set(CC_GET<Uint32Array>(srcIBView));
+                        cc::get<Uint32Array>(ibView).set(cc::get<Uint32Array>(srcIBView));
                         break;
                 }
             } else {
                 for (uint32_t n = 0; n < prim.indexView.value().count; ++n) {
                     if (idxStride == 2) {
-                        CC_GET<Uint16Array>(ibView)[n] = static_cast<uint16_t>(getTypedArrayValue<uint32_t>(srcIBView, n));
+                        cc::get<Uint16Array>(ibView)[n] = static_cast<uint16_t>(getTypedArrayValue<uint32_t>(srcIBView, n));
                     } else if (idxStride == 1) {
-                        CC_GET<Uint8Array>(ibView)[n] = static_cast<uint8_t>(getTypedArrayValue<uint32_t>(srcIBView, n));
+                        cc::get<Uint8Array>(ibView)[n] = static_cast<uint8_t>(getTypedArrayValue<uint32_t>(srcIBView, n));
                     } else {
-                        CC_GET<Uint32Array>(ibView)[n] = getTypedArrayValue<uint32_t>(srcIBView, n);
+                        cc::get<Uint32Array>(ibView)[n] = getTypedArrayValue<uint32_t>(srcIBView, n);
                     }
                 }
             }
@@ -637,13 +637,13 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
             }
             for (uint32_t n = 0; n < dstPrim.indexView.value().count; ++n) {
                 if (idxStride == 2) {
-                    CC_GET<Uint16Array>(ibView)[prim.indexView->count + n] =
+                    cc::get<Uint16Array>(ibView)[prim.indexView->count + n] =
                         vertBatchCount + static_cast<uint16_t>(getTypedArrayValue<uint32_t>(dstIBView, n));
                 } else if (idxStride == 1) {
-                    CC_GET<Uint8Array>(ibView)[prim.indexView->count + n] =
+                    cc::get<Uint8Array>(ibView)[prim.indexView->count + n] =
                         vertBatchCount + static_cast<uint8_t>(getTypedArrayValue<uint32_t>(dstIBView, n));
                 } else {
-                    CC_GET<Uint32Array>(ibView)[prim.indexView->count + n] =
+                    cc::get<Uint32Array>(ibView)[prim.indexView->count + n] =
                         vertBatchCount + getTypedArrayValue<uint32_t>(dstIBView, n);
                 }
             }
@@ -680,10 +680,10 @@ bool Mesh::merge(Mesh *mesh, const Mat4 *worldMatrix /* = nullptr */, bool valid
             boundingBox.halfExtents.scale(0.5F);
             boundingBox.transform(*worldMatrix, &boundingBox);
 
-            Vec3::add(boundingBox.center, boundingBox.halfExtents, &vec3_temp);
-            Vec3::max(meshStruct.maxPosition.value(), vec3_temp, &meshStruct.maxPosition.value());
-            Vec3::subtract(boundingBox.center, boundingBox.halfExtents, &vec3_temp);
-            Vec3::min(meshStruct.minPosition.value(), vec3_temp, &meshStruct.minPosition.value());
+            Vec3::add(boundingBox.center, boundingBox.halfExtents, &vec3Temp);
+            Vec3::max(meshStruct.maxPosition.value(), vec3Temp, &meshStruct.maxPosition.value());
+            Vec3::subtract(boundingBox.center, boundingBox.halfExtents, &vec3Temp);
+            Vec3::min(meshStruct.minPosition.value(), vec3Temp, &meshStruct.minPosition.value());
         } else {
             Vec3::min(meshStruct.minPosition.value(), mesh->_struct.minPosition.value(), &meshStruct.minPosition.value());
             Vec3::max(meshStruct.maxPosition.value(), mesh->_struct.maxPosition.value(), &meshStruct.maxPosition.value());
@@ -759,7 +759,7 @@ TypedArray Mesh::readAttribute(index_t primitiveIndex, const char *attributeName
             return;
         }
 
-        DataView inputView(_data.buffer(), vertexBundle.view.offset + getOffset(vertexBundle.attributes, iAttribute));
+        DataView inputView(_data.buffer(), vertexBundle.view.offset + getOffset(vertexBundle.attributes, static_cast<index_t>(iAttribute)));
 
         const auto &formatInfo = gfx::GFX_FORMAT_INFOS[static_cast<uint32_t>(format)];
 
@@ -791,7 +791,7 @@ bool Mesh::copyAttribute(index_t primitiveIndex, const char *attributeName, Arra
         }
         const gfx::Format format = vertexBundle.attributes[iAttribute].format;
 
-        DataView inputView(_data.buffer(), vertexBundle.view.offset + getOffset(vertexBundle.attributes, iAttribute));
+        DataView inputView(_data.buffer(), vertexBundle.view.offset + getOffset(vertexBundle.attributes, static_cast<index_t>(iAttribute)));
 
         DataView outputView(buffer, offset);
 

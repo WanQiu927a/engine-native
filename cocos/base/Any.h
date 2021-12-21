@@ -26,21 +26,78 @@
 #pragma once
 
 #ifdef USE_CXX_17
-    
-#else
-    #include "boost/any.hpp"
 
-    #define CC_ANY_CAST boost::any_cast
+    #include <any>
+
+namespace cc {
+
+using any = std::any;
+
+template <typename ValueType>
+inline ValueType* any_cast(any* operand) noexcept {
+    return std::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline const ValueType* any_cast(const any* operand) noexcept {
+    return std::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(any& operand) {
+    return std::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(const any& operand) {
+    return std::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(any&& operand) {
+    return std::any_cast<ValueType>(operand);
+}
+
+} // namespace cc
+
+#else
+
+    #include "boost/any.hpp"
 
 namespace cc {
 class any : public boost::any {
 public:
     using boost::any::any;
 
-    bool has_value() const noexcept {
+    inline bool has_value() const noexcept {
         return !this->empty();
     }
 };
 
-}; // namespace cc
+template <typename ValueType>
+inline ValueType* any_cast(any* operand) noexcept {
+    return boost::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline const ValueType* any_cast(const any* operand) noexcept {
+    return boost::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(any& operand) {
+    return boost::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(const any& operand) {
+    return boost::any_cast<ValueType>(operand);
+}
+
+template <typename ValueType>
+inline ValueType any_cast(any&& operand) {
+    return boost::any_cast<ValueType>(operand);
+}
+
+} // namespace cc
 #endif
