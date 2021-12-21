@@ -23,6 +23,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#include "scene/Skybox.h"
 #include "3d/assets/Mesh.h"
 #include "3d/misc/CreateMesh.h"
 #include "core/Director.h"
@@ -32,7 +33,6 @@
 #include "renderer/core/MaterialInstance.h"
 #include "renderer/core/PassUtils.h"
 #include "scene/Model.h"
-#include "scene/Skybox.h"
 
 namespace {
 cc::Mesh *    skyboxMesh{nullptr};
@@ -153,7 +153,7 @@ void Skybox::updatePipeline() const {
 
     if (auto iter = pipeline->getMacros().find("CC_USE_IBL"); iter != pipeline->getMacros().end()) {
         const MacroValue &macro    = iter->second;
-        const int32_t *   macroPtr = CC_GET_IF<int32_t>(&macro);
+        const int32_t *   macroPtr = cc::get_if<int32_t>(&macro);
         if (macroPtr != nullptr && (*macroPtr == value)) {
             return;
         }

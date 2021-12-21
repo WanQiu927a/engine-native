@@ -63,7 +63,7 @@ void BakedSkinningModel::destroy() {
     if (_jointMedium.buffer != nullptr) {
         CC_SAFE_DESTROY(_jointMedium.buffer);
     }
-    applyJointTexture(CC_NULLOPT);
+    applyJointTexture(cc::nullopt);
     Super::destroy();
 }
 
@@ -183,9 +183,9 @@ void BakedSkinningModel::updateInstancedJointTextureInfo() {
     const IAnimInfo &animInfo         = _jointMedium.animInfo;
     index_t          idx              = _instAnimInfoIdx;
     if (idx >= 0) {
-        auto &view = CC_GET<Float32Array>(getInstancedAttributeBlock()->views[idx]); // TODO(xwx): not sure can get Float32Array or Uint8Array
-        view[0]    = *animInfo.curFrame;                                               //NOTE: curFrame is only used in JSB.
-                                                                                       //        view[0]           = animInfo.data[0];
+        auto &view = cc::get<Float32Array>(getInstancedAttributeBlock()->views[idx]); // TODO(xwx): not sure can get Float32Array or Uint8Array
+        view[0]    = *animInfo.curFrame;                                              //NOTE: curFrame is only used in JSB.
+                                                                                      //        view[0]           = animInfo.data[0];
         view[1] = jointTextureInfo[1];
         view[2] = jointTextureInfo[2];
     }
@@ -200,12 +200,12 @@ void BakedSkinningModel::syncAnimInfoForJS(gfx::Buffer *buffer, const Float32Arr
 
 void BakedSkinningModel::syncDataForJS(const std::vector<cc::optional<geometry::AABB>> &boundsInfo,
                                        const cc::optional<geometry::AABB> &             modelBound,
-                                       float                                             jointTextureInfo_0,
-                                       float                                             jointTextureInfo_1,
-                                       float                                             jointTextureInfo_2,
-                                       float                                             jointTextureInfo_3,
-                                       gfx::Texture *                                    tex,
-                                       const Float32Array &                              animInfoData) {
+                                       float                                            jointTextureInfo_0,
+                                       float                                            jointTextureInfo_1,
+                                       float                                            jointTextureInfo_2,
+                                       float                                            jointTextureInfo_3,
+                                       gfx::Texture *                                   tex,
+                                       const Float32Array &                             animInfoData) {
     _jointMedium.boundsInfo = boundsInfo;
 
     if (modelBound.has_value()) {

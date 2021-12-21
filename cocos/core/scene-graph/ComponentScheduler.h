@@ -26,8 +26,8 @@
 #pragma once
 #include <functional>
 #include <vector>
-#include "cocos/base/Optional.h"
 #include "base/TypeDef.h"
+#include "cocos/base/Optional.h"
 #include "core/components/Component.h"
 #include "core/scene-graph/Node.h"
 #include "core/utils/MutableForwardIterator.h"
@@ -112,7 +112,7 @@ public:
      * @param comp The component to be enabled
      * @param invoker The invoker which is responsible to schedule the `onEnable` call
      */
-    void enableComp(Component *comp, cc::optional<LifeCycleInvoker *> invoker = CC_NULLOPT);
+    void enableComp(Component *comp, cc::optional<LifeCycleInvoker *> invoker = cc::nullopt);
 
     /**
      * @en Disable a component

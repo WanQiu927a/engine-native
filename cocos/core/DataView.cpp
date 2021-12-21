@@ -49,10 +49,10 @@ std::unordered_map<std::string, DataView::IntWritter> DataView::intWritterMap{
 };
 
 int32_t DataView::readInt(ReaderVariant &readerVariant, uint32_t offset) {
-    return CC_VISIT([offset, this](auto &reader) {
+    return cc::visit([offset, this](auto &reader) {
         return (int32_t)(this->*reader)(offset);
     },
-                    readerVariant);
+                     readerVariant);
 }
 
 DataView::DataView(ArrayBuffer *buffer) : DataView(buffer, 0) {}
