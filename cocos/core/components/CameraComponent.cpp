@@ -71,18 +71,18 @@ Vec3 Camera::convertToUINode(const Vec3 &wpos, Node *uiNode) {
         return out;
     }
 
-    Vec3 _temp_vec3_1;
-    worldToScreen(_temp_vec3_1, wpos);
+    Vec3 tempVec3;
+    worldToScreen(tempVec3, wpos);
     auto *cmp        = uiNode->getComponent<UITransform>();
     auto &view       = View::getInstance(); //cjh TODO: Is view implemented?
     auto  designSize = view.getVisibleSize();
-    float xoffset    = _temp_vec3_1.x - _camera->getWidth() * 0.5F;
-    float yoffset    = _temp_vec3_1.y - _camera->getHeight() * 0.5F;
-    _temp_vec3_1.x   = xoffset / view.getScaleX() + designSize.width * 0.5F;
-    _temp_vec3_1.y   = yoffset / view.getScaleY() + designSize.height * 0.5F;
+    float xoffset    = tempVec3.x - static_cast<float>(_camera->getWidth()) * 0.5F;
+    float yoffset    = tempVec3.y - static_cast<float>(_camera->getHeight()) * 0.5F;
+    tempVec3.x       = xoffset / view.getScaleX() + designSize.width * 0.5F;
+    tempVec3.y       = yoffset / view.getScaleY() + designSize.height * 0.5F;
 
     if (cmp) {
-        //cjh TODO:        cmp->convertToNodeSpaceAR(out, _temp_vec3_1);
+        //cjh TODO:        cmp->convertToNodeSpaceAR(out, tempVec3);
     }
 
     return out;
@@ -103,11 +103,11 @@ void Camera::createCamera() {
 
         _camera->setViewport(Vec4{_rect.origin.x, _rect.origin.y, _rect.size.width, _rect.size.height});
         _camera->setFovAxis(_fovAxis);
-        _camera->setFov(mathutils::toRadian(_fov));
+        _camera->setFov(static_cast<float>(mathutils::toRadian(_fov)));
         _camera->setOrthoHeight(_orthoHeight);
         _camera->setNearClip(_near);
         _camera->setFarClip(_far);
-        _camera->setClearColor(gfx::Color{_color.r / 255.F, _color.g / 255.F, _color.b / 255.F, _color.a / 255.F});
+        _camera->setClearColor(gfx::Color{static_cast<float>(_color.r) / 255.F, static_cast<float>(_color.g) / 255.F, static_cast<float>(_color.b) / 255.F, static_cast<float>(_color.a) / 255.F});
         _camera->setClearDepth(_depth);
         _camera->setClearStencil(_stencil);
         _camera->setClearFlag(static_cast<gfx::ClearFlags>(_clearFlags));

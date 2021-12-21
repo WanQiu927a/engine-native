@@ -95,7 +95,7 @@ void Component::_onPreDestroy() {
     // }
 
     // onDestroy
-    Director::getInstance()->getNodeActivator()->destroyComp(this);
+    NodeActivator::destroyComp(this);
 
     // do remove component
     _node->removeComponent(this);

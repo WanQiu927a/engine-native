@@ -66,14 +66,14 @@ public:
      * @param onLoadInvoker The invoker for `onLoad` method, normally from [[ComponentScheduler]]
      * @param onEnableInvoker The invoker for `onEnable` method, normally from [[ComponentScheduler]]
      */
-    void activateComp(Component *comp, LifeCycleInvoker *preloadInvoker = nullptr, LifeCycleInvoker *onLoadInvoker = nullptr, LifeCycleInvoker *onEnableInvoker = nullptr);
+    static void activateComp(Component *comp, LifeCycleInvoker *preloadInvoker = nullptr, LifeCycleInvoker *onLoadInvoker = nullptr, LifeCycleInvoker *onEnableInvoker = nullptr);
 
     /**
      * @en Destroy a component
      * @zh 销毁一个组件
      * @param comp Target component
      */
-    void destroyComp(Component *comp);
+    static void destroyComp(Component *comp);
 
     Component *_resetComp{nullptr};
 

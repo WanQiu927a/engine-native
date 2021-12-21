@@ -31,6 +31,7 @@
 #include "base/Ptr.h"
 #include "base/RefCounted.h"
 #include "cocos/base/Optional.h"
+#include "cocos/math/Utils.h"
 #include "core/geometry/Frustum.h"
 #include "core/geometry/Ray.h"
 #include "core/scene-graph/Node.h"
@@ -291,19 +292,18 @@ protected:
 private:
     void updateExposure();
 
-    bool             _isWindowSize{true};
-    float            _screenScale{0.F};
-    gfx::Device *    _device{nullptr};
-    RenderScene *    _scene{nullptr};
-    SharedPtr<Node>  _node;
-    std::string      _name;
-    bool             _enabled{false};
-    CameraProjection _proj{CameraProjection::UNKNOWN};
-    float            _aspect{0.F};
-    float            _orthoHeight{10.0F};
-    CameraFOVAxis    _fovAxis{CameraFOVAxis::VERTICAL};
-    //    float _fov = toRadian(45);
-    float                 _fov{0.F};
+    bool                  _isWindowSize{true};
+    float                 _screenScale{0.F};
+    gfx::Device *         _device{nullptr};
+    RenderScene *         _scene{nullptr};
+    SharedPtr<Node>       _node;
+    std::string           _name;
+    bool                  _enabled{false};
+    CameraProjection      _proj{CameraProjection::UNKNOWN};
+    float                 _aspect{0.F};
+    float                 _orthoHeight{10.0F};
+    CameraFOVAxis         _fovAxis{CameraFOVAxis::VERTICAL};
+    float                 _fov{static_cast<float>(mathutils::toRadian(45.F))};
     float                 _nearClip{1.0F};
     float                 _farClip{1000.0F};
     gfx::Color            _clearColor{0.2, 0.2, 0.2, 1};

@@ -129,7 +129,7 @@ public:
     Line &operator=(const Line &) = default;
     Line &operator=(Line &&) = default;
     Line(Line &&)            = default;
-    ~Line()                  = default;
+    ~Line() override         = default;
 
     /**
      * @zh

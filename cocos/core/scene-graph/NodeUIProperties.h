@@ -40,9 +40,9 @@ public:
 
     NodeUiProperties(/* args */) = default;
     ~NodeUiProperties() override = default;
-    inline UITransform *getUITransformComp() const { return nullptr; } //cjh TODO:
+    inline UITransform *getUITransformComp() const { return nullptr; } //cjh TODO: //NOLINT NOTE:remove NOLINT after implement
     inline void         setUITransformComp(UITransform *value) {}      //cjh TODO:
-    inline UIComponent *getUIComp() const { return nullptr; }          //cjh TODO:
+    inline UIComponent *getUIComp() const { return nullptr; }          //cjh TODO:  //NOLINT NOTE:remove NOLINT after implement
     inline void         setUIComp(UIComponent *comp) {}                //cjh TODO:
 protected:
     UITransform *_uiTransformComp{nullptr};

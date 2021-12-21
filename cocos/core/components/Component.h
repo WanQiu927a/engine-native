@@ -59,7 +59,7 @@ public:
 
     using Super = CCObject;
 
-    virtual ~Component() = default;
+    ~Component() override = default;
 
     const std::string &getName() const { return _name; }
     void               setName(const std::string &value) { _name = value; }
@@ -123,9 +123,9 @@ public:
 
     //cjh TODO:
     bool         destroy() override;
-    virtual void _onPreDestroy();
+    virtual void _onPreDestroy(); //NOLINT(readability-identifier-naming)
 
-    Component *instantiate(Component *cloned) { return nullptr; } //cjh TODO:
+    Component *instantiate(Component *cloned) { return nullptr; } //cjh TODO: //NOLINT remove NOLINT after implement
 
     Node *getNode() const;
 
@@ -168,13 +168,13 @@ public:
     /**
      * @en Un-schedules a custom task.
      * @zh 取消调度一个自定义的回调任务。
-     * @param callback_fn  The callback function of the task
+     * @param callbackFn  The callback function of the task
      * @example
      * ```ts
      * this.unschedule(_callback);
      * ```
      */
-    void unschedule(SCHEDULE_CB callback_fn) {}
+    void unschedule(SCHEDULE_CB callbackFn) {}
 
     /**
      * @en unschedule all scheduled tasks.
@@ -222,7 +222,7 @@ public:
      * 如果支持脚本优先级，则应删除此方法。
      * @private
      */
-    virtual void __preload() {}
+    virtual void __preload() {} //NOLINT(readability-identifier-naming, bugprone-reserved-identifier)
 
     /**
      * @en
@@ -301,7 +301,7 @@ protected:
      * @param outRect - The rect to store the result bounding rect
      * @private
      */
-    virtual Rect _getLocalBounds() { return {}; }
+    virtual Rect _getLocalBounds() { return {}; } //NOLINT(readability-identifier-naming) remove NOLINT after implement
 
     /**
      * @en

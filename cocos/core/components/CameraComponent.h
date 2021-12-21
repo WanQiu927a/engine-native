@@ -123,7 +123,7 @@ public:
     inline void setClearColor(const Color &val) {
         _color.set(val);
         if (_camera != nullptr) {
-            _camera->setClearColor(gfx::Color{val.r / 255.F, val.g / 255.F, val.b / 255.F, val.a / 255.F});
+            _camera->setClearColor(gfx::Color{static_cast<float>(val.r) / 255.F, static_cast<float>(val.g) / 255.F, static_cast<float>(val.b) / 255.F, static_cast<float>(val.a) / 255.F});
         }
     }
 
@@ -207,7 +207,7 @@ public:
     inline void setFov(float val) {
         _fov = val;
         if (_camera != nullptr) {
-            _camera->setFov(mathutils::toRadian(val));
+            _camera->setFov(static_cast<float>(mathutils::toRadian(val)));
         }
     }
 
@@ -397,7 +397,6 @@ protected:
     void checkTargetTextureEvent(RenderTexture *old);
     void updateTargetTexture();
 
-protected:
     // @serializable
     ProjectionType _projection{ProjectionType::PERSPECTIVE};
     // @serializable

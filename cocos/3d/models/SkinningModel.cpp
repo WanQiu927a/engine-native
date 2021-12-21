@@ -85,7 +85,7 @@ void SkinningModel::bindSkeleton(Skeleton *skeleton, Node *skinningRoot, Mesh *m
     setTransform(skinningRoot);
     auto        boneSpaceBounds = mesh->getBoneSpaceBounds(skeleton);
     const auto &jointMaps       = mesh->getStruct().jointMaps;
-    ensureEnoughBuffers((jointMaps.has_value() && !jointMaps->empty()) ? jointMaps->size() : 1);
+    ensureEnoughBuffers((jointMaps.has_value() && !jointMaps->empty()) ? static_cast<int32_t>(jointMaps->size()) : 1);
     _bufferIndices = mesh->getJointBufferIndices();
 
     for (index_t index = 0; index < skeleton->getJoints().size(); ++index) {
@@ -129,7 +129,7 @@ void SkinningModel::updateTransform(uint32_t stamp) {
     for (JointInfo &jointInfo : _joints) {
         const auto *bound       = jointInfo.bound;
         auto *      transform   = jointInfo.transform;
-        Mat4        worldMatrix = cc::getWorldMatrix(transform, stamp);
+        Mat4        worldMatrix = cc::getWorldMatrix(transform, static_cast<int32_t>(stamp));
         jointInfo.bound->transform(worldMatrix, &ab1);
         ab1.getBoundary(&v31, &v32);
         Vec3::min(v3Min, v31, &v3Min);

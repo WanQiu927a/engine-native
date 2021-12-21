@@ -110,7 +110,7 @@ public:
 
     AABB(float px, float py, float pz, float hw, float hh, float hl);
     AABB();
-    ~AABB() = default;
+    ~AABB() override = default;
 
     /**
      * @en
@@ -138,7 +138,7 @@ public:
     void               getBoundary(cc::Vec3 *minPos, cc::Vec3 *maxPos) const;
     void               merge(const AABB &aabb);
     void               set(const cc::Vec3 &centerVal, const cc::Vec3 &halfExtentVal);
-    void               transform(const Mat4 &m, AABB *out);
+    void               transform(const Mat4 &m, AABB *out) const;
     inline void        setCenter(float x, float y, float z) { center.set(x, y, z); }
     inline void        setCenter(const Vec3 &center) { this->center.set(center); }
     inline void        setValid(bool isValid) { _isValid = isValid; }

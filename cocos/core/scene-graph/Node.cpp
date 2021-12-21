@@ -24,6 +24,7 @@
  ****************************************************************************/
 
 #include "core/scene-graph/Node.h"
+#include "base/CachedArray.h"
 #include "core/Director.h"
 #include "core/Game.h"
 #include "core/data/Object.h"
@@ -33,7 +34,6 @@
 #include "core/scene-graph/NodeUIProperties.h"
 #include "core/scene-graph/Scene.h"
 #include "core/utils/IDGenerator.h"
-#include "base/CachedArray.h"
 
 namespace cc {
 
@@ -52,10 +52,10 @@ std::vector<std::vector<Node *>> Node::stacks;
 
 namespace {
 CachedArray<Node *> allNodes{128}; //cjh how to clear ?
-const std::string                                      EMPTY_NODE_NAME;
-IDGenerator                                            idGenerator("Node");
+const std::string   EMPTY_NODE_NAME;
+IDGenerator         idGenerator("Node");
 
-std::vector<Node *> dirtyNodes;
+std::vector<Node *>  dirtyNodes;
 CC_FORCE_INLINE void setDirtyNode(const index_t idx, Node *node) {
     if (idx >= dirtyNodes.size()) {
         if (idx >= dirtyNodes.capacity()) {
@@ -104,10 +104,10 @@ void Node::onBatchCreated(bool dontChildPrefab) {
 Node *Node::instantiate(Node *cloned, bool isSyncedNode) {
     if (!cloned) {
         CC_ASSERT(false);
-        // TODO: cloned = legacyCC.instantiate._clone(this, this);
+        // TODO(): cloned = legacyCC.instantiate._clone(this, this);
         return nullptr;
     }
-    // TODO
+    // TODO():
     // const newPrefabInfo = cloned._prefab;
     // if (EDITOR && newPrefabInfo) {
     //    if (cloned == = newPrefabInfo.root) {
@@ -128,7 +128,7 @@ Node *Node::instantiate(Node *cloned, bool isSyncedNode) {
     return cloned;
 }
 
-void Node::onHierarchyChangedBase(Node *oldParent) {
+void Node::onHierarchyChangedBase(Node * /*oldParent*/) {
     Node *newParent = _parent;
     auto *scene     = dynamic_cast<Scene *>(newParent);
     if (isPersistNode() && scene == nullptr) {
@@ -138,7 +138,7 @@ void Node::onHierarchyChangedBase(Node *oldParent) {
         //            warnID(1623);
         //        }
     }
-    // TODO
+    // TODO()
     // if (EDITOR) {
     //    const scene                = legacyCC.director.getScene() as this | null;
     //    const inCurrentSceneBefore = oldParent && oldParent.isChildOf(scene);
@@ -251,7 +251,7 @@ void Node::setParent(Node *parent, bool isKeepWorld /* = false */) {
     if (oldParent) {
         if (!(oldParent->_objFlags & Flags::DESTROYING)) {
             index_t removeAt = getIdxOfChild(oldParent->_children, this);
-            // TODO: DEV
+            // TODO(): DEV
             /*if (DEV && removeAt < 0) {
                 errorID(1633);
                 return;
@@ -269,7 +269,7 @@ void Node::setParent(Node *parent, bool isKeepWorld /* = false */) {
         //     // TODO:errorID(3821);
         // }
         newParent->_children.emplace_back(this);
-        _siblingIndex = newParent->_children.size() - 1;
+        _siblingIndex = static_cast<int32_t>(newParent->_children.size() - 1);
         newParent->emit(NodeEventType::CHILD_ADDED, this);
     }
     onHierarchyChanged(oldParent);
@@ -287,7 +287,7 @@ void Node::walk(const std::function<void(Node *)> &preFunc, const std::function<
     index_t                             index{1};
     index_t                             i{0};
     const std::vector<SharedPtr<Node>> *children = nullptr;
-    Node                               *curr{nullptr};
+    Node *                              curr{nullptr};
     auto                                stacksCount = static_cast<index_t>(Node::stacks.size());
     if (stackId >= stacksCount) {
         stacks.resize(stackId + 1);
@@ -374,7 +374,7 @@ Component *Node::addComponent(Component *comp) {
     _components.emplace_back(comp);
 
     if (isActiveInHierarchy()) {
-        Director::getInstance()->getNodeActivator()->activateComp(comp);
+        NodeActivator::activateComp(comp);
     }
 
     return comp;
@@ -391,7 +391,7 @@ bool Node::onPreDestroyBase() {
     Flags destroyingFlag = Flags::DESTROYING;
     _objFlags |= destroyingFlag;
     bool destroyByParent = (!!_parent) && (!!(_parent->_objFlags & destroyingFlag));
-    // TODO
+    // TODO()
     /*if (!destroyByParent && EDITOR) {
         this._registerIfAttached !(false);
     }*/
@@ -491,7 +491,7 @@ void Node::setSiblingIndex(index_t index) {
         return;
     }
     if (!!(_parent->_objFlags & Flags::DEACTIVATING)) {
-        // TODO: errorID(3821);
+        // TODO(): errorID(3821);
         return;
     }
     std::vector<SharedPtr<Node>> &siblings = _parent->_children;
@@ -517,7 +517,7 @@ Node *Node::getChildByPath(const std::string &path) const {
     size_t                   start;
     size_t                   end      = 0;
     std::vector<std::string> segments = StringUtil::split(path, "/");
-    auto                    *lastNode = const_cast<Node *>(this);
+    auto *                   lastNode = const_cast<Node *>(this);
     for (const std::string &segment : segments) {
         if (segment.empty()) {
             continue;
@@ -599,7 +599,7 @@ void Node::updateWorldTransform() {
     }
 
     index_t    i    = 0;
-    Node      *curr = this;
+    Node *     curr = this;
     Mat3       mat3;
     Mat3       m43;
     Quaternion quat;
@@ -607,7 +607,7 @@ void Node::updateWorldTransform() {
         setDirtyNode(i++, curr);
         curr = curr->getParent();
     }
-    Node    *child{nullptr};
+    Node *   child{nullptr};
     uint32_t dirtyBits = 0;
     while (i) {
         child = getDirtyNode(--i);
@@ -691,7 +691,7 @@ void Node::invalidateChildren(TransformBit dirtyBit) {
         const uint32_t hasChangedFlags = cur->getChangedFlags();
         if (cur->isValid() && (cur->getDirtyFlag() & hasChangedFlags & curDirtyBit) != curDirtyBit) {
             cur->setDirtyFlag(cur->getDirtyFlag() | curDirtyBit);
-            cur->_uiTransformDirty[0] = 1;// UIOnly TRS dirty
+            cur->_uiTransformDirty[0] = 1; // UIOnly TRS dirty
             cur->setChangedFlags(hasChangedFlags | curDirtyBit);
 
             for (Node *curChild : cur->getChildren()) {
@@ -756,21 +756,21 @@ void Node::setWorldScale(float x, float y, float z) {
     _worldScale.set(x, y, z);
     if (_parent != nullptr) {
         _parent->updateWorldTransform();
-        Mat3 m3_1;
-        Mat3::fromQuat(_parent->getWorldRotation().getConjugated(), &m3_1);
+        Mat3 mat3;
+        Mat3::fromQuat(_parent->getWorldRotation().getConjugated(), &mat3);
         Mat3 b;
         Mat3::fromMat4(_parent->getWorldMatrix(), &b);
-        Mat3::multiply(m3_1, b, &m3_1);
-        Mat3 m3_scaling;
-        m3_scaling.m[0] = _worldScale.x;
-        m3_scaling.m[4] = _worldScale.y;
-        m3_scaling.m[8] = _worldScale.z;
+        Mat3::multiply(mat3, b, &mat3);
+        Mat3 mat3Scaling;
+        mat3Scaling.m[0] = _worldScale.x;
+        mat3Scaling.m[4] = _worldScale.y;
+        mat3Scaling.m[8] = _worldScale.z;
 
-        m3_1.inverse();
-        Mat3::multiply(m3_scaling, m3_1, &m3_1);
-        _localScale.x = Vec3{m3_1.m[0], m3_1.m[1], m3_1.m[2]}.length();
-        _localScale.y = Vec3{m3_1.m[3], m3_1.m[4], m3_1.m[5]}.length();
-        _localScale.z = Vec3{m3_1.m[6], m3_1.m[7], m3_1.m[8]}.length();
+        mat3.inverse();
+        Mat3::multiply(mat3Scaling, mat3, &mat3);
+        _localScale.x = Vec3{mat3.m[0], mat3.m[1], mat3.m[2]}.length();
+        _localScale.y = Vec3{mat3.m[3], mat3.m[4], mat3.m[5]}.length();
+        _localScale.z = Vec3{mat3.m[6], mat3.m[7], mat3.m[8]}.length();
     } else {
         _localScale = _worldScale;
     }
@@ -860,7 +860,7 @@ void Node::lookAt(const Vec3 &pos, const Vec3 &up) {
 
 void Node::inverseTransformPoint(Vec3 &out, const Vec3 &p) {
     out.set(p.x, p.y, p.z);
-    Node   *cur{this};
+    Node *  cur{this};
     index_t i{0};
     while (cur != nullptr && cur->getParent()) {
         setDirtyNode(i++, cur);

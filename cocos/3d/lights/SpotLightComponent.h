@@ -97,7 +97,7 @@ public:
     inline float getSpotAngle() const { return _spotAngle; }
     inline void  setSpotAngle(float val) {
         _spotAngle = val;
-        if (_light != nullptr) static_cast<scene::SpotLight *>(_light)->setSpotAngle(mathutils::toRadian(val));
+        if (_light != nullptr) static_cast<scene::SpotLight *>(_light)->setSpotAngle(static_cast<float>(mathutils::toRadian(val)));
     }
 
 protected:

@@ -27,9 +27,9 @@
 #include "core/data/deserializer/EffectAssetDeserializer.h"
 #include "core/data/deserializer/MaterialDeserializer.h"
 #include "core/data/deserializer/MeshDeserializer.h"
+#include "core/data/deserializer/TerrainAssetDeserializer.h"
 #include "core/data/deserializer/Texture2DDeserializer.h"
 #include "core/data/deserializer/TextureBaseDeserializer.h"
-#include "core/data/deserializer/TerrainAssetDeserializer.h"
 
 namespace cc {
 

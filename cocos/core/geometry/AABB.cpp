@@ -106,7 +106,7 @@ void AABB::set(const cc::Vec3 &centerVal, const cc::Vec3 &halfExtentVal) {
     setHalfExtents(halfExtentVal);
 }
 
-void AABB::transform(const Mat4 &m, AABB *out) {
+void AABB::transform(const Mat4 &m, AABB *out) const {
     Vec3::transformMat4(center, m, &out->center);
     transformExtentM4(&out->halfExtents, getHalfExtents(), m);
 }

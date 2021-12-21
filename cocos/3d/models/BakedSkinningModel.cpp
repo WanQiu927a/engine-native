@@ -135,9 +135,9 @@ void BakedSkinningModel::applyJointTexture(const cc::optional<IJointTextureHandl
     }
     auto *buffer           = _jointMedium.buffer.get();
     auto &jointTextureInfo = _jointMedium.jointTextureInfo;
-    jointTextureInfo[0]    = texture->handle.texture->getWidth();
-    jointTextureInfo[1]    = _skeleton->getJoints().size();
-    jointTextureInfo[2]    = texture->pixelOffset + 0.1F; // guard against floor() underflow
+    jointTextureInfo[0]    = static_cast<float>(texture->handle.texture->getWidth());
+    jointTextureInfo[1]    = static_cast<float>(_skeleton->getJoints().size());
+    jointTextureInfo[2]    = static_cast<float>(texture->pixelOffset) + 0.1F; // guard against floor() underflow
     jointTextureInfo[3]    = 1 / jointTextureInfo[0];
     updateInstancedJointTextureInfo();
     if (buffer != nullptr) {
@@ -200,25 +200,25 @@ void BakedSkinningModel::syncAnimInfoForJS(gfx::Buffer *buffer, const Float32Arr
 
 void BakedSkinningModel::syncDataForJS(const std::vector<cc::optional<geometry::AABB>> &boundsInfo,
                                        const cc::optional<geometry::AABB> &             modelBound,
-                                       float                                            jointTextureInfo_0,
-                                       float                                            jointTextureInfo_1,
-                                       float                                            jointTextureInfo_2,
-                                       float                                            jointTextureInfo_3,
+                                       float                                            jointTextureInfo0,
+                                       float                                            jointTextureInfo1,
+                                       float                                            jointTextureInfo2,
+                                       float                                            jointTextureInfo3,
                                        gfx::Texture *                                   tex,
                                        const Float32Array &                             animInfoData) {
     _jointMedium.boundsInfo = boundsInfo;
 
     if (modelBound.has_value()) {
         const geometry::AABB &modelBounldValue = modelBound.value();
-        _modelBounds.get()->set(modelBounldValue.center, modelBounldValue.halfExtents);
+        _modelBounds->set(modelBounldValue.center, modelBounldValue.halfExtents);
     } else {
         _modelBounds = nullptr;
     }
 
-    _jointMedium.jointTextureInfo[0] = jointTextureInfo_0;
-    _jointMedium.jointTextureInfo[1] = jointTextureInfo_1;
-    _jointMedium.jointTextureInfo[2] = jointTextureInfo_2;
-    _jointMedium.jointTextureInfo[3] = jointTextureInfo_3;
+    _jointMedium.jointTextureInfo[0] = jointTextureInfo0;
+    _jointMedium.jointTextureInfo[1] = jointTextureInfo1;
+    _jointMedium.jointTextureInfo[2] = jointTextureInfo2;
+    _jointMedium.jointTextureInfo[3] = jointTextureInfo3;
 
     _jointMedium.animInfo.curFrame       = &animInfoData[0];
     _jointMedium.animInfo.frameDataBytes = animInfoData.byteLength();

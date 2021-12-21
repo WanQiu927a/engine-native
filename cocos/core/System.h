@@ -58,13 +58,9 @@ public:
      * @param b System b
      */
     static int32_t sortByPriority(System *a, System *b) {
-        if (a->_priority < b->_priority) {
-            return 1;
-        } else if (a->_priority > b->_priority) {
-            return -1;
-        } else {
-            return 0;
-        }
+        if (a->_priority < b->_priority) return 1;
+        if (a->_priority > b->_priority) return -1;
+        return 0;
     }
 
     System()          = default;

@@ -111,7 +111,7 @@ public:
 
     Sphere(const Sphere &) = delete;
     Sphere(Sphere &&)      = delete;
-    ~Sphere()              = default;
+    ~Sphere() override     = default;
     Sphere &operator=(const Sphere &) = delete;
     Sphere &operator=(Sphere &&) = delete;
 

@@ -199,7 +199,7 @@ void doDispatchEvent(cc::Node *owner, cc::event::Event *event) {
     owner->getEventProcessor()->getCapturingTargets(event->getEventName(), cachedArray);
     // capturing
     event->setEventPhase(cc::event::Event::Phase::CAPTURING);
-    for (int32_t i = cachedArray.size() - 1; i >= 0; --i) {
+    for (auto i = static_cast<int32_t>(cachedArray.size() - 1); i >= 0; --i) {
         target = cachedArray[i];
         if (target->getEventProcessor()->getCapturingTargets()) {
             event->setCurrentTarget(target);

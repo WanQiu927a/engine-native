@@ -52,7 +52,7 @@ public:
 
     static int32_t sortedIndex(std::vector<Component *> &components, Component *comp);
 
-    explicit LifeCycleInvoker(const Invoker &invokeFunc);
+    explicit LifeCycleInvoker(Invoker invokeFunc);
     ~LifeCycleInvoker();
 
     virtual void add(Component *comp)    = 0;

@@ -118,7 +118,7 @@ public:
     Ray &operator=(const Ray &) = default;
     Ray &operator=(Ray &&) = default;
     Ray(Ray &&)            = default;
-    ~Ray()                 = default;
+    ~Ray() override        = default;
 
     /**
      * @en

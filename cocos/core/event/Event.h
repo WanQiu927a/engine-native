@@ -49,7 +49,7 @@ public:
     Event() = default;
     explicit Event(Type eventType);
     Event(Type eventType, bool bubbles);
-    virtual ~Event() = default;
+    ~Event() override = default;
 
     // Event phases
     enum class Phase {

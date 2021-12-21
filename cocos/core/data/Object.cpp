@@ -36,7 +36,7 @@ std::vector<CCObject *> objectsToDestroy;
 /* static */
 void CCObject::deferredDestroy() {
     if (objectsToDestroy.empty()) return;
-    size_t deleteCount = objectsToDestroy.size();
+    auto deleteCount = static_cast<int32_t>(objectsToDestroy.size());
     for (size_t i = 0; i < deleteCount; ++i) {
         CCObject *obj = objectsToDestroy[i];
         if (!(obj->_objFlags & Flags::DESTROYED)) {
@@ -57,8 +57,8 @@ void CCObject::deferredDestroy() {
     //    }
 }
 
-CCObject::CCObject(const std::string &name /* = ""*/)
-: _name(name) {
+CCObject::CCObject(std::string name /* = ""*/)
+: _name(std::move(name)) {
 }
 
 bool CCObject::destroy() {
