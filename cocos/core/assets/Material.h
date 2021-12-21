@@ -223,7 +223,7 @@ public:
 
     // For deserialization, we need to make the following properties public
     /* @type(EffectAsset) */
-    cc::SharedPtr<EffectAsset> _effectAsset;
+    SharedPtr<EffectAsset> _effectAsset;
 
     /* @serializable */
     uint32_t _techIdx{0};
